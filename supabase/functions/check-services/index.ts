@@ -345,7 +345,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      // ---- SLA BREACH CHECK ----
+      // ---- UPTIME CALCULATION ----
       // Calculate uptime from last 12 months
       const twelveMonthsAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toISOString();
       const { count: totalChecks } = await supabase
@@ -364,73 +364,6 @@ Deno.serve(async (req) => {
       const total = totalChecks || 1;
       const up = upChecks || 0;
       const uptimePercentage = Math.round((up / total) * 10000) / 100;
-
-      // SLA breach: check monthly uptime (default threshold 99.9%)
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      const { count: monthTotal } = await supabase
-        .from("checks")
-        .select("*", { count: "exact", head: true })
-        .eq("service_id", service.id)
-        .gte("checked_at", thirtyDaysAgo);
-
-      const { count: monthUp } = await supabase
-        .from("checks")
-        .select("*", { count: "exact", head: true })
-        .eq("service_id", service.id)
-        .eq("status", "up")
-        .gte("checked_at", thirtyDaysAgo);
-
-      const monthlyUptime = (monthTotal || 1) > 0
-        ? Math.round(((monthUp || 0) / (monthTotal || 1)) * 10000) / 100
-        : 100;
-
-      if (monthlyUptime < 99.9 && (monthTotal || 0) > 100) {
-        // Check for existing SLA breach alert this month (anti-spam)
-        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-        const { data: existingSla } = await supabase
-          .from("alerts")
-          .select("id")
-          .eq("service_id", service.id)
-          .eq("alert_type", "sla_breach")
-          .gte("created_at", monthStart)
-          .is("resolved_at", null)
-          .eq("is_dismissed", false)
-          .limit(1);
-
-        if (!existingSla || existingSla.length === 0) {
-          await supabase.from("alerts").insert({
-            user_id: service.user_id,
-            workspace_id: service.workspace_id,
-            service_id: service.id,
-            alert_type: "sla_breach",
-            severity: "warning",
-            title: `${service.name}: SLA breach`,
-            description: `Monthly uptime dropped to ${monthlyUptime}% (target: 99.9%)`,
-            integration_type: "service",
-            metadata: { service_id: service.id, url: service.url, monthly_uptime: monthlyUptime },
-          });
-        }
-      } else if (monthlyUptime >= 99.9) {
-        // Auto-resolve open SLA breach alerts when uptime recovers
-        const { data: openSlaAlerts } = await supabase
-          .from("alerts")
-          .select("id")
-          .eq("service_id", service.id)
-          .eq("alert_type", "sla_breach")
-          .is("resolved_at", null)
-          .eq("is_dismissed", false);
-
-        for (const slaAlert of (openSlaAlerts || [])) {
-          await supabase
-            .from("alerts")
-            .update({
-              resolved_at: now.toISOString(),
-              is_dismissed: true,
-              metadata: { service_id: service.id, url: service.url, monthly_uptime: monthlyUptime, resolved_at: now.toISOString() },
-            })
-            .eq("id", slaAlert.id);
-        }
-      }
 
       // Calculate avg response time
       const { data: rtChecks } = await supabase

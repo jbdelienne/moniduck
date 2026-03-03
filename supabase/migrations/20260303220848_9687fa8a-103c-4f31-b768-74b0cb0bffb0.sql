@@ -1,0 +1,1 @@
+UPDATE alerts SET is_dismissed = true, resolved_at = now() WHERE alert_type = 'sla_breach' AND is_dismissed = false AND resolved_at IS NULL;
