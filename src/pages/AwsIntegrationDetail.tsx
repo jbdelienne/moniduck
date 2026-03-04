@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import AppLayout from '@/components/layout/AppLayout';
+// layout provided by route
 import { useIntegrations, useServices } from '@/hooks/use-supabase';
 import { useAwsCredentials, useSyncAwsCredentials } from '@/hooks/use-integrations';
 import { useLatestSyncMetrics } from '@/hooks/use-all-sync-data';
