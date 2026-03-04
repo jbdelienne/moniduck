@@ -19,6 +19,7 @@ export default function AddServiceModal({ open, onClose, onAdd }: AddServiceModa
   const [url, setUrl] = useState('');
   const [interval, setInterval] = useState('5');
   const [contentKeyword, setContentKeyword] = useState('');
+  const [visibility, setVisibility] = useState('public');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
