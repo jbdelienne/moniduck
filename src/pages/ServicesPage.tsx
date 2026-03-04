@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { useServices, useAddService, useDeleteService, useTogglePause, useForceCheck, Service } from '@/hooks/use-supabase';
 import AddServiceModal from '@/components/dashboard/AddServiceModal';
@@ -19,8 +19,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { UptimePeriod, useUptimeForServices } from '@/hooks/use-uptime';
 import { toast } from 'sonner';
-import { useMemo } from 'react';
 import SearchBar from '@/components/SearchBar';
+
+type VisibilityTab = 'all' | 'public' | 'private';
 
 const periodLabels: Record<UptimePeriod, string> = {
   '24h': '24h',
