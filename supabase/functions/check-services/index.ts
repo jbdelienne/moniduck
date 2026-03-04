@@ -262,6 +262,7 @@ Deno.serve(async (req) => {
 
           if (!existingOpen || existingOpen.length === 0) {
             const incidentId = `inc_${service.id}_${Date.now()}`;
+            const alertSeverity = service.visibility === 'private' ? 'warning' : 'critical';
 
             // Create the alert
             const { data: newAlert } = await supabase.from("alerts").insert({
