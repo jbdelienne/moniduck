@@ -90,8 +90,7 @@ export default function Alerts() {
   };
 
   return (
-    <AppLayout centered>
-      <div className="max-w-3xl animate-fade-in">
+    <div className="max-w-3xl mx-auto animate-fade-in">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-foreground mb-1">{t('alerts.title')}</h1>
           <p className="text-muted-foreground text-sm">{t('alerts.activeAlerts', { count: activeCount })}</p>
