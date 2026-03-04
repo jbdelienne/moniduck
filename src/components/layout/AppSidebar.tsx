@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { LayoutDashboard, Server, Plug, Bell, Settings, FileText, Cloud, Globe } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useTranslation } from "react-i18next";
@@ -10,10 +10,17 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
   const { t } = useTranslation();
   const lp = useLangPrefix();
   const { unreadCount } = useRealtimeAlerts();
-  const [spinKey, setSpinKey] = useState(0);
+  const hasMounted = useRef(false);
+  const [spinning, setSpinning] = useState(false);
 
   useEffect(() => {
-    setSpinKey((k) => k + 1);
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
+    setSpinning(true);
+    const timer = setTimeout(() => setSpinning(false), 400);
+    return () => clearTimeout(timer);
   }, [collapsed]);
 
   const navItems = [
