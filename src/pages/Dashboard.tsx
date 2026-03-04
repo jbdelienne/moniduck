@@ -153,7 +153,7 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </div>
   );
 }
 
