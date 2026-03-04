@@ -23,6 +23,7 @@ import ReportsPage from "@/pages/ReportsPage";
 import AwsCostDashboard from "@/pages/AwsCostDashboard";
 import AwsIntegrationDetail from "@/pages/AwsIntegrationDetail";
 import PublicReport from "@/pages/PublicReport";
+import SaasStatusPage from "@/pages/SaasStatusPage";
 
 const queryClient = new QueryClient();
 
