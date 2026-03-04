@@ -94,8 +94,7 @@ export default function AwsCostDashboard() {
 
   if (!credentialId && !isLoading) {
     return (
-      <AppLayout centered>
-        <div className="max-w-5xl animate-fade-in">
+      <div className="max-w-5xl mx-auto animate-fade-in">
           <div className="flex items-center gap-4 mb-8">
             <Button variant="ghost" size="icon" onClick={() => navigate(`${lp}/integrations/aws`)}>
               <ArrowLeft className="w-5 h-5" />
