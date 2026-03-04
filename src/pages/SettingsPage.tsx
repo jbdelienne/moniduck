@@ -120,7 +120,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <AppLayout>
+    <>
       <h1 className="text-2xl font-bold text-foreground mb-6">{t('settings.title')}</h1>
       <div className="max-w-2xl mx-auto w-full animate-fade-in">
 
