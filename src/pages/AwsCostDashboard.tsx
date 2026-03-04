@@ -108,7 +108,7 @@ export default function AwsCostDashboard() {
             </CardContent>
           </Card>
         </div>
-      </AppLayout>
+      </div>
     );
   }
 
