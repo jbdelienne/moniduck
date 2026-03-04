@@ -270,7 +270,7 @@ Deno.serve(async (req) => {
               workspace_id: service.workspace_id,
               service_id: service.id,
               alert_type: "downtime",
-              severity: "critical",
+              severity: alertSeverity,
               title: `${service.name}: Service is down`,
               description: errorMessage
                 ? `Error: ${errorMessage}`
