@@ -113,8 +113,7 @@ export default function AwsCostDashboard() {
   }
 
   return (
-    <AppLayout centered>
-      <div className="max-w-6xl animate-fade-in">
+    <div className="max-w-6xl mx-auto animate-fade-in">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate(`${lp}/integrations/aws`)}>
