@@ -107,7 +107,6 @@ export default function AwsCostDashboard() {
               <Button onClick={() => navigate(`${lp}/integrations`)}>Configure AWS</Button>
             </CardContent>
           </Card>
-        </div>
       </div>
     );
   }
