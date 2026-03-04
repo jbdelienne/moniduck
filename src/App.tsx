@@ -23,6 +23,7 @@ import ReportsPage from "@/pages/ReportsPage";
 import AwsCostDashboard from "@/pages/AwsCostDashboard";
 import AwsIntegrationDetail from "@/pages/AwsIntegrationDetail";
 import PublicReport from "@/pages/PublicReport";
+import SaasStatusPage from "@/pages/SaasStatusPage";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const LangRoutes = () => (
       <Route path="dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="services" element={<ProtectedRoute><ServicesPage /></ProtectedRoute>} />
       <Route path="cloud-resources" element={<ProtectedRoute><CloudResourcesPage /></ProtectedRoute>} />
+      <Route path="saas-status" element={<ProtectedRoute><SaasStatusPage /></ProtectedRoute>} />
       <Route path="integrations" element={<ProtectedRoute><Integrations /></ProtectedRoute>} />
       <Route path="integrations/aws/costs" element={<ProtectedRoute><AwsCostDashboard /></ProtectedRoute>} />
       <Route path="integrations/aws" element={<ProtectedRoute><AwsIntegrationDetail /></ProtectedRoute>} />
