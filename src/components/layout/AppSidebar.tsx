@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { LayoutDashboard, Server, Plug, Bell, Settings, FileText, Cloud, Globe } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useTranslation } from "react-i18next";
@@ -9,6 +10,11 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
   const { t } = useTranslation();
   const lp = useLangPrefix();
   const { unreadCount } = useRealtimeAlerts();
+  const [spinKey, setSpinKey] = useState(0);
+
+  useEffect(() => {
+    setSpinKey((k) => k + 1);
+  }, [collapsed]);
 
   const navItems = [
     { title: "Dashboard", url: `${lp}/dashboard`, icon: LayoutDashboard },
