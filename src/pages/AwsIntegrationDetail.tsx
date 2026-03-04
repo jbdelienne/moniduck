@@ -414,7 +414,6 @@ export default function AwsIntegrationDetail() {
             )}
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }

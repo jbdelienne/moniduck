@@ -358,7 +358,6 @@ export default function Integrations() {
             ))}
           </div>
         )}
-      </div>
       <AwsConnectModal open={awsModalOpen} onClose={() => setAwsModalOpen(false)} />
     </div>
   );

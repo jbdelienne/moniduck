@@ -193,7 +193,6 @@ export default function SaasStatusPage() {
             </Table>
           </div>
         )}
-      </div>
 
       {/* Add SaaS Modal */}
       <Dialog open={addModalOpen} onOpenChange={(v) => !v && setAddModalOpen(false)}>

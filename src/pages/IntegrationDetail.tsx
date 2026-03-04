@@ -413,7 +413,6 @@ export default function IntegrationDetail() {
             )}
           </>
         )}
-      </div>
     </div>
   );
 }

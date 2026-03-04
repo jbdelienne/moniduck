@@ -316,7 +316,6 @@ export default function AwsCostDashboard() {
             </Card>
           </>
         )}
-      </div>
     </div>
   );
 }
