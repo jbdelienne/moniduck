@@ -318,6 +318,6 @@ export default function AwsCostDashboard() {
           </>
         )}
       </div>
-    </AppLayout>
+    </div>
   );
 }

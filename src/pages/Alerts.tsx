@@ -386,7 +386,7 @@ export default function Alerts() {
           </div>
         )}
       </div>
-    </AppLayout>
+    </div>
   );
 }
 

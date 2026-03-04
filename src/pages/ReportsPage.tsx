@@ -472,6 +472,6 @@ export default function ReportsPage() {
           </div>
         </SheetContent>
       </Sheet>
-    </AppLayout>
+    </>
   );
 }

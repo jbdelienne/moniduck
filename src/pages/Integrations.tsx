@@ -360,6 +360,6 @@ export default function Integrations() {
         )}
       </div>
       <AwsConnectModal open={awsModalOpen} onClose={() => setAwsModalOpen(false)} />
-    </AppLayout>
+    </div>
   );
 }

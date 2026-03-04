@@ -80,7 +80,7 @@ export default function Dashboard() {
   }
 
   return (
-    <AppLayout>
+    <div className="max-w-5xl animate-fade-in">
       <div className="max-w-5xl animate-fade-in">
         <div className="flex items-center justify-between mb-6">
           <div>

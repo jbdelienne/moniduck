@@ -657,6 +657,6 @@ export default function CloudResourcesPage() {
           </Tabs>
         )}
       </div>
-    </AppLayout>
+    </>
   );
 }
