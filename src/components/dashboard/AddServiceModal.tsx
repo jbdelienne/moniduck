@@ -10,7 +10,7 @@ import IconPicker from './IconPicker';
 interface AddServiceModalProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (service: { name: string; icon: string; url: string; check_interval: number; content_keyword?: string }) => Promise<void>;
+  onAdd: (service: { name: string; icon: string; url: string; check_interval: number; content_keyword?: string; visibility?: string }) => Promise<void>;
 }
 
 export default function AddServiceModal({ open, onClose, onAdd }: AddServiceModalProps) {
