@@ -253,7 +253,6 @@ export default function ServicesPage() {
             </Table>
           </div>
         )}
-      </div>
 
       <AddServiceModal open={addModalOpen} onClose={() => setAddModalOpen(false)} onAdd={handleAddService} />
 
