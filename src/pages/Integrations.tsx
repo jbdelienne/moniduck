@@ -1,4 +1,4 @@
-import AppLayout from '@/components/layout/AppLayout';
+// layout provided by route
 import { useIntegrations } from '@/hooks/use-supabase';
 import { useStartOAuth, useSyncData, useSyncIntegration, useSyncAwsCredentials, useAwsCredentials, useDisconnectIntegration, useDisconnectAws } from '@/hooks/use-integrations';
 import { Button } from '@/components/ui/button';
