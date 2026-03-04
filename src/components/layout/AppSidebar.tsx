@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { LayoutDashboard, Server, Plug, Bell, Settings, FileText, Cloud, Globe } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useTranslation } from "react-i18next";
@@ -10,10 +10,17 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
   const { t } = useTranslation();
   const lp = useLangPrefix();
   const { unreadCount } = useRealtimeAlerts();
-  const [spinKey, setSpinKey] = useState(0);
+  const hasMounted = useRef(false);
+  const [spinning, setSpinning] = useState(false);
 
   useEffect(() => {
-    setSpinKey((k) => k + 1);
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
+    setSpinning(true);
+    const timer = setTimeout(() => setSpinning(false), 400);
+    return () => clearTimeout(timer);
   }, [collapsed]);
 
   const navItems = [
@@ -34,12 +41,11 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
     >
       <div className="items-center gap-2 p-4 border-b border-sidebar-border min-h-[60px] flex flex-col overflow-hidden">
         <img
-          key={spinKey}
           src={duckLogo}
           alt="moniduck"
-          className={`flex-shrink-0 object-contain transition-all duration-300 ease-in-out animate-[spin_0.4s_ease-in-out] ${
-            collapsed ? 'w-9 h-9' : 'w-20 h-20'
-          }`}
+          className={`flex-shrink-0 object-contain transition-all duration-300 ease-in-out ${
+            spinning ? 'animate-[spin_0.4s_ease-in-out]' : ''
+          } ${collapsed ? 'w-9 h-9' : 'w-20 h-20'}`}
         />
         <span className={`text-lg font-bold text-foreground transition-all duration-300 ${collapsed ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
           moniduck
