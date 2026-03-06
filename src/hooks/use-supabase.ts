@@ -177,7 +177,7 @@ export function useIntegrations() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('integrations')
-        .select('*')
+        .select('id, user_id, integration_type, is_connected, last_sync, created_at, token_expires_at, scopes, config, workspace_id, owner_id, tags')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data as Integration[];
