@@ -36,6 +36,25 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
+    // Verify the email actually exists in waitlist_signups (prevents abuse)
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+    const { data: signup } = await supabaseAdmin
+      .from("waitlist_signups")
+      .select("id")
+      .eq("email", email)
+      .limit(1)
+      .maybeSingle();
+
+    if (!signup) {
+      return new Response(JSON.stringify({ error: "Email not found in waitlist" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     // Sanitize optional string fields
     const safeName = typeof firstName === "string" ? firstName.slice(0, 100) : undefined;
     const safeCompany = typeof company === "string" ? company.slice(0, 200) : undefined;
