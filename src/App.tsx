@@ -65,6 +65,12 @@ function RootRedirect() {
   return <Navigate to={`/${lang}`} replace />;
 }
 
+function ShortcutRedirect({ path }: { path: string }) {
+  const browserLang = navigator.language?.split('-')[0] || 'en';
+  const lang = SUPPORTED_LANGS.includes(browserLang) ? browserLang : 'en';
+  return <Navigate to={`/${lang}/${path}`} replace />;
+}
+
 const LangRoutes = () => (
   <LanguageWrapper>
     <Routes>
