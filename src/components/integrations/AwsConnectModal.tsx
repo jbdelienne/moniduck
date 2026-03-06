@@ -222,7 +222,7 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
                     type={showSecret ? 'text' : 'password'}
                     value={secretAccessKey}
                     onChange={(e) => setSecretAccessKey(e.target.value)}
-                    placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                    placeholder={credentials ? '••••••••••••••••• (leave empty to keep current)' : 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'}
                     className="font-mono pr-10"
                   />
                   <Button
