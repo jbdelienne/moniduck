@@ -65,6 +65,12 @@ function RootRedirect() {
   return <Navigate to={`/${lang}`} replace />;
 }
 
+function ShortcutRedirect({ path }: { path: string }) {
+  const browserLang = navigator.language?.split('-')[0] || 'en';
+  const lang = SUPPORTED_LANGS.includes(browserLang) ? browserLang : 'en';
+  return <Navigate to={`/${lang}/${path}`} replace />;
+}
+
 const LangRoutes = () => (
   <LanguageWrapper>
     <Routes>
@@ -92,6 +98,7 @@ const LangRoutes = () => (
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<RootRedirect />} />
+    <Route path="/waitlist" element={<ShortcutRedirect path="waitlist" />} />
     <Route path="/reports/shared/:shareToken" element={<PublicReport />} />
     <Route path="/:lang/*" element={<LangRoutes />} />
   </Routes>
