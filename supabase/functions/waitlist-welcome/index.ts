@@ -37,8 +37,16 @@ const handler = async (req: Request): Promise<Response> => {
     const resend = new Resend(resendKey);
     const { email, firstName, company } = await req.json();
 
-    if (!email) {
-      throw new Error("Missing email");
+    if (!email || !EMAIL_REGEX.test(email)) {
+      return new Response(JSON.stringify({ error: "Invalid email" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Sanitize optional string fields
+    const safeName = typeof firstName === "string" ? firstName.slice(0, 100) : undefined;
+    const safeCompany = typeof company === "string" ? company.slice(0, 200) : undefined;
     }
 
     // Add contact to Resend audience
