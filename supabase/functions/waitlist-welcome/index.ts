@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,12 +8,15 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+
     const resendKey = Deno.env.get("RESEND_API_KEY");
     if (!resendKey) {
       console.warn("RESEND_API_KEY not configured, skipping email");
@@ -25,9 +29,35 @@ const handler = async (req: Request): Promise<Response> => {
     const resend = new Resend(resendKey);
     const { email, firstName, company } = await req.json();
 
-    if (!email) {
-      throw new Error("Missing email");
+    if (!email || !EMAIL_REGEX.test(email)) {
+      return new Response(JSON.stringify({ error: "Invalid email" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
+
+    // Verify the email actually exists in waitlist_signups (prevents abuse)
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+    const { data: signup } = await supabaseAdmin
+      .from("waitlist_signups")
+      .select("id")
+      .eq("email", email)
+      .limit(1)
+      .maybeSingle();
+
+    if (!signup) {
+      return new Response(JSON.stringify({ error: "Email not found in waitlist" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Sanitize optional string fields
+    const safeName = typeof firstName === "string" ? firstName.slice(0, 100) : undefined;
+    const safeCompany = typeof company === "string" ? company.slice(0, 200) : undefined;
 
     // Add contact to Resend audience
     const audienceId = Deno.env.get("RESEND_AUDIENCE_ID");
@@ -36,13 +66,12 @@ const handler = async (req: Request): Promise<Response> => {
         await resend.contacts.create({
           audienceId,
           email,
-          firstName: firstName || company || undefined,
+          firstName: safeName || safeCompany || undefined,
           unsubscribed: false,
         });
-        console.log(`Contact ${email} added to audience`);
+        console.log(`Contact added to audience`);
       } catch (e: any) {
         console.error("Failed to add contact to audience:", e.message);
-        // Don't block the welcome email if audience add fails
       }
     }
 
@@ -55,9 +84,9 @@ const handler = async (req: Request): Promise<Response> => {
         html: `
           <div style="font-family: 'Inter', -apple-system, sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px; color: #171717;">
             <div style="margin-bottom: 32px;">
-              <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 8px;">${firstName ? `Hey ${firstName}, welcome` : "Welcome"} to the waitlist!</h1>
+              <h1 style="font-size: 24px; font-weight: 700; margin: 0 0 8px;">${safeName ? `Hey ${safeName}, welcome` : "Welcome"} to the waitlist!</h1>
               <p style="color: #737373; font-size: 15px; line-height: 1.6; margin: 0;">
-                Thanks for signing up${company ? ` from <strong>${company}</strong>` : ""}. You're now on the list for early access to moniduck.
+                Thanks for signing up${safeCompany ? ` from <strong>${safeCompany}</strong>` : ""}. You're now on the list for early access to moniduck.
               </p>
             </div>
             <div style="background: #f5f5f5; border-radius: 12px; padding: 24px; margin-bottom: 32px;">
