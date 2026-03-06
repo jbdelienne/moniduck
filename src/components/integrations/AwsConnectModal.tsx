@@ -37,7 +37,6 @@ const AWS_REGIONS = [
 interface AwsCredentials {
   id: string;
   access_key_id: string;
-  secret_access_key: string;
   region: string;
   last_sync_at: string | null;
   sync_status: string;
@@ -71,14 +70,14 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
     setLoading(true);
     const { data, error } = await supabase
       .from('aws_credentials')
-      .select('*')
+      .select('id, access_key_id, region, last_sync_at, sync_status')
       .eq('user_id', user!.id)
       .maybeSingle();
 
     if (!error && data) {
-      setCredentials(data as unknown as AwsCredentials);
+      setCredentials(data as AwsCredentials);
       setAccessKeyId(data.access_key_id);
-      setSecretAccessKey(data.secret_access_key);
+      setSecretAccessKey(''); // Never fetch secret back from server
       setRegion(data.region);
     } else {
       setCredentials(null);
@@ -87,8 +86,13 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
   };
 
   const handleSave = async () => {
-    if (!accessKeyId.trim() || !secretAccessKey.trim()) {
-      toast.error('Please enter both Access Key ID and Secret Access Key');
+    // For new credentials, secret is required. For updates, it's optional (only if user wants to change it)
+    if (!accessKeyId.trim()) {
+      toast.error('Please enter an Access Key ID');
+      return;
+    }
+    if (!credentials && !secretAccessKey.trim()) {
+      toast.error('Please enter a Secret Access Key');
       return;
     }
     if (!accessKeyId.startsWith('AKIA') && !accessKeyId.startsWith('ASIA')) {
@@ -99,9 +103,11 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
     setSaving(true);
 
     if (credentials) {
+      const updatePayload: Record<string, string> = { access_key_id: accessKeyId, region, sync_status: 'pending' };
+      if (secretAccessKey.trim()) updatePayload.secret_access_key = secretAccessKey;
       const { error } = await supabase
         .from('aws_credentials')
-        .update({ access_key_id: accessKeyId, secret_access_key: secretAccessKey, region, sync_status: 'pending' })
+        .update(updatePayload)
         .eq('id', credentials.id);
 
       if (error) {
@@ -216,7 +222,7 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
                     type={showSecret ? 'text' : 'password'}
                     value={secretAccessKey}
                     onChange={(e) => setSecretAccessKey(e.target.value)}
-                    placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                    placeholder={credentials ? '••••••••••••••••• (leave empty to keep current)' : 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'}
                     className="font-mono pr-10"
                   />
                   <Button

@@ -175,7 +175,7 @@ export function useAwsCredentials() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('aws_credentials')
-        .select('*')
+        .select('id, user_id, workspace_id, access_key_id, region, sync_status, last_sync_at, created_at, updated_at')
         .maybeSingle();
       if (error) throw error;
       return data;
