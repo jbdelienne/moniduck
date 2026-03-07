@@ -78,7 +78,7 @@ const handler = async (req: Request): Promise<Response> => {
     let emailSent = false;
     try {
       const { error } = await resend.emails.send({
-        from: "moniduck <noreply@send.moniduck.io>",
+        from: "moniduck <noreply@mail.moniduck.io>",
         to: [email],
         subject: "You're on the moniduck waitlist! 🦆",
         template: {
