@@ -17,16 +17,19 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
 
-    const resendKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendKey) {
-      console.warn("RESEND_API_KEY not configured, skipping email");
+    const fullAccessKey = Deno.env.get("RESEND_API_KEY");
+    const sendingKey = Deno.env.get("RESEND_SENDING_KEY");
+    if (!fullAccessKey && !sendingKey) {
+      console.warn("No Resend keys configured, skipping");
       return new Response(JSON.stringify({ skipped: true }), {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
-    const resend = new Resend(resendKey);
+    // Full Access key for audience/contacts, Sending key for emails
+    const resendFull = fullAccessKey ? new Resend(fullAccessKey) : null;
+    const resendSending = new Resend(sendingKey || fullAccessKey!);
     const { email, firstName, company } = await req.json();
 
     if (!email || !EMAIL_REGEX.test(email)) {
