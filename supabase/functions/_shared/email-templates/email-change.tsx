@@ -42,7 +42,7 @@ export const EmailChangeEmail = ({
         />
         <Heading style={h1}>Email Address Change</Heading>
         <Text style={text}>
-          You requested to change your MoniDuck email from{' '}
+          You requested to change your moniduck email from{' '}
           <Link href={`mailto:${email}`} style={link}>
             {email}
           </Link>{' '}

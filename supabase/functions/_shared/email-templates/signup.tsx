@@ -44,7 +44,7 @@ export const SignupEmail = ({
         <Text style={text}>
           Thanks for signing up on{' '}
           <Link href={siteUrl} style={link}>
-            <strong>MoniDuck</strong>
+            <strong>moniduck</strong>
           </Link>
           ! Your modern monitoring starts here.
         </Text>

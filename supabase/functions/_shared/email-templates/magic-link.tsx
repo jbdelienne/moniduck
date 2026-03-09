@@ -37,7 +37,7 @@ export const MagicLinkEmail = ({
         />
         <Heading style={h1}>Your sign-in link</Heading>
         <Text style={text}>
-          Click the button below to sign in to MoniDuck.
+          Click the button below to sign in to moniduck.
           This link will expire shortly.
         </Text>
         <Button style={button} href={confirmationUrl}>

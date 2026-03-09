@@ -42,7 +42,7 @@ export const InviteEmail = ({
         <Text style={text}>
           You've been invited to join a workspace on{' '}
           <Link href={siteUrl} style={link}>
-            <strong>MoniDuck</strong>
+            <strong>moniduck</strong>
           </Link>
           . Click below to accept the invitation and create your account.
         </Text>

@@ -37,7 +37,7 @@ export const RecoveryEmail = ({
         />
         <Heading style={h1}>Password Reset</Heading>
         <Text style={text}>
-          You requested to reset your MoniDuck password.
+          You requested to reset your moniduck password.
           Click the button below to choose a new one.
         </Text>
         <Button style={button} href={confirmationUrl}>
