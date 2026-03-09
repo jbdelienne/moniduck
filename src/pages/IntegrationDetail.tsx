@@ -152,12 +152,20 @@ export default function IntegrationDetail() {
       if (!response.ok) throw new Error('Sync failed');
       const data = await response.json();
 
+      if (data.error || data.status === 'access_denied') {
+        toast.warning(`"${driveName}" : accès refusé (vous n'êtes pas membre de ce drive)`);
+        setSyncingDriveIds(prev => { const s = new Set(prev); s.delete(driveId); return s; });
+        queryClient.invalidateQueries({ queryKey: ['sync-data'] });
+        return;
+      }
+
+      const count = data.objectCount ?? 0;
       if (data.status === 'continuing') {
-        toast.info(`"${driveName}" en cours de sync (${data.objectCount.toLocaleString('fr-FR')} objets comptés)...`);
+        toast.info(`"${driveName}" en cours de sync (${count.toLocaleString('fr-FR')} objets comptés)...`);
         // Poll until done
         pollDriveSync(driveId, driveName);
       } else {
-        toast.success(`"${driveName}" : ${data.objectCount.toLocaleString('fr-FR')} objets`);
+        toast.success(`"${driveName}" : ${count.toLocaleString('fr-FR')} objets`);
         setSyncingDriveIds(prev => { const s = new Set(prev); s.delete(driveId); return s; });
         queryClient.invalidateQueries({ queryKey: ['sync-data'] });
       }
