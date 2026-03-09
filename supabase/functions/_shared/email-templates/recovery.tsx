@@ -25,7 +25,7 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Reset your MoniDuck password</Preview>
+    <Preview>Reset your moniduck password</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
