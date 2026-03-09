@@ -23,105 +23,39 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// ---- Send alert email via Resend ----
-async function sendAlertEmail(
-  to: string,
-  subject: string,
-  htmlBody: string,
-) {
-  const resendKey = Deno.env.get("RESEND_API_KEY");
-  if (!resendKey) {
-    console.warn("RESEND_API_KEY not set, skipping email");
-    return;
-  }
-
+// ---- Invoke sibling edge function ----
+async function invokeFunction(functionName: string, body: Record<string, unknown>) {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   try {
-    const res = await fetch("https://api.resend.com/emails", {
+    const res = await fetch(`${supabaseUrl}/functions/v1/${functionName}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${resendKey}`,
         "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceRoleKey}`,
       },
-      body: JSON.stringify({
-        from: "MoniDuck <alerts@moniduck.com>",
-        to: [to],
-        subject,
-        html: htmlBody,
-      }),
+      body: JSON.stringify(body),
     });
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("Resend error:", res.status, errText);
-    } else {
-      console.log("Alert email sent to", to);
-      await res.text(); // consume body
-    }
+    const result = await res.text();
+    if (!res.ok) console.error(`${functionName} error:`, res.status, result);
+    else console.log(`${functionName} OK:`, result);
   } catch (err) {
-    console.error("Failed to send email:", err);
+    console.error(`Failed to invoke ${functionName}:`, err);
   }
 }
 
-function buildDownEmail(serviceName: string, url: string, errorMessage: string, downSince: string, dashboardUrl: string): string {
-  return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #1A1A2E; color: #e0e0e0; border-radius: 12px; overflow: hidden;">
-      <div style="background: #dc2626; padding: 20px 24px;">
-        <h1 style="margin: 0; font-size: 18px; color: white;">🔴 Service Down</h1>
-      </div>
-      <div style="padding: 24px;">
-        <h2 style="margin: 0 0 16px; font-size: 20px; color: white;">${serviceName}</h2>
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr><td style="padding: 8px 0; color: #999; width: 100px;">URL</td><td style="padding: 8px 0;"><a href="${url}" style="color: #927FBF;">${url}</a></td></tr>
-          <tr><td style="padding: 8px 0; color: #999;">Down since</td><td style="padding: 8px 0;">${downSince}</td></tr>
-          <tr><td style="padding: 8px 0; color: #999;">Cause</td><td style="padding: 8px 0; color: #FF8C42;">${errorMessage}</td></tr>
-        </table>
-        <div style="margin-top: 24px;">
-          <a href="${dashboardUrl}" style="display: inline-block; background: #4F3B78; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Dashboard</a>
-        </div>
-      </div>
-      <div style="padding: 16px 24px; border-top: 1px solid #2a2a4e; font-size: 12px; color: #666;">MoniDuck — Monitoring for modern tech stacks</div>
-    </div>
-  `;
-}
-
-function buildResolvedEmail(serviceName: string, url: string, downtimeMinutes: number, dashboardUrl: string): string {
-  const duration = downtimeMinutes < 60
-    ? `${downtimeMinutes} minute${downtimeMinutes > 1 ? 's' : ''}`
-    : `${Math.floor(downtimeMinutes / 60)}h ${downtimeMinutes % 60}min`;
-
-  return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #1A1A2E; color: #e0e0e0; border-radius: 12px; overflow: hidden;">
-      <div style="background: #16a34a; padding: 20px 24px;">
-        <h1 style="margin: 0; font-size: 18px; color: white;">✅ Service Recovered</h1>
-      </div>
-      <div style="padding: 24px;">
-        <h2 style="margin: 0 0 16px; font-size: 20px; color: white;">${serviceName}</h2>
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr><td style="padding: 8px 0; color: #999; width: 120px;">URL</td><td style="padding: 8px 0;"><a href="${url}" style="color: #927FBF;">${url}</a></td></tr>
-          <tr><td style="padding: 8px 0; color: #999;">Incident duration</td><td style="padding: 8px 0;">${duration}</td></tr>
-        </table>
-        <div style="margin-top: 24px;">
-          <a href="${dashboardUrl}" style="display: inline-block; background: #4F3B78; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">View Report</a>
-        </div>
-      </div>
-      <div style="padding: 16px 24px; border-top: 1px solid #2a2a4e; font-size: 12px; color: #666;">MoniDuck — Monitoring for modern tech stacks</div>
-    </div>
-  `;
-}
-
-// ---- Get email destination for a service ----
-async function getAlertEmail(supabase: any, service: any): Promise<string | null> {
-  if (!service.alert_email_enabled) return null;
-
+// ---- Get notification email for a service ----
+async function getNotificationEmail(supabase: any, service: any): Promise<string | null> {
   // Check maintenance window
   if (service.maintenance_until) {
     const maintEnd = new Date(service.maintenance_until);
-    if (maintEnd > new Date()) return null; // in maintenance
+    if (maintEnd > new Date()) return null;
   }
 
-  // Use custom email if set, else fallback to user's auth email
+  // Use notification_email > alert_email > account email
+  if (service.notification_email) return service.notification_email;
   if (service.alert_email) return service.alert_email;
 
-  // Get workspace member emails (send to all members)
   const { data } = await supabase.rpc('get_auth_email');
   return data || null;
 }
@@ -132,19 +66,16 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Authenticate: require either a valid user JWT or a shared cron secret
     const authHeader = req.headers.get("Authorization");
     const cronSecret = req.headers.get("x-cron-secret");
     const expectedCronSecret = Deno.env.get("CRON_SECRET");
 
     let isAuthorized = false;
 
-    // Option 1: Cron secret for scheduled invocations
     if (expectedCronSecret && cronSecret === expectedCronSecret) {
       isAuthorized = true;
     }
 
-    // Option 2: Valid user JWT
     if (!isAuthorized && authHeader?.startsWith("Bearer ")) {
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -166,16 +97,13 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    const dashboardBaseUrl = "https://moniduck.com"; // TODO: configure
-
-    // Check for force parameter
     let force = false;
     try {
       const body = await req.json();
       force = body?.force === true;
-    } catch { /* no body or not JSON */ }
+    } catch { /* no body */ }
 
-    // Get all active (non-paused) services
+    // Get all active services
     const { data: services, error: svcErr } = await supabase
       .from("services")
       .select("*")
@@ -184,7 +112,7 @@ Deno.serve(async (req) => {
     if (svcErr) throw svcErr;
     if (!services || services.length === 0) {
       return new Response(
-        JSON.stringify({ message: "No active services to check", checked: 0 }),
+        JSON.stringify({ message: "No active services", checked: 0 }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -193,7 +121,7 @@ Deno.serve(async (req) => {
     const results: Array<{ service_id: string; status: string; response_time: number }> = [];
 
     for (const service of services) {
-      // Check if it's time to check based on interval
+      // Check interval filtering
       if (!force && service.last_check) {
         const lastCheck = new Date(service.last_check);
         const diffMinutes = (now.getTime() - lastCheck.getTime()) / 60000;
@@ -206,9 +134,9 @@ Deno.serve(async (req) => {
       let errorMessage: string | null = null;
       let ttfb: number | null = null;
       let responseSize: number | null = null;
-
       const checkRegion = Deno.env.get("DENO_REGION") || Deno.env.get("SB_REGION") || "eu-central-1";
 
+      // ---- HTTP CHECK ----
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 10000);
@@ -230,10 +158,12 @@ Deno.serve(async (req) => {
         responseSize = new TextEncoder().encode(body).length;
         statusCode = res.status;
 
-        if (res.status >= 200 && res.status < 500) {
-          status = "up";
-        } else {
+        // A check is FAILED if status >= 500
+        if (res.status >= 500) {
           status = "down";
+          errorMessage = `HTTP ${res.status}`;
+        } else if (res.status >= 200 && res.status < 500) {
+          status = "up";
         }
 
         // Content validation
@@ -241,7 +171,7 @@ Deno.serve(async (req) => {
           const keyword = service.content_keyword.trim().toLowerCase();
           if (keyword && !body.toLowerCase().includes(keyword)) {
             status = "degraded";
-            errorMessage = `Content keyword "${service.content_keyword}" not found in response`;
+            errorMessage = `Content keyword "${service.content_keyword}" not found`;
           }
         }
       } catch (err: unknown) {
@@ -252,7 +182,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Insert check record
+      // ---- INSERT CHECK RECORD ----
       await supabase.from("checks").insert({
         service_id: service.id,
         user_id: service.user_id,
@@ -265,119 +195,164 @@ Deno.serve(async (req) => {
         check_region: checkRegion,
       });
 
-      // ---- ALERTING LOGIC ----
-      const checksThreshold = service.alert_checks_threshold || 2;
+      // ---- INCIDENT & ALERTING LOGIC ----
+      const checksBeforeAlert = service.alert_checks_threshold || 2;
+      const currentFailures = service.consecutive_failures || 0;
 
-      // Check consecutive failures
       if (status === "down") {
-        const { data: recentChecks } = await supabase
-          .from("checks")
-          .select("status")
-          .eq("service_id", service.id)
-          .order("checked_at", { ascending: false })
-          .limit(checksThreshold);
+        const newFailures = currentFailures + 1;
 
-        const consecutiveFailures = recentChecks?.every((c: any) => c.status === "down") && recentChecks?.length >= checksThreshold;
+        // Update consecutive_failures
+        await supabase
+          .from("services")
+          .update({ consecutive_failures: newFailures })
+          .eq("id", service.id);
 
-        if (consecutiveFailures) {
-          // Check if there's already an open (unresolved) alert for this service — anti-spam
-          const { data: existingOpen } = await supabase
-            .from("alerts")
+        // Check if we should create an incident
+        if (newFailures >= checksBeforeAlert) {
+          // Check no open incident exists
+          const { data: openIncident } = await supabase
+            .from("incidents")
             .select("id")
             .eq("service_id", service.id)
-            .eq("alert_type", "downtime")
             .is("resolved_at", null)
-            .eq("is_dismissed", false)
             .limit(1);
 
-          if (!existingOpen || existingOpen.length === 0) {
-            const incidentId = `inc_${service.id}_${Date.now()}`;
-            const alertSeverity = service.visibility === 'private' ? 'warning' : 'critical';
+          if (!openIncident || openIncident.length === 0) {
+            // Create incident
+            const { data: newIncident } = await supabase
+              .from("incidents")
+              .insert({
+                service_id: service.id,
+                user_id: service.user_id,
+                workspace_id: service.workspace_id,
+                status_code: errorMessage || `HTTP ${statusCode}`,
+                error_message: errorMessage,
+                started_at: now.toISOString(),
+              })
+              .select()
+              .single();
 
-            // Create the alert
-            const { data: newAlert } = await supabase.from("alerts").insert({
+            // Send down alert email
+            if (newIncident && service.alert_notify_down !== false) {
+              const email = await getNotificationEmail(supabase, service);
+              if (email) {
+                // Get last successful check time
+                const { data: lastUp } = await supabase
+                  .from("checks")
+                  .select("checked_at")
+                  .eq("service_id", service.id)
+                  .eq("status", "up")
+                  .order("checked_at", { ascending: false })
+                  .limit(1);
+
+                await invokeFunction("send-alert-down", {
+                  to: email,
+                  service_name: service.name,
+                  service_url: service.url,
+                  service_id: service.id,
+                  status_code: statusCode?.toString() || "N/A",
+                  error_message: errorMessage,
+                  detected_at: now.toISOString(),
+                  visibility: service.visibility,
+                  last_check_up: lastUp?.[0]?.checked_at || null,
+                  uptime_30d: service.uptime_percentage,
+                });
+
+                // Mark alert_sent_at on the incident
+                await supabase
+                  .from("incidents")
+                  .update({ alert_sent_at: now.toISOString() })
+                  .eq("id", newIncident.id);
+              }
+            }
+
+            // Also create alert record for the UI
+            const alertSeverity = service.visibility === "private" ? "warning" : "critical";
+            await supabase.from("alerts").insert({
               user_id: service.user_id,
               workspace_id: service.workspace_id,
               service_id: service.id,
               alert_type: "downtime",
               severity: alertSeverity,
               title: `${service.name}: Service is down`,
-              description: errorMessage
-                ? `Error: ${errorMessage}`
-                : `HTTP ${statusCode} - Service is not responding`,
+              description: errorMessage || `HTTP ${statusCode} - Service is not responding`,
               integration_type: "service",
-              incident_id: incidentId,
-              metadata: { service_id: service.id, url: service.url, down_since: now.toISOString() },
-            }).select().single();
-
-            // Send email (1 per incident)
-            const alertEmail = await getAlertEmail(supabase, service);
-            if (alertEmail && newAlert) {
-              const subject = `🔴 [MoniDuck] ${service.name} is down`;
-              const html = buildDownEmail(
-                service.name,
-                service.url,
-                errorMessage || `HTTP ${statusCode}`,
-                now.toISOString(),
-                `${dashboardBaseUrl}/en/services`,
-              );
-              await sendAlertEmail(alertEmail, subject, html);
-              await supabase.from("alerts").update({ email_sent: true }).eq("id", newAlert.id);
-            }
+              incident_id: newIncident?.id,
+              metadata: {
+                service_id: service.id,
+                url: service.url,
+                down_since: now.toISOString(),
+              },
+            });
           }
         }
       }
 
       // ---- RESOLUTION LOGIC ----
       if (status === "up") {
-        // Find open alerts for this service
-        const { data: openAlerts } = await supabase
-          .from("alerts")
-          .select("id, created_at, metadata, email_sent, incident_id")
+        // Reset consecutive failures
+        if (currentFailures > 0) {
+          await supabase
+            .from("services")
+            .update({ consecutive_failures: 0 })
+            .eq("id", service.id);
+        }
+
+        // Resolve any open incidents
+        const { data: openIncidents } = await supabase
+          .from("incidents")
+          .select("*")
           .eq("service_id", service.id)
-          .eq("alert_type", "downtime")
-          .is("resolved_at", null)
-          .eq("is_dismissed", false);
+          .is("resolved_at", null);
 
-        for (const openAlert of (openAlerts || [])) {
-          const meta = openAlert.metadata as Record<string, any> | null;
-          const downSince = meta?.down_since ? new Date(meta.down_since) : new Date(openAlert.created_at);
-          const durationMs = now.getTime() - downSince.getTime();
-          const durationMin = Math.round(durationMs / 60000);
+        for (const incident of openIncidents || []) {
+          const startedAt = new Date(incident.started_at);
+          const durationMin = Math.round((now.getTime() - startedAt.getTime()) / 60000);
 
-          // Resolve the alert
+          await supabase
+            .from("incidents")
+            .update({
+              resolved_at: now.toISOString(),
+              duration_minutes: durationMin,
+              resolution_sent_at: service.alert_notify_up !== false ? now.toISOString() : null,
+            })
+            .eq("id", incident.id);
+
+          // Send recovery email
+          if (service.alert_notify_up !== false && incident.alert_sent_at) {
+            const email = await getNotificationEmail(supabase, service);
+            if (email) {
+              await invokeFunction("send-alert-up", {
+                to: email,
+                service_name: service.name,
+                service_url: service.url,
+                incident_started_at: incident.started_at,
+                incident_resolved_at: now.toISOString(),
+                duration_minutes: durationMin,
+                uptime_30d: service.uptime_percentage,
+              });
+            }
+          }
+
+          // Resolve corresponding alerts
           await supabase
             .from("alerts")
             .update({
               resolved_at: now.toISOString(),
               is_dismissed: true,
               metadata: {
-                ...meta,
                 resolved_at: now.toISOString(),
                 downtime_minutes: durationMin,
               },
             })
-            .eq("id", openAlert.id);
-
-          // Send resolution email only if down email was sent
-          if (openAlert.email_sent) {
-            const alertEmail = await getAlertEmail(supabase, service);
-            if (alertEmail) {
-              const subject = `✅ [MoniDuck] ${service.name} is back up`;
-              const html = buildResolvedEmail(
-                service.name,
-                service.url,
-                durationMin,
-                `${dashboardBaseUrl}/en/reports`,
-              );
-              await sendAlertEmail(alertEmail, subject, html);
-            }
-          }
+            .eq("service_id", service.id)
+            .eq("alert_type", "downtime")
+            .is("resolved_at", null);
         }
       }
 
       // ---- UPTIME CALCULATION ----
-      // Calculate uptime from last 12 months
       const twelveMonthsAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toISOString();
       const { count: totalChecks } = await supabase
         .from("checks")
@@ -396,7 +371,7 @@ Deno.serve(async (req) => {
       const up = upChecks || 0;
       const uptimePercentage = Math.round((up / total) * 10000) / 100;
 
-      // Calculate avg response time
+      // Avg response time
       const { data: rtChecks } = await supabase
         .from("checks")
         .select("response_time")
@@ -409,7 +384,7 @@ Deno.serve(async (req) => {
         ? Math.round(rtChecks.reduce((sum: number, c: any) => sum + c.response_time, 0) / rtChecks.length)
         : 0;
 
-      // Check SSL
+      // SSL check
       let sslExpiryDate: string | null = null;
       let sslIssuer: string | null = null;
       try {
@@ -446,7 +421,7 @@ Deno.serve(async (req) => {
   } catch (error: unknown) {
     console.error("check-services error:", error instanceof Error ? error.message : error);
     return new Response(
-      JSON.stringify({ error: "An error occurred processing your request", code: "INTERNAL_ERROR" }),
+      JSON.stringify({ error: "Internal error", code: "INTERNAL_ERROR" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
