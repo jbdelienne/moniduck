@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { useLangPrefix } from "@/hooks/use-lang-prefix";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import duckLogo from "@/assets/moniduck-logo.png";
 import { useScrollReveal, useStaggerReveal } from "@/hooks/use-scroll-reveal";
@@ -187,7 +187,6 @@ export default function Landing() {
             <a href="#pricing" className="hover:text-foreground transition-colors">{t("nav.pricing")}</a>
           </div>
           <div className="flex items-center gap-3">
-            <LanguageSwitcher />
             <Button variant="ghost" size="sm" asChild>
               <Link to={`${lp}/auth`}>{t("nav.signIn")}</Link>
             </Button>

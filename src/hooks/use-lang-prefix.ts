@@ -1,10 +1,7 @@
-import { useParams } from 'react-router-dom';
-
 /**
- * Returns the current language prefix for building internal links.
- * Usage: const lp = useLangPrefix(); <Link to={`${lp}/dashboard`}>
+ * Returns an empty string — language prefix removed (English only).
+ * Kept for backward compatibility with existing `${lp}/path` patterns.
  */
 export function useLangPrefix() {
-  const { lang } = useParams<{ lang: string }>();
-  return `/${lang || 'en'}`;
+  return '';
 }

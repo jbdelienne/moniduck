@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { useLangPrefix } from "@/hooks/use-lang-prefix";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+
 import duckLogo from "@/assets/moniduck-logo.png";
 
 export default function Auth() {
@@ -79,7 +79,7 @@ export default function Auth() {
               <img src={duckLogo} alt="moniduck" className="w-10 h-10" />
               <span className="text-lg font-semibold text-foreground tracking-tight">moniduck</span>
             </div>
-            <LanguageSwitcher variant="outline" />
+            
           </div>
 
           <div>

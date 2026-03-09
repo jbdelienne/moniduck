@@ -3,8 +3,6 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAlerts } from '@/hooks/use-supabase';
-import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface TopBarProps {
   onToggleSidebar: () => void;
@@ -14,7 +12,6 @@ interface TopBarProps {
 export default function TopBar({ onToggleSidebar, sidebarCollapsed }: TopBarProps) {
   const { user, signOut } = useAuth();
   const { data: alerts = [] } = useAlerts();
-  const { t } = useTranslation();
   const initials = user?.email?.slice(0, 2).toUpperCase() ?? 'U';
   const unreadCount = alerts.filter((a) => !a.is_dismissed).length;
 
@@ -27,8 +24,6 @@ export default function TopBar({ onToggleSidebar, sidebarCollapsed }: TopBarProp
       </div>
 
       <div className="flex items-center gap-2">
-        <LanguageSwitcher />
-
         <Button variant="ghost" size="icon" className="relative text-muted-foreground">
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
