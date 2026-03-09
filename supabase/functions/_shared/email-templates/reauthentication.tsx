@@ -20,7 +20,7 @@ interface ReauthenticationEmailProps {
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your MoniDuck verification code</Preview>
+    <Preview>Your moniduck verification code</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
