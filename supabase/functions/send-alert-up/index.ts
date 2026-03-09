@@ -98,10 +98,11 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "MoniDuck Alerts <serviceup@mail.moniduck.io>",
+        from: "MoniDuck Alerts <alerts@mail.moniduck.io>",
         to: Array.isArray(to) ? to : [to],
         subject: `✅ ${service_name} is back up`,
         html,
+        tags: [{ name: "template", value: "serviceup" }],
       }),
     });
 
