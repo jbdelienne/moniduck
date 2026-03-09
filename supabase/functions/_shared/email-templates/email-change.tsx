@@ -28,9 +28,9 @@ export const EmailChangeEmail = ({
   newEmail,
   confirmationUrl,
 }: EmailChangeEmailProps) => (
-  <Html lang="fr" dir="ltr">
+  <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirmez votre changement d'e-mail MoniDuck</Preview>
+    <Preview>Confirm your email change on MoniDuck</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
@@ -40,26 +40,26 @@ export const EmailChangeEmail = ({
           height="auto"
           style={{ marginBottom: '24px' }}
         />
-        <Heading style={h1}>Changement d'adresse e-mail</Heading>
+        <Heading style={h1}>Email Address Change</Heading>
         <Text style={text}>
-          Vous avez demandé à changer votre adresse e-mail MoniDuck de{' '}
+          You requested to change your MoniDuck email from{' '}
           <Link href={`mailto:${email}`} style={link}>
             {email}
           </Link>{' '}
-          vers{' '}
+          to{' '}
           <Link href={`mailto:${newEmail}`} style={link}>
             {newEmail}
           </Link>
           .
         </Text>
         <Text style={text}>
-          Cliquez ci-dessous pour confirmer ce changement :
+          Click below to confirm this change:
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Confirmer le changement
+          Confirm change
         </Button>
         <Text style={footer}>
-          Si vous n'avez pas fait cette demande, sécurisez votre compte immédiatement.
+          If you didn't request this, please secure your account immediately.
         </Text>
       </Container>
     </Body>

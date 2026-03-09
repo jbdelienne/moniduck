@@ -23,9 +23,9 @@ export const MagicLinkEmail = ({
   siteName,
   confirmationUrl,
 }: MagicLinkEmailProps) => (
-  <Html lang="fr" dir="ltr">
+  <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Votre lien de connexion MoniDuck</Preview>
+    <Preview>Your MoniDuck sign-in link</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
@@ -35,16 +35,16 @@ export const MagicLinkEmail = ({
           height="auto"
           style={{ marginBottom: '24px' }}
         />
-        <Heading style={h1}>Votre lien de connexion</Heading>
+        <Heading style={h1}>Your sign-in link</Heading>
         <Text style={text}>
-          Cliquez sur le bouton ci-dessous pour vous connecter à MoniDuck.
-          Ce lien expirera sous peu.
+          Click the button below to sign in to MoniDuck.
+          This link will expire shortly.
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Se connecter
+          Sign in
         </Button>
         <Text style={footer}>
-          Si vous n'avez pas demandé ce lien, ignorez simplement cet e-mail.
+          If you didn't request this link, you can safely ignore this email.
         </Text>
       </Container>
     </Body>

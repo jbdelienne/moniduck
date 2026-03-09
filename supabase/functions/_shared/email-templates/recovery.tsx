@@ -23,9 +23,9 @@ export const RecoveryEmail = ({
   siteName,
   confirmationUrl,
 }: RecoveryEmailProps) => (
-  <Html lang="fr" dir="ltr">
+  <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Réinitialisez votre mot de passe MoniDuck</Preview>
+    <Preview>Reset your MoniDuck password</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
@@ -35,17 +35,17 @@ export const RecoveryEmail = ({
           height="auto"
           style={{ marginBottom: '24px' }}
         />
-        <Heading style={h1}>Réinitialisation du mot de passe</Heading>
+        <Heading style={h1}>Password Reset</Heading>
         <Text style={text}>
-          Vous avez demandé à réinitialiser votre mot de passe MoniDuck.
-          Cliquez sur le bouton ci-dessous pour en choisir un nouveau.
+          You requested to reset your MoniDuck password.
+          Click the button below to choose a new one.
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Réinitialiser mon mot de passe
+          Reset my password
         </Button>
         <Text style={footer}>
-          Si vous n'avez pas fait cette demande, ignorez cet e-mail.
-          Votre mot de passe restera inchangé.
+          If you didn't request this, you can ignore this email.
+          Your password will remain unchanged.
         </Text>
       </Container>
     </Body>

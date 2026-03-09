@@ -26,9 +26,9 @@ export const InviteEmail = ({
   siteUrl,
   confirmationUrl,
 }: InviteEmailProps) => (
-  <Html lang="fr" dir="ltr">
+  <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Vous êtes invité à rejoindre MoniDuck</Preview>
+    <Preview>You're invited to join MoniDuck</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
@@ -38,19 +38,19 @@ export const InviteEmail = ({
           height="auto"
           style={{ marginBottom: '24px' }}
         />
-        <Heading style={h1}>Vous êtes invité ! 🚀</Heading>
+        <Heading style={h1}>You're invited! 🚀</Heading>
         <Text style={text}>
-          Vous avez été invité à rejoindre un workspace sur{' '}
+          You've been invited to join a workspace on{' '}
           <Link href={siteUrl} style={link}>
             <strong>MoniDuck</strong>
           </Link>
-          . Cliquez ci-dessous pour accepter l'invitation et créer votre compte.
+          . Click below to accept the invitation and create your account.
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Accepter l'invitation
+          Accept invitation
         </Button>
         <Text style={footer}>
-          Si vous n'attendiez pas cette invitation, ignorez simplement cet e-mail.
+          If you weren't expecting this invitation, you can safely ignore this email.
         </Text>
       </Container>
     </Body>
