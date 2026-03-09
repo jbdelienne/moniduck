@@ -137,6 +137,7 @@ Deno.serve(async (req) => {
     const results: Array<{ service_id: string; status: string; response_time: number }> = [];
 
     for (const service of services) {
+      try {
       // Check interval filtering (skip if force or single service)
       if (!force && service.last_check) {
         const lastCheck = new Date(service.last_check);
@@ -428,6 +429,10 @@ Deno.serve(async (req) => {
         .eq("id", service.id);
 
       results.push({ service_id: service.id, status, response_time: responseTime });
+      } catch (serviceErr) {
+        console.error(`Error processing service ${service.id} (${service.name}):`, serviceErr);
+        results.push({ service_id: service.id, status: "error", response_time: 0 });
+      }
     }
 
     return new Response(
