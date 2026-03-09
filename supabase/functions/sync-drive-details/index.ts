@@ -75,7 +75,6 @@ async function getAccessToken(integration: any, encryptionKey: string, supabaseA
     if (integration.refresh_token_encrypted) {
       const refreshToken = await decrypt(integration.refresh_token_encrypted, encryptionKey);
       const newTokenData = await refreshGoogleToken(refreshToken);
-      if (!newTokenData?.access_token) throw new Error("Token refresh failed");
       accessToken = newTokenData.access_token;
       const newEncrypted = await encryptToken(accessToken, encryptionKey);
       const expiresIn = newTokenData.expires_in || 3600;
