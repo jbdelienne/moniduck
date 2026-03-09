@@ -28,6 +28,7 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
     { title: "Services", url: `${lp}/services`, icon: Server },
     { title: "Cloud", url: `${lp}/cloud-resources`, icon: Cloud },
     { title: "SaaS", url: `${lp}/saas-status`, icon: Globe },
+    { title: "Integrations", url: `${lp}/integrations`, icon: Plug },
     { title: "Alerts", url: `${lp}/alerts`, icon: Bell, badge: unreadCount },
     { title: "Reports", url: `${lp}/reports`, icon: FileText },
     { title: "Settings", url: `${lp}/settings`, icon: Settings },
