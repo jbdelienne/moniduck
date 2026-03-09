@@ -207,6 +207,13 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Decrypt credentials
+    const encryptionKey = Deno.env.get("INTEGRATION_ENCRYPTION_KEY");
+    if (!encryptionKey) throw new Error("INTEGRATION_ENCRYPTION_KEY not configured");
+    
+    const decryptedAccessKeyId = await decrypt(cred.access_key_id, encryptionKey);
+    const decryptedSecretAccessKey = await decrypt(cred.secret_access_key, encryptionKey);
+
     const accountId = cred.id; // Use credential ID as account identifier
     const workspaceId = cred.workspace_id;
 

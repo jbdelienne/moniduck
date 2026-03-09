@@ -473,11 +473,11 @@ Deno.serve(async (req) => {
     // Run all discoveries in parallel
     const [ec2, s3, lambda, rds, costs, health] = await Promise.all([
       discoverEC2(aws, cred.region),
-      discoverS3({ accessKeyId: cred.access_key_id, secretAccessKey: cred.secret_access_key }),
+      discoverS3({ accessKeyId: decryptedAccessKeyId, secretAccessKey: decryptedSecretAccessKey }),
       discoverLambda(aws, cred.region),
       discoverRDS(aws, cred.region),
-      fetchCosts({ accessKeyId: cred.access_key_id, secretAccessKey: cred.secret_access_key }, cred.region),
-      fetchHealth({ accessKeyId: cred.access_key_id, secretAccessKey: cred.secret_access_key }, cred.region),
+      fetchCosts({ accessKeyId: decryptedAccessKeyId, secretAccessKey: decryptedSecretAccessKey }, cred.region),
+      fetchHealth({ accessKeyId: decryptedAccessKeyId, secretAccessKey: decryptedSecretAccessKey }, cred.region),
     ]);
 
     const allMetrics: AwsMetric[] = [
