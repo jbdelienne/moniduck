@@ -4,22 +4,40 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import IconPicker from './IconPicker';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AddServiceModalProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (service: { name: string; icon: string; url: string; check_interval: number; content_keyword?: string; visibility?: string }) => Promise<void>;
+  onAdd: (service: {
+    name: string;
+    icon: string;
+    url: string;
+    check_interval: number;
+    content_keyword?: string;
+    visibility?: string;
+    alert_checks_threshold?: number;
+    notification_email?: string;
+    alert_notify_down?: boolean;
+    alert_notify_up?: boolean;
+  }) => Promise<void>;
 }
 
 export default function AddServiceModal({ open, onClose, onAdd }: AddServiceModalProps) {
+  const { user } = useAuth();
   const [name, setName] = useState('');
   const [icon, setIcon] = useState('');
   const [url, setUrl] = useState('');
-  const [interval, setInterval] = useState('5');
+  const [interval, setInterval] = useState('2');
   const [contentKeyword, setContentKeyword] = useState('');
   const [visibility, setVisibility] = useState('public');
+  const [checksBeforeAlert, setChecksBeforeAlert] = useState('2');
+  const [notificationEmail, setNotificationEmail] = useState('');
+  const [alertNotifyDown, setAlertNotifyDown] = useState(true);
+  const [alertNotifyUp, setAlertNotifyUp] = useState(true);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -27,16 +45,31 @@ export default function AddServiceModal({ open, onClose, onAdd }: AddServiceModa
     e.preventDefault();
     setLoading(true);
     try {
-      await onAdd({ name, icon, url, check_interval: Number(interval), content_keyword: contentKeyword || undefined, visibility });
+      await onAdd({
+        name,
+        icon,
+        url,
+        check_interval: Number(interval),
+        content_keyword: contentKeyword || undefined,
+        visibility,
+        alert_checks_threshold: Number(checksBeforeAlert),
+        notification_email: notificationEmail || undefined,
+        alert_notify_down: alertNotifyDown,
+        alert_notify_up: alertNotifyUp,
+      });
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
         setName('');
         setUrl('');
         setIcon('');
-        setInterval('5');
+        setInterval('2');
         setContentKeyword('');
         setVisibility('public');
+        setChecksBeforeAlert('2');
+        setNotificationEmail('');
+        setAlertNotifyDown(true);
+        setAlertNotifyUp(true);
         setLoading(false);
         onClose();
       }, 1500);
@@ -47,7 +80,7 @@ export default function AddServiceModal({ open, onClose, onAdd }: AddServiceModa
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add new service</DialogTitle>
         </DialogHeader>
@@ -76,18 +109,6 @@ export default function AddServiceModal({ open, onClose, onAdd }: AddServiceModa
             </div>
 
             <div className="space-y-2">
-              <Label>Check interval</Label>
-              <Select value={interval} onValueChange={setInterval}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Every 1 min</SelectItem>
-                  <SelectItem value="2">Every 2 min</SelectItem>
-                  <SelectItem value="5">Every 5 min</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
               <Label>Visibility</Label>
               <Select value={visibility} onValueChange={setVisibility}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
@@ -96,13 +117,72 @@ export default function AddServiceModal({ open, onClose, onAdd }: AddServiceModa
                   <SelectItem value="private">🔒 Private endpoint</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-[11px] text-muted-foreground">Public endpoints trigger critical alerts when down. Private endpoints trigger warnings.</p>
+              <p className="text-[11px] text-muted-foreground">Public endpoints trigger critical alerts. Private endpoints trigger warnings.</p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="svc-keyword">Content validation keyword <span className="text-muted-foreground font-normal">(optional)</span></Label>
               <Input id="svc-keyword" value={contentKeyword} onChange={(e) => setContentKeyword(e.target.value)} placeholder="e.g. OK, healthy, alive" />
-              <p className="text-[11px] text-muted-foreground">If set, the service will be marked as degraded when this keyword is not found in the response body.</p>
+              <p className="text-[11px] text-muted-foreground">Service marked degraded when keyword not found in response.</p>
+            </div>
+
+            {/* Alert Configuration Section */}
+            <div className="border-t border-border pt-4 mt-4">
+              <h3 className="text-sm font-semibold text-foreground mb-3">Alert Configuration</h3>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Check interval</Label>
+                  <Select value={interval} onValueChange={setInterval}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Every minute</SelectItem>
+                      <SelectItem value="2">Every 2 minutes (default)</SelectItem>
+                      <SelectItem value="5">Every 5 minutes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Alert sensitivity</Label>
+                  <Select value={checksBeforeAlert} onValueChange={setChecksBeforeAlert}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 failed check → Immediate</SelectItem>
+                      <SelectItem value="2">2 failed checks → Recommended (default)</SelectItem>
+                      <SelectItem value="5">5 failed checks → Conservative</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="svc-notify-email">Notification email</Label>
+                  <Input
+                    id="svc-notify-email"
+                    type="email"
+                    value={notificationEmail}
+                    onChange={(e) => setNotificationEmail(e.target.value)}
+                    placeholder={user?.email || "your@email.com"}
+                  />
+                  <p className="text-[11px] text-muted-foreground">Defaults to your account email if left empty.</p>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="notify-down" className="cursor-pointer">Alert when down</Label>
+                    <p className="text-[11px] text-muted-foreground">Get notified when service goes down</p>
+                  </div>
+                  <Switch id="notify-down" checked={alertNotifyDown} onCheckedChange={setAlertNotifyDown} />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="notify-up" className="cursor-pointer">Alert when recovered</Label>
+                    <p className="text-[11px] text-muted-foreground">Get notified when service comes back</p>
+                  </div>
+                  <Switch id="notify-up" checked={alertNotifyUp} onCheckedChange={setAlertNotifyUp} />
+                </div>
+              </div>
             </div>
 
             <Button

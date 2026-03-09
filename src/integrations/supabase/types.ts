@@ -521,6 +521,66 @@ export type Database = {
           },
         ]
       }
+      incidents: {
+        Row: {
+          alert_sent_at: string | null
+          created_at: string
+          duration_minutes: number | null
+          error_message: string | null
+          id: string
+          resolution_sent_at: string | null
+          resolved_at: string | null
+          service_id: string
+          started_at: string
+          status_code: string | null
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          alert_sent_at?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          error_message?: string | null
+          id?: string
+          resolution_sent_at?: string | null
+          resolved_at?: string | null
+          service_id: string
+          started_at?: string
+          status_code?: string | null
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          alert_sent_at?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          error_message?: string | null
+          id?: string
+          resolution_sent_at?: string | null
+          resolved_at?: string | null
+          service_id?: string
+          started_at?: string
+          status_code?: string | null
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incidents_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       integration_sync_data: {
         Row: {
           created_at: string
@@ -753,8 +813,11 @@ export type Database = {
           alert_checks_threshold: number
           alert_email: string | null
           alert_email_enabled: boolean
+          alert_notify_down: boolean
+          alert_notify_up: boolean
           avg_response_time: number | null
           check_interval: number
+          consecutive_failures: number
           content_keyword: string | null
           created_at: string
           icon: string
@@ -763,6 +826,7 @@ export type Database = {
           last_check: string | null
           maintenance_until: string | null
           name: string
+          notification_email: string | null
           owner_id: string | null
           ssl_expiry_date: string | null
           ssl_issuer: string | null
@@ -779,8 +843,11 @@ export type Database = {
           alert_checks_threshold?: number
           alert_email?: string | null
           alert_email_enabled?: boolean
+          alert_notify_down?: boolean
+          alert_notify_up?: boolean
           avg_response_time?: number | null
           check_interval?: number
+          consecutive_failures?: number
           content_keyword?: string | null
           created_at?: string
           icon?: string
@@ -789,6 +856,7 @@ export type Database = {
           last_check?: string | null
           maintenance_until?: string | null
           name: string
+          notification_email?: string | null
           owner_id?: string | null
           ssl_expiry_date?: string | null
           ssl_issuer?: string | null
@@ -805,8 +873,11 @@ export type Database = {
           alert_checks_threshold?: number
           alert_email?: string | null
           alert_email_enabled?: boolean
+          alert_notify_down?: boolean
+          alert_notify_up?: boolean
           avg_response_time?: number | null
           check_interval?: number
+          consecutive_failures?: number
           content_keyword?: string | null
           created_at?: string
           icon?: string
@@ -815,6 +886,7 @@ export type Database = {
           last_check?: string | null
           maintenance_until?: string | null
           name?: string
+          notification_email?: string | null
           owner_id?: string | null
           ssl_expiry_date?: string | null
           ssl_issuer?: string | null
