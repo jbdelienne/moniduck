@@ -106,12 +106,15 @@ Deno.serve(async (req) => {
     // Parse query params for single-service check
     const url = new URL(req.url);
     const singleServiceId = url.searchParams.get("service_id");
+    const forceParam = url.searchParams.get("force");
 
-    let force = false;
+    let force = forceParam === "true";
     try {
       const body = await req.json();
-      force = body?.force === true;
+      if (body?.force === true) force = true;
     } catch { /* no body */ }
+
+    console.log("check-services: force =", force, "singleServiceId =", singleServiceId);
 
     // If a specific service_id is provided, force-check only that service
     if (singleServiceId) {
