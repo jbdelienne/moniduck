@@ -69,8 +69,9 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     const cronSecret = req.headers.get("x-cron-secret");
     const expectedCronSecret = Deno.env.get("CRON_SECRET");
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
     const sbUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
     let isAuthorized = false;
     let isCronCall = false;
@@ -81,20 +82,24 @@ Deno.serve(async (req) => {
       isCronCall = true;
     }
 
-    // Option 2: Service role key (used by pg_cron via pg_net)
-    const serviceRoleKeyAuth = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    if (!isAuthorized && serviceRoleKeyAuth && authHeader === `Bearer ${serviceRoleKeyAuth}`) {
-      isAuthorized = true;
-      isCronCall = true;
+    // Option 2: Check if the bearer token is service_role or anon key by decoding JWT role
+    if (!isAuthorized && authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.replace("Bearer ", "");
+      try {
+        // Decode JWT payload (base64) to check role claim
+        const payloadB64 = token.split(".")[1];
+        if (payloadB64) {
+          const payload = JSON.parse(atob(payloadB64));
+          if (payload.role === "anon" || payload.role === "service_role") {
+            // It's a Supabase system key (anon or service_role), treat as cron
+            isAuthorized = true;
+            isCronCall = true;
+          }
+        }
+      } catch { /* not a valid JWT, try user auth below */ }
     }
 
-    // Option 3: Anon key (fallback for pg_cron)
-    if (!isAuthorized && anonKey && authHeader === `Bearer ${anonKey}`) {
-      isAuthorized = true;
-      isCronCall = true;
-    }
-
-    // Option 4: Valid user JWT
+    // Option 3: Valid user JWT
     if (!isAuthorized && authHeader?.startsWith("Bearer ")) {
       const userClient = createClient(sbUrl, anonKey, {
         global: { headers: { Authorization: authHeader } },
