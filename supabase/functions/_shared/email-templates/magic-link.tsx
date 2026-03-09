@@ -25,7 +25,7 @@ export const MagicLinkEmail = ({
 }: MagicLinkEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your MoniDuck sign-in link</Preview>
+    <Preview>Your moniduck sign-in link</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
