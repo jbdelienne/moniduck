@@ -73,15 +73,18 @@ Deno.serve(async (req) => {
     const sbUrl = Deno.env.get("SUPABASE_URL")!;
 
     let isAuthorized = false;
+    let isCronCall = false;
 
     // Option 1: Cron secret header
     if (expectedCronSecret && cronSecret === expectedCronSecret) {
       isAuthorized = true;
+      isCronCall = true;
     }
 
     // Option 2: Anon key (used by pg_cron)
     if (!isAuthorized && authHeader === `Bearer ${anonKey}`) {
       isAuthorized = true;
+      isCronCall = true;
     }
 
     // Option 3: Valid user JWT
