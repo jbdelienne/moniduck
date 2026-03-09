@@ -187,9 +187,7 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
             {credentials && (
               <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border">
                 <div>
-                  <p className="font-mono text-sm text-foreground">
-                    {credentials.access_key_id.slice(0, 8)}...{credentials.access_key_id.slice(-4)}
-                  </p>
+                  <p className="text-sm text-foreground font-medium">Credentials stored (encrypted)</p>
                   <p className="text-xs text-muted-foreground">
                     {credentials.last_sync_at
                       ? `Last synced ${formatDistanceToNow(new Date(credentials.last_sync_at))} ago`
