@@ -21,3 +21,7 @@ project_id = "cynnbynmicfosozmgjua"
     verify_jwt = false
   [functions.waitlist-welcome]
     verify_jwt = false
+  [functions.send-alert-down]
+    verify_jwt = false
+  [functions.send-alert-up]
+    verify_jwt = false
