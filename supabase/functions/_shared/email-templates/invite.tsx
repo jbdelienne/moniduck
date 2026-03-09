@@ -28,7 +28,7 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>You're invited to join MoniDuck</Preview>
+    <Preview>You're invited to join moniduck</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
