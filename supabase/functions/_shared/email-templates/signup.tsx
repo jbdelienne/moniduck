@@ -28,9 +28,9 @@ export const SignupEmail = ({
   recipient,
   confirmationUrl,
 }: SignupEmailProps) => (
-  <Html lang="fr" dir="ltr">
+  <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirmez votre e-mail pour MoniDuck</Preview>
+    <Preview>Confirm your email for MoniDuck</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
@@ -40,26 +40,26 @@ export const SignupEmail = ({
           height="auto"
           style={{ marginBottom: '24px' }}
         />
-        <Heading style={h1}>Bienvenue sur MoniDuck 🎉</Heading>
+        <Heading style={h1}>Welcome to MoniDuck 🎉</Heading>
         <Text style={text}>
-          Merci de vous être inscrit sur{' '}
+          Thanks for signing up on{' '}
           <Link href={siteUrl} style={link}>
             <strong>MoniDuck</strong>
           </Link>
-          &nbsp;! Votre monitoring moderne commence ici.
+          ! Your modern monitoring starts here.
         </Text>
         <Text style={text}>
-          Confirmez votre adresse e-mail (
+          Please confirm your email address (
           <Link href={`mailto:${recipient}`} style={link}>
             {recipient}
           </Link>
-          ) en cliquant sur le bouton ci-dessous :
+          ) by clicking the button below:
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Confirmer mon e-mail
+          Confirm my email
         </Button>
         <Text style={footer}>
-          Si vous n'avez pas créé de compte, ignorez simplement cet e-mail.
+          If you didn't create an account, you can safely ignore this email.
         </Text>
       </Container>
     </Body>
