@@ -52,15 +52,17 @@ Deno.serve(async (req) => {
         from: "MoniDuck Alerts <alerts@mail.moniduck.io>",
         to: Array.isArray(to) ? to : [to],
         subject: `✅ ${service_name} is back up`,
-        template_id: "d49e3500-f3ab-43fc-aea8-789d5ff11d76",
-        template_data: {
-          service_name,
-          service_url,
-          incident_started_at: formatDate(incident_started_at),
-          incident_resolved_at: formatDate(incident_resolved_at),
-          incident_duration: formatDuration(duration_minutes),
-          uptime_30d: `${uptime_30d ?? "N/A"}%`,
-          dashboard_url: "https://moniduck.io/services",
+        template: {
+          id: "d49e3500-f3ab-43fc-aea8-789d5ff11d76",
+          variables: {
+            service_name,
+            service_url,
+            incident_started_at: formatDate(incident_started_at),
+            incident_resolved_at: formatDate(incident_resolved_at),
+            incident_duration: formatDuration(duration_minutes),
+            uptime_30d: `${uptime_30d ?? "N/A"}%`,
+            dashboard_url: "https://moniduck.io/services",
+          },
         },
       }),
     });
