@@ -106,18 +106,17 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(sbUrl, serviceRoleKey);
 
-    // Parse query params for single-service check
-    const url = new URL(req.url);
-    const singleServiceId = url.searchParams.get("service_id");
-    const forceParam = url.searchParams.get("force");
-
-    let force = forceParam === "true";
+    let force = isCronCall; // Always force on cron calls
     try {
       const body = await req.json();
       if (body?.force === true) force = true;
     } catch { /* no body */ }
 
-    console.log("check-services: force =", force, "singleServiceId =", singleServiceId);
+    // Parse query params for single-service check
+    const url = new URL(req.url);
+    const singleServiceId = url.searchParams.get("service_id");
+
+    console.log("check-services: force =", force, "isCron =", isCronCall, "singleServiceId =", singleServiceId);
 
     // If a specific service_id is provided, force-check only that service
     if (singleServiceId) {
