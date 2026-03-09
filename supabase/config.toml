@@ -3,6 +3,8 @@ project_id = "cynnbynmicfosozmgjua"
 [functions]
   [functions.auth-email-hook]
     verify_jwt = false
+  [functions.aws-credentials]
+    verify_jwt = false
   [functions.aws-cost-sync]
     verify_jwt = false
   [functions.aws-status-poll]
