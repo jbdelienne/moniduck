@@ -73,15 +73,18 @@ Deno.serve(async (req) => {
     const sbUrl = Deno.env.get("SUPABASE_URL")!;
 
     let isAuthorized = false;
+    let isCronCall = false;
 
     // Option 1: Cron secret header
     if (expectedCronSecret && cronSecret === expectedCronSecret) {
       isAuthorized = true;
+      isCronCall = true;
     }
 
     // Option 2: Anon key (used by pg_cron)
     if (!isAuthorized && authHeader === `Bearer ${anonKey}`) {
       isAuthorized = true;
+      isCronCall = true;
     }
 
     // Option 3: Valid user JWT
@@ -103,15 +106,17 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(sbUrl, serviceRoleKey);
 
+    let force = isCronCall; // Always force on cron calls
+    try {
+      const body = await req.json();
+      if (body?.force === true) force = true;
+    } catch { /* no body */ }
+
     // Parse query params for single-service check
     const url = new URL(req.url);
     const singleServiceId = url.searchParams.get("service_id");
 
-    let force = false;
-    try {
-      const body = await req.json();
-      force = body?.force === true;
-    } catch { /* no body */ }
+    console.log("check-services: force =", force, "isCron =", isCronCall, "singleServiceId =", singleServiceId);
 
     // If a specific service_id is provided, force-check only that service
     if (singleServiceId) {
