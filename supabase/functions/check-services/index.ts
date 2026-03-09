@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
     const cronSecret = req.headers.get("x-cron-secret");
     const expectedCronSecret = Deno.env.get("CRON_SECRET");
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const sbUrl = Deno.env.get("SUPABASE_URL")!;
 
     let isAuthorized = false;
 
@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
 
     // Option 3: Valid user JWT
     if (!isAuthorized && authHeader?.startsWith("Bearer ")) {
-      const userClient = createClient(supabaseUrl, anonKey, {
+      const userClient = createClient(sbUrl, anonKey, {
         global: { headers: { Authorization: authHeader } },
       });
       const { data: { user }, error } = await userClient.auth.getUser();
@@ -100,9 +100,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const supabase = createClient(sbUrl, serviceRoleKey);
+
+    // Parse query params for single-service check
+    const url = new URL(req.url);
+    const singleServiceId = url.searchParams.get("service_id");
 
     let force = false;
     try {
@@ -110,11 +113,17 @@ Deno.serve(async (req) => {
       force = body?.force === true;
     } catch { /* no body */ }
 
-    // Get all active services
-    const { data: services, error: svcErr } = await supabase
-      .from("services")
-      .select("*")
-      .eq("is_paused", false);
+    // If a specific service_id is provided, force-check only that service
+    if (singleServiceId) {
+      force = true;
+    }
+
+    // Get services to check
+    let query = supabase.from("services").select("*").eq("is_paused", false);
+    if (singleServiceId) {
+      query = query.eq("id", singleServiceId);
+    }
+    const { data: services, error: svcErr } = await query;
 
     if (svcErr) throw svcErr;
     if (!services || services.length === 0) {
@@ -128,7 +137,7 @@ Deno.serve(async (req) => {
     const results: Array<{ service_id: string; status: string; response_time: number }> = [];
 
     for (const service of services) {
-      // Check interval filtering
+      // Check interval filtering (skip if force or single service)
       if (!force && service.last_check) {
         const lastCheck = new Date(service.last_check);
         const diffMinutes = (now.getTime() - lastCheck.getTime()) / 60000;
