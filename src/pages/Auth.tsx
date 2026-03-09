@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { useLangPrefix } from "@/hooks/use-lang-prefix";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+
 import duckLogo from "@/assets/moniduck-logo.png";
 
 export default function Auth() {
