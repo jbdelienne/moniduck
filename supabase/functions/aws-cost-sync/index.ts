@@ -284,7 +284,7 @@ Deno.serve(async (req) => {
     console.log(`Fetching cost data: ${awsGranularity} from ${effectiveStart} to ${effectiveEnd}`);
 
     // Three calls: grouped by service, total, and by resource
-    const awsCreds = { accessKeyId: cred.access_key_id, secretAccessKey: cred.secret_access_key };
+    const awsCreds = { accessKeyId: decryptedAccessKeyId, secretAccessKey: decryptedSecretAccessKey };
     const [byServiceData, totalData, byResourceData] = await Promise.all([
       fetchCostAndUsage(awsCreds, awsGranularity, effectiveStart, effectiveEnd, true),
       fetchCostAndUsage(awsCreds, awsGranularity, effectiveStart, effectiveEnd, false),
