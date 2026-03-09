@@ -196,7 +196,7 @@ Deno.serve(async (req) => {
     }
 
     // Redirect back to app
-    const appUrl = Deno.env.get("APP_URL") || "https://moniduck.lovable.app";
+    const appUrl = Deno.env.get("APP_URL") || "https://moniduck.io";
     return new Response(null, {
       status: 302,
       headers: { Location: `${appUrl}/integrations?connected=${provider}` },
