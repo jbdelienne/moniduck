@@ -44,6 +44,7 @@ export default function ServicesPage() {
   const [uptimePeriod, setUptimePeriod] = useState<UptimePeriod>('12m');
   const [search, setSearch] = useState('');
   const [visibilityTab, setVisibilityTab] = useState<VisibilityTab>('all');
+  const [checkingServiceId, setCheckingServiceId] = useState<string | null>(null);
   const { t } = useTranslation();
 
   // Only show HTTP services (exclude cloud-imported ones)
