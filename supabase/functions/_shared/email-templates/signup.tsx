@@ -30,7 +30,7 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email for MoniDuck</Preview>
+    <Preview>Confirm your email for moniduck</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
