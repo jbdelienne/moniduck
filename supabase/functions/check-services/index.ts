@@ -69,16 +69,23 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     const cronSecret = req.headers.get("x-cron-secret");
     const expectedCronSecret = Deno.env.get("CRON_SECRET");
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 
     let isAuthorized = false;
 
+    // Option 1: Cron secret header
     if (expectedCronSecret && cronSecret === expectedCronSecret) {
       isAuthorized = true;
     }
 
+    // Option 2: Anon key (used by pg_cron)
+    if (!isAuthorized && authHeader === `Bearer ${anonKey}`) {
+      isAuthorized = true;
+    }
+
+    // Option 3: Valid user JWT
     if (!isAuthorized && authHeader?.startsWith("Bearer ")) {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
       const userClient = createClient(supabaseUrl, anonKey, {
         global: { headers: { Authorization: authHeader } },
       });
