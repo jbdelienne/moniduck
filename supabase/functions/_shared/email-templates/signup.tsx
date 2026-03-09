@@ -40,7 +40,7 @@ export const SignupEmail = ({
           height="auto"
           style={{ marginBottom: '24px' }}
         />
-        <Heading style={h1}>Welcome to MoniDuck 🎉</Heading>
+        <Heading style={h1}>Welcome to moniduck 🎉</Heading>
         <Text style={text}>
           Thanks for signing up on{' '}
           <Link href={siteUrl} style={link}>
