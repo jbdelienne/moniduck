@@ -30,21 +30,21 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email for MoniDuck</Preview>
+    <Preview>Confirm your email for moniduck</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://cynnbynmicfosozmgjua.supabase.co/storage/v1/object/public/email-assets/moniduck-logo.png"
-          alt="MoniDuck"
+          alt="moniduck"
           width="140"
           height="auto"
           style={{ marginBottom: '24px' }}
         />
-        <Heading style={h1}>Welcome to MoniDuck 🎉</Heading>
+        <Heading style={h1}>Welcome to moniduck 🎉</Heading>
         <Text style={text}>
           Thanks for signing up on{' '}
           <Link href={siteUrl} style={link}>
-            <strong>MoniDuck</strong>
+            <strong>moniduck</strong>
           </Link>
           ! Your modern monitoring starts here.
         </Text>

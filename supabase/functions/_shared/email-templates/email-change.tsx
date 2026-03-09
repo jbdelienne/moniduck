@@ -30,19 +30,19 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email change on MoniDuck</Preview>
+    <Preview>Confirm your email change on moniduck</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://cynnbynmicfosozmgjua.supabase.co/storage/v1/object/public/email-assets/moniduck-logo.png"
-          alt="MoniDuck"
+          alt="moniduck"
           width="140"
           height="auto"
           style={{ marginBottom: '24px' }}
         />
         <Heading style={h1}>Email Address Change</Heading>
         <Text style={text}>
-          You requested to change your MoniDuck email from{' '}
+          You requested to change your moniduck email from{' '}
           <Link href={`mailto:${email}`} style={link}>
             {email}
           </Link>{' '}

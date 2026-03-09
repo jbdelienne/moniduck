@@ -28,12 +28,12 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>You're invited to join MoniDuck</Preview>
+    <Preview>You're invited to join moniduck</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://cynnbynmicfosozmgjua.supabase.co/storage/v1/object/public/email-assets/moniduck-logo.png"
-          alt="MoniDuck"
+          alt="moniduck"
           width="140"
           height="auto"
           style={{ marginBottom: '24px' }}
@@ -42,7 +42,7 @@ export const InviteEmail = ({
         <Text style={text}>
           You've been invited to join a workspace on{' '}
           <Link href={siteUrl} style={link}>
-            <strong>MoniDuck</strong>
+            <strong>moniduck</strong>
           </Link>
           . Click below to accept the invitation and create your account.
         </Text>

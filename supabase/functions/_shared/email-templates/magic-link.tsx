@@ -25,19 +25,19 @@ export const MagicLinkEmail = ({
 }: MagicLinkEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your MoniDuck sign-in link</Preview>
+    <Preview>Your moniduck sign-in link</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://cynnbynmicfosozmgjua.supabase.co/storage/v1/object/public/email-assets/moniduck-logo.png"
-          alt="MoniDuck"
+          alt="moniduck"
           width="140"
           height="auto"
           style={{ marginBottom: '24px' }}
         />
         <Heading style={h1}>Your sign-in link</Heading>
         <Text style={text}>
-          Click the button below to sign in to MoniDuck.
+          Click the button below to sign in to moniduck.
           This link will expire shortly.
         </Text>
         <Button style={button} href={confirmationUrl}>

@@ -20,12 +20,12 @@ interface ReauthenticationEmailProps {
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your MoniDuck verification code</Preview>
+    <Preview>Your moniduck verification code</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://cynnbynmicfosozmgjua.supabase.co/storage/v1/object/public/email-assets/moniduck-logo.png"
-          alt="MoniDuck"
+          alt="moniduck"
           width="140"
           height="auto"
           style={{ marginBottom: '24px' }}

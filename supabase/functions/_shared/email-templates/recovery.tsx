@@ -25,19 +25,19 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Reset your MoniDuck password</Preview>
+    <Preview>Reset your moniduck password</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://cynnbynmicfosozmgjua.supabase.co/storage/v1/object/public/email-assets/moniduck-logo.png"
-          alt="MoniDuck"
+          alt="moniduck"
           width="140"
           height="auto"
           style={{ marginBottom: '24px' }}
         />
         <Heading style={h1}>Password Reset</Heading>
         <Text style={text}>
-          You requested to reset your MoniDuck password.
+          You requested to reset your moniduck password.
           Click the button below to choose a new one.
         </Text>
         <Button style={button} href={confirmationUrl}>
