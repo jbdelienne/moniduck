@@ -7,6 +7,28 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// AES-GCM decryption
+async function deriveDecryptKey(secret: string): Promise<CryptoKey> {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(secret), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: enc.encode("moniduck-salt"), iterations: 100000, hash: "SHA-256" },
+    keyMaterial,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["decrypt"],
+  );
+}
+
+async function decrypt(ciphertext: string, secret: string): Promise<string> {
+  const key = await deriveDecryptKey(secret);
+  const raw = Uint8Array.from(atob(ciphertext), (c) => c.charCodeAt(0));
+  const iv = raw.slice(0, 12);
+  const data = raw.slice(12);
+  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
+  return new TextDecoder().decode(decrypted);
+}
+
 interface AwsMetric {
   metric_type: string;
   metric_key: string;
@@ -369,6 +391,13 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Decrypt credentials
+    const encryptionKey = Deno.env.get("INTEGRATION_ENCRYPTION_KEY");
+    if (!encryptionKey) throw new Error("INTEGRATION_ENCRYPTION_KEY not configured");
+    
+    const decryptedAccessKeyId = await decrypt(cred.access_key_id, encryptionKey);
+    const decryptedSecretAccessKey = await decrypt(cred.secret_access_key, encryptionKey);
+
     // Update sync status
     await supabaseAdmin
       .from("aws_credentials")
@@ -376,8 +405,8 @@ Deno.serve(async (req) => {
       .eq("id", credentialId);
 
     const aws = new AwsClient({
-      accessKeyId: cred.access_key_id,
-      secretAccessKey: cred.secret_access_key,
+      accessKeyId: decryptedAccessKeyId,
+      secretAccessKey: decryptedSecretAccessKey,
       region: cred.region,
     });
 
@@ -444,11 +473,11 @@ Deno.serve(async (req) => {
     // Run all discoveries in parallel
     const [ec2, s3, lambda, rds, costs, health] = await Promise.all([
       discoverEC2(aws, cred.region),
-      discoverS3({ accessKeyId: cred.access_key_id, secretAccessKey: cred.secret_access_key }),
+      discoverS3({ accessKeyId: decryptedAccessKeyId, secretAccessKey: decryptedSecretAccessKey }),
       discoverLambda(aws, cred.region),
       discoverRDS(aws, cred.region),
-      fetchCosts({ accessKeyId: cred.access_key_id, secretAccessKey: cred.secret_access_key }, cred.region),
-      fetchHealth({ accessKeyId: cred.access_key_id, secretAccessKey: cred.secret_access_key }, cred.region),
+      fetchCosts({ accessKeyId: decryptedAccessKeyId, secretAccessKey: decryptedSecretAccessKey }, cred.region),
+      fetchHealth({ accessKeyId: decryptedAccessKeyId, secretAccessKey: decryptedSecretAccessKey }, cred.region),
     ]);
 
     const allMetrics: AwsMetric[] = [

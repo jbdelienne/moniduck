@@ -7,6 +7,28 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// AES-GCM decryption
+async function deriveDecryptKey(secret: string): Promise<CryptoKey> {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(secret), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: enc.encode("moniduck-salt"), iterations: 100000, hash: "SHA-256" },
+    keyMaterial,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["decrypt"],
+  );
+}
+
+async function decrypt(ciphertext: string, secret: string): Promise<string> {
+  const key = await deriveDecryptKey(secret);
+  const raw = Uint8Array.from(atob(ciphertext), (c) => c.charCodeAt(0));
+  const iv = raw.slice(0, 12);
+  const data = raw.slice(12);
+  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
+  return new TextDecoder().decode(decrypted);
+}
+
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
 
 interface CostRequest {
@@ -185,6 +207,13 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Decrypt credentials
+    const encryptionKey = Deno.env.get("INTEGRATION_ENCRYPTION_KEY");
+    if (!encryptionKey) throw new Error("INTEGRATION_ENCRYPTION_KEY not configured");
+    
+    const decryptedAccessKeyId = await decrypt(cred.access_key_id, encryptionKey);
+    const decryptedSecretAccessKey = await decrypt(cred.secret_access_key, encryptionKey);
+
     const accountId = cred.id; // Use credential ID as account identifier
     const workspaceId = cred.workspace_id;
 
@@ -255,7 +284,7 @@ Deno.serve(async (req) => {
     console.log(`Fetching cost data: ${awsGranularity} from ${effectiveStart} to ${effectiveEnd}`);
 
     // Three calls: grouped by service, total, and by resource
-    const awsCreds = { accessKeyId: cred.access_key_id, secretAccessKey: cred.secret_access_key };
+    const awsCreds = { accessKeyId: decryptedAccessKeyId, secretAccessKey: decryptedSecretAccessKey };
     const [byServiceData, totalData, byResourceData] = await Promise.all([
       fetchCostAndUsage(awsCreds, awsGranularity, effectiveStart, effectiveEnd, true),
       fetchCostAndUsage(awsCreds, awsGranularity, effectiveStart, effectiveEnd, false),
