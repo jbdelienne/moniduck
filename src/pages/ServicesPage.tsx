@@ -222,9 +222,9 @@ export default function ServicesPage() {
                       <TableCell className="text-right font-mono text-sm text-muted-foreground">
                         {(service.avg_response_time ?? 0) > 0 ? `${service.avg_response_time}ms` : '—'}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
+                      <TableCell className="text-xs text-muted-foreground font-mono">
                         {service.last_check
-                          ? formatDistanceToNow(new Date(service.last_check), { addSuffix: true })
+                          ? format(new Date(service.last_check), 'HH:mm:ss')
                           : t('services.never')}
                       </TableCell>
                       <TableCell className="text-right">
