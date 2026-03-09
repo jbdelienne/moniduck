@@ -76,7 +76,18 @@ export default function ServicesPage() {
     unknown: { label: t('services.pending'), dotClass: 'status-dot-unknown' },
   };
 
-  const handleAddService = async (svc: { name: string; icon: string; url: string; check_interval: number }) => {
+  const handleAddService = async (svc: {
+    name: string;
+    icon: string;
+    url: string;
+    check_interval: number;
+    content_keyword?: string;
+    visibility?: string;
+    alert_checks_threshold?: number;
+    notification_email?: string;
+    alert_notify_down?: boolean;
+    alert_notify_up?: boolean;
+  }) => {
     await addService.mutateAsync(svc);
   };
 
