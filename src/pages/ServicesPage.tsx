@@ -44,6 +44,7 @@ export default function ServicesPage() {
   const [uptimePeriod, setUptimePeriod] = useState<UptimePeriod>('12m');
   const [search, setSearch] = useState('');
   const [visibilityTab, setVisibilityTab] = useState<VisibilityTab>('all');
+  const [checkingServiceId, setCheckingServiceId] = useState<string | null>(null);
   const { t } = useTranslation();
 
   // Only show HTTP services (exclude cloud-imported ones)
@@ -228,14 +229,15 @@ export default function ServicesPage() {
                             title={t('services.forceCheck')}
                             onClick={(e) => {
                               e.stopPropagation();
+                              setCheckingServiceId(service.id);
                               forceCheck.mutate(service.id, {
-                                onSuccess: () => toast.success(t('services.checkTriggered')),
-                                onError: (err) => toast.error(err.message),
+                                onSuccess: () => { setCheckingServiceId(null); toast.success(t('services.checkTriggered')); },
+                                onError: (err) => { setCheckingServiceId(null); toast.error(err.message); },
                               });
                             }}
-                            disabled={forceCheck.isPending}
+                            disabled={checkingServiceId === service.id}
                           >
-                            {forceCheck.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                            {checkingServiceId === service.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
                           </Button>
                           <Button
                             variant="outline"
