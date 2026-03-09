@@ -18,45 +18,6 @@ function formatDuration(minutes: number): string {
   return m > 0 ? `${h}h ${m}min` : `${h} hour${h > 1 ? "s" : ""}`;
 }
 
-function buildUpEmail(vars: {
-  service_name: string;
-  service_url: string;
-  incident_started_at: string;
-  incident_resolved_at: string;
-  incident_duration: string;
-  uptime_30d: string;
-  dashboard_url: string;
-}): string {
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
-<body style="margin:0;padding:0;background:#f4f4f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-<div style="max-width:600px;margin:24px auto;background:#1A1A2E;border-radius:12px;overflow:hidden;">
-  <div style="background:#16a34a;padding:20px 24px;">
-    <h1 style="margin:0;font-size:18px;color:#fff;">✅ ${vars.service_name} is back up</h1>
-  </div>
-  <div style="padding:24px;">
-    <table style="width:100%;border-collapse:collapse;color:#e0e0e0;font-size:14px;">
-      <tr><td style="padding:10px 0;color:#999;width:140px;">Service</td><td style="padding:10px 0;font-weight:600;color:#fff;">${vars.service_name}</td></tr>
-      <tr><td style="padding:10px 0;color:#999;">URL</td><td style="padding:10px 0;"><a href="${vars.service_url}" style="color:#927FBF;text-decoration:none;">${vars.service_url}</a></td></tr>
-      <tr><td style="padding:10px 0;color:#999;">Down since</td><td style="padding:10px 0;">${vars.incident_started_at}</td></tr>
-      <tr><td style="padding:10px 0;color:#999;">Recovered at</td><td style="padding:10px 0;">${vars.incident_resolved_at}</td></tr>
-      <tr><td style="padding:10px 0;color:#999;">Total downtime</td><td style="padding:10px 0;font-weight:600;color:#FF8C42;">${vars.incident_duration}</td></tr>
-      <tr><td style="padding:10px 0;color:#999;">Uptime (30d)</td><td style="padding:10px 0;">${vars.uptime_30d}</td></tr>
-    </table>
-    <div style="margin-top:24px;text-align:center;">
-      <a href="${vars.dashboard_url}" style="display:inline-block;background:#4F3B78;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">View Report</a>
-    </div>
-  </div>
-  <div style="padding:16px 24px;border-top:1px solid #2a2a4e;font-size:12px;color:#666;">
-    MoniDuck — Monitoring for modern tech stacks
-  </div>
-</div>
-</body>
-</html>`;
-}
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -81,16 +42,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const html = buildUpEmail({
-      service_name,
-      service_url,
-      incident_started_at: formatDate(incident_started_at),
-      incident_resolved_at: formatDate(incident_resolved_at),
-      incident_duration: formatDuration(duration_minutes),
-      uptime_30d: `${uptime_30d ?? "N/A"}%`,
-      dashboard_url: `https://moniduck.io/services`,
-    });
-
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -101,8 +52,16 @@ Deno.serve(async (req) => {
         from: "MoniDuck Alerts <alerts@mail.moniduck.io>",
         to: Array.isArray(to) ? to : [to],
         subject: `✅ ${service_name} is back up`,
-        html,
-        tags: [{ name: "template", value: "serviceup" }],
+        template_id: "d49e3500-f3ab-43fc-aea8-789d5ff11d76",
+        template_data: {
+          service_name,
+          service_url,
+          incident_started_at: formatDate(incident_started_at),
+          incident_resolved_at: formatDate(incident_resolved_at),
+          incident_duration: formatDuration(duration_minutes),
+          uptime_30d: `${uptime_30d ?? "N/A"}%`,
+          dashboard_url: "https://moniduck.io/services",
+        },
       }),
     });
 
