@@ -137,6 +137,7 @@ Deno.serve(async (req) => {
     const results: Array<{ service_id: string; status: string; response_time: number }> = [];
 
     for (const service of services) {
+      try {
       // Check interval filtering (skip if force or single service)
       if (!force && service.last_check) {
         const lastCheck = new Date(service.last_check);
