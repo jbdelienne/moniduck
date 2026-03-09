@@ -429,6 +429,10 @@ Deno.serve(async (req) => {
         .eq("id", service.id);
 
       results.push({ service_id: service.id, status, response_time: responseTime });
+      } catch (serviceErr) {
+        console.error(`Error processing service ${service.id} (${service.name}):`, serviceErr);
+        results.push({ service_id: service.id, status: "error", response_time: 0 });
+      }
     }
 
     return new Response(
