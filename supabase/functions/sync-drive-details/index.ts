@@ -59,7 +59,12 @@ async function refreshGoogleToken(refreshToken: string): Promise<{ access_token:
       grant_type: "refresh_token",
     }),
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok || !data.access_token) {
+    console.error("Google token refresh failed:", JSON.stringify(data));
+    throw new Error(`Token refresh failed: ${data.error || 'unknown'} - ${data.error_description || ''}`);
+  }
+  return data;
 }
 
 // deno-lint-ignore no-explicit-any
