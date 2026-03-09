@@ -391,6 +391,13 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Decrypt credentials
+    const encryptionKey = Deno.env.get("INTEGRATION_ENCRYPTION_KEY");
+    if (!encryptionKey) throw new Error("INTEGRATION_ENCRYPTION_KEY not configured");
+    
+    const decryptedAccessKeyId = await decrypt(cred.access_key_id, encryptionKey);
+    const decryptedSecretAccessKey = await decrypt(cred.secret_access_key, encryptionKey);
+
     // Update sync status
     await supabaseAdmin
       .from("aws_credentials")
@@ -398,8 +405,8 @@ Deno.serve(async (req) => {
       .eq("id", credentialId);
 
     const aws = new AwsClient({
-      accessKeyId: cred.access_key_id,
-      secretAccessKey: cred.secret_access_key,
+      accessKeyId: decryptedAccessKeyId,
+      secretAccessKey: decryptedSecretAccessKey,
       region: cred.region,
     });
 
