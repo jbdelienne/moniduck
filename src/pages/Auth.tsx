@@ -79,7 +79,7 @@ export default function Auth() {
               <img src={duckLogo} alt="moniduck" className="w-10 h-10" />
               <span className="text-lg font-semibold text-foreground tracking-tight">moniduck</span>
             </div>
-            <LanguageSwitcher variant="outline" />
+            
           </div>
 
           <div>

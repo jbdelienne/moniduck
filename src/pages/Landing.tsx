@@ -187,7 +187,6 @@ export default function Landing() {
             <a href="#pricing" className="hover:text-foreground transition-colors">{t("nav.pricing")}</a>
           </div>
           <div className="flex items-center gap-3">
-            <LanguageSwitcher />
             <Button variant="ghost" size="sm" asChild>
               <Link to={`${lp}/auth`}>{t("nav.signIn")}</Link>
             </Button>
