@@ -85,7 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
         to: [email],
         subject: "You're on the moniduck waitlist! 🦆",
         template: {
-          id: "testing",
+          id: "waitlistconfirmation",
           variables: {
             firstName: safeName || "",
             company: safeCompany || "",
