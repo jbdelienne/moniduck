@@ -85,7 +85,6 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
   };
 
   const handleSave = async () => {
-    // For new credentials, secret is required. For updates, it's optional (only if user wants to change it)
     if (!accessKeyId.trim()) {
       toast.error('Please enter an Access Key ID');
       return;
@@ -101,35 +100,41 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
 
     setSaving(true);
 
-    if (credentials) {
-      const updatePayload: Record<string, string> = { access_key_id: accessKeyId, region, sync_status: 'pending' };
-      if (secretAccessKey.trim()) updatePayload.secret_access_key = secretAccessKey;
-      const { error } = await supabase
-        .from('aws_credentials')
-        .update(updatePayload)
-        .eq('id', credentials.id);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast.error('Not authenticated');
+        setSaving(false);
+        return;
+      }
 
-      if (error) {
-        toast.error('Failed to update credentials');
+      const payload = credentials
+        ? { action: 'update', credential_id: credentials.id, access_key_id: accessKeyId, secret_access_key: secretAccessKey.trim() || undefined, region }
+        : { action: 'save', access_key_id: accessKeyId, secret_access_key: secretAccessKey, region, workspace_id: workspaceId };
+
+      const res = await fetch(`https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/aws-credentials`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        toast.error(result.error || 'Failed to save credentials');
       } else {
-        toast.success('AWS credentials updated');
+        toast.success(credentials ? 'AWS credentials updated' : 'AWS credentials saved');
         fetchCredentials();
         onConnected?.();
       }
-    } else {
-      const { error } = await supabase
-        .from('aws_credentials')
-        .insert({ user_id: user!.id, workspace_id: workspaceId, access_key_id: accessKeyId, secret_access_key: secretAccessKey, region });
-
-      if (error) {
-        toast.error('Failed to save credentials');
-        console.error(error);
-      } else {
-        toast.success('AWS credentials saved');
-        fetchCredentials();
-        onConnected?.();
-      }
+    } catch (err) {
+      toast.error('Failed to save credentials');
+      console.error(err);
     }
+
     setSaving(false);
   };
 
