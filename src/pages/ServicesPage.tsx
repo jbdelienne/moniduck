@@ -5,7 +5,7 @@ import AddServiceModal from '@/components/dashboard/AddServiceModal';
 import ServiceDetailModal from '@/components/dashboard/ServiceDetailModal';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Pause, Play, ExternalLink, Loader2, ChevronDown, RefreshCw } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
