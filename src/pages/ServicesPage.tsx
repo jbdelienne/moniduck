@@ -33,6 +33,13 @@ const periodLabels: Record<UptimePeriod, string> = {
 const CLOUD_TAGS = ['aws', 'ec2', 's3', 'lambda', 'rds', 'gcp', 'azure'];
 
 export default function ServicesPage() {
+  // Force re-render every 15s so relative timestamps stay fresh
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 15_000);
+    return () => clearInterval(id);
+  }, []);
+
   const { data: services = [], isLoading } = useServices();
   const addService = useAddService();
   const deleteService = useDeleteService();
