@@ -69,14 +69,14 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
     setLoading(true);
     const { data, error } = await supabase
       .from('aws_credentials')
-      .select('id, access_key_id, region, last_sync_at, sync_status')
+      .select('id, region, last_sync_at, sync_status')
       .eq('user_id', user!.id)
       .maybeSingle();
 
     if (!error && data) {
       setCredentials(data as AwsCredentials);
-      setAccessKeyId(data.access_key_id);
-      setSecretAccessKey(''); // Never fetch secret back from server
+      setAccessKeyId(''); // Encrypted in DB, cannot display
+      setSecretAccessKey('');
       setRegion(data.region);
     } else {
       setCredentials(null);
