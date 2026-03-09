@@ -30,7 +30,7 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email change on MoniDuck</Preview>
+    <Preview>Confirm your email change on moniduck</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
