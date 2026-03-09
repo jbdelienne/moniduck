@@ -81,13 +81,20 @@ Deno.serve(async (req) => {
       isCronCall = true;
     }
 
-    // Option 2: Anon key (used by pg_cron)
-    if (!isAuthorized && authHeader === `Bearer ${anonKey}`) {
+    // Option 2: Service role key (used by pg_cron via pg_net)
+    const serviceRoleKeyAuth = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!isAuthorized && serviceRoleKeyAuth && authHeader === `Bearer ${serviceRoleKeyAuth}`) {
       isAuthorized = true;
       isCronCall = true;
     }
 
-    // Option 3: Valid user JWT
+    // Option 3: Anon key (fallback for pg_cron)
+    if (!isAuthorized && anonKey && authHeader === `Bearer ${anonKey}`) {
+      isAuthorized = true;
+      isCronCall = true;
+    }
+
+    // Option 4: Valid user JWT
     if (!isAuthorized && authHeader?.startsWith("Bearer ")) {
       const userClient = createClient(sbUrl, anonKey, {
         global: { headers: { Authorization: authHeader } },
