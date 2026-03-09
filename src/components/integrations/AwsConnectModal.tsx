@@ -211,7 +211,7 @@ export default function AwsConnectModal({ open, onClose, onConnected }: AwsConne
                   id="aws-access-key"
                   value={accessKeyId}
                   onChange={(e) => setAccessKeyId(e.target.value)}
-                  placeholder="AKIAIOSFODNN7EXAMPLE"
+                  placeholder={credentials ? 'AKIA••••••••••••••••' : 'AKIAIOSFODNN7EXAMPLE'}
                   className="font-mono"
                 />
               </div>
