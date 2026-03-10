@@ -25,3 +25,5 @@ project_id = "cynnbynmicfosozmgjua"
     verify_jwt = false
   [functions.send-alert-up]
     verify_jwt = false
+  [functions.check-saas]
+    verify_jwt = false
