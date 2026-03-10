@@ -149,7 +149,7 @@ export default function SaasStatusPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto animate-fade-in">
+    <div className="mx-auto animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">SaaS Dependencies</h1>
