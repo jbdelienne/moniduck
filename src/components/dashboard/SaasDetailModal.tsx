@@ -61,7 +61,7 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto overflow-x-hidden p-0 gap-0 bg-card border-border rounded-2xl">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden p-0 gap-0 bg-card border-border rounded-2xl">
         {/* Header */}
         <div className="px-6 pt-6 pb-5">
           <div className="flex items-center justify-between gap-4">
