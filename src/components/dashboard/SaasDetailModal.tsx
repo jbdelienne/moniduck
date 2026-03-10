@@ -28,7 +28,14 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
   const updateSla = useUpdateSlaOverride();
   const [editingSla, setEditingSla] = useState(false);
   const [slaInput, setSlaInput] = useState('');
+  const [localSla, setLocalSla] = useState<number | null>(null);
   const slaInputRef = useRef<HTMLInputElement>(null);
+
+  // Reset local SLA when provider changes
+  useEffect(() => {
+    setLocalSla(null);
+    setEditingSla(false);
+  }, [provider?.subscription_id]);
 
   useEffect(() => {
     if (editingSla && slaInputRef.current) {
@@ -38,6 +45,8 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
   }, [editingSla]);
 
   if (!provider) return null;
+
+  const currentSla = localSla ?? provider.sla_promised;
 
   const cfg = statusConfig[provider.status] ?? statusConfig.unknown;
   const pageCfg = statusConfig[provider.status_page_status] ?? statusConfig.unknown;
@@ -57,11 +66,11 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
     : 0;
 
   const uptime = provider.uptime_percentage ?? 100;
-  const slaDelta = uptime - provider.sla_promised;
+  const slaDelta = uptime - currentSla;
   const slaBreach = slaDelta < 0;
 
   const handleSlaEdit = () => {
-    setSlaInput(String(provider.sla_promised));
+    setSlaInput(String(currentSla));
     setEditingSla(true);
   };
 
@@ -73,6 +82,7 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
     }
     try {
       await updateSla.mutateAsync({ subscriptionId: provider.subscription_id, sla: val });
+      setLocalSla(val);
       toast.success('SLA updated');
       setEditingSla(false);
     } catch (e: any) {
@@ -168,7 +178,7 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
               <div className="rounded-xl bg-muted/15 border border-border p-3 text-center group cursor-pointer" onClick={handleSlaEdit}>
                 <div className="flex justify-center mb-2"><ShieldCheck className="w-4 h-4 text-info" /></div>
                 <div className="flex items-center justify-center gap-1.5">
-                  <p className="text-lg font-bold text-foreground">{provider.sla_promised}%</p>
+                  <p className="text-lg font-bold text-foreground">{currentSla}%</p>
                   <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-0.5">SLA promis</p>
@@ -191,8 +201,8 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {slaBreach
-                ? `SLA breached — uptime ${uptime}% vs promised ${provider.sla_promised}%`
-                : `SLA respected — ${uptime}% uptime vs ${provider.sla_promised}% promised`}
+                ? `SLA breached — uptime ${uptime}% vs promised ${currentSla}%`
+                : `SLA respected — ${uptime}% uptime vs ${currentSla}% promised`}
             </p>
           </div>
         </div>
