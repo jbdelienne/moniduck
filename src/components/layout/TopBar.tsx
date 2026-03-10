@@ -16,29 +16,29 @@ export default function TopBar({ onToggleSidebar, sidebarCollapsed }: TopBarProp
   const unreadCount = alerts.filter((a) => !a.is_dismissed).length;
 
   return (
-    <header className="h-[60px] border-b border-border bg-card flex items-center justify-between px-4 sticky top-0 z-20">
+    <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4 sticky top-0 z-20">
       <div className="flex items-center gap-3">
         <button onClick={onToggleSidebar} className="text-muted-foreground hover:text-foreground transition-colors lg:hidden">
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="relative text-muted-foreground">
-          <Bell className="w-5 h-5" />
+      <div className="flex items-center gap-1">
+        <Button variant="ghost" size="icon" className="relative text-muted-foreground h-8 w-8">
+          <Bell className="w-4 h-4" />
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-destructive" />
           )}
         </Button>
 
-        <div className="flex items-center gap-2 ml-2">
-          <Avatar className="w-8 h-8">
-            <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
+        <div className="flex items-center gap-1.5 ml-1">
+          <Avatar className="w-7 h-7">
+            <AvatarFallback className="bg-accent text-foreground text-xs font-medium">
               {initials}
             </AvatarFallback>
           </Avatar>
-          <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors">
-            <LogOut className="w-4 h-4" />
+          <button onClick={signOut} className="text-muted-foreground hover:text-foreground transition-colors p-1">
+            <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

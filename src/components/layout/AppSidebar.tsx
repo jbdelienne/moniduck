@@ -48,21 +48,21 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
             spinning ? 'animate-[spin_0.4s_ease-in-out]' : ''
           } ${collapsed ? 'w-9 h-9' : 'w-20 h-20'}`}
         />
-        <span className={`text-lg font-bold text-foreground transition-all duration-300 ${collapsed ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+        <span className={`text-lg font-semibold text-foreground transition-all duration-300 tracking-tight ${collapsed ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
           moniduck
         </span>
       </div>
 
-      <nav className="flex-1 p-2 space-y-1">
+      <nav className="flex-1 p-2 space-y-0.5">
         {navItems.map((item) => (
           <NavLink
             key={item.url}
             to={item.url}
             end={item.url === `${lp}/dashboard`}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-primary/5 hover:text-foreground transition-colors text-sm font-medium relative"
-            activeClassName="bg-primary/10 text-primary font-semibold"
+            className="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors text-[13px] font-medium relative"
+            activeClassName="bg-accent text-foreground font-semibold"
           >
-            <item.icon className="w-5 h-5 flex-shrink-0" />
+            <item.icon className="w-4 h-4 flex-shrink-0" />
             {!collapsed && <span>{item.title}</span>}
             {'badge' in item && item.badge !== undefined && item.badge > 0 && (
               <span className={`absolute ${collapsed ? 'top-1 right-1' : 'right-3'} min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1`}>
