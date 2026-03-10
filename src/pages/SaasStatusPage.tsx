@@ -25,6 +25,7 @@ import {
 import { Plus, Trash2, RefreshCw, Loader2, ExternalLink, Search } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import SaasDetailModal from '@/components/dashboard/SaasDetailModal';
 
 const statusConfig: Record<string, { label: string; dotClass: string }> = {
   operational: { label: 'Operational', dotClass: 'status-dot-up' },
