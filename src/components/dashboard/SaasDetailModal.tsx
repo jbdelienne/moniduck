@@ -138,11 +138,42 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
               value={`${uptime}%`}
               valueColor={uptime < 99.5 ? 'text-warning' : undefined}
             />
-            <MetricCard
-              icon={<ShieldCheck className="w-4 h-4 text-info" />}
-              label="SLA promis"
-              value={`${provider.sla_promised}%`}
-            />
+            {editingSla ? (
+              <div className="rounded-xl bg-muted/15 border border-border p-3 text-center">
+                <div className="flex justify-center mb-2"><ShieldCheck className="w-4 h-4 text-info" /></div>
+                <div className="flex items-center justify-center gap-1">
+                  <Input
+                    ref={slaInputRef}
+                    value={slaInput}
+                    onChange={(e) => setSlaInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSlaSave();
+                      if (e.key === 'Escape') handleSlaCancel();
+                    }}
+                    className="w-20 h-7 text-center text-sm font-bold px-1"
+                  />
+                  <span className="text-sm font-bold text-foreground">%</span>
+                </div>
+                <div className="flex items-center justify-center gap-1 mt-1.5">
+                  <button onClick={handleSlaSave} disabled={updateSla.isPending} className="p-0.5 rounded hover:bg-success/20 text-success">
+                    {updateSla.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  </button>
+                  <button onClick={handleSlaCancel} className="p-0.5 rounded hover:bg-destructive/20 text-destructive">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">SLA promis</p>
+              </div>
+            ) : (
+              <div className="rounded-xl bg-muted/15 border border-border p-3 text-center group cursor-pointer" onClick={handleSlaEdit}>
+                <div className="flex justify-center mb-2"><ShieldCheck className="w-4 h-4 text-info" /></div>
+                <div className="flex items-center justify-center gap-1.5">
+                  <p className="text-lg font-bold text-foreground">{provider.sla_promised}%</p>
+                  <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">SLA promis</p>
+              </div>
+            )}
           </div>
         </div>
 
