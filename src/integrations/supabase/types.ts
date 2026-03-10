@@ -755,6 +755,95 @@ export type Database = {
           },
         ]
       }
+      saas_checks: {
+        Row: {
+          checked_at: string
+          error_message: string | null
+          id: string
+          response_time: number
+          saas_provider_id: string
+          status: string
+          status_code: number | null
+        }
+        Insert: {
+          checked_at?: string
+          error_message?: string | null
+          id?: string
+          response_time?: number
+          saas_provider_id: string
+          status: string
+          status_code?: number | null
+        }
+        Update: {
+          checked_at?: string
+          error_message?: string | null
+          id?: string
+          response_time?: number
+          saas_provider_id?: string
+          status?: string
+          status_code?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saas_checks_saas_provider_id_fkey"
+            columns: ["saas_provider_id"]
+            isOneToOne: false
+            referencedRelation: "saas_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saas_providers: {
+        Row: {
+          added_by: string
+          avg_response_time: number | null
+          created_at: string
+          icon: string
+          id: string
+          incidents: Json
+          last_check: string | null
+          name: string
+          sla_promised_default: number
+          status: string
+          status_page_status: string | null
+          status_page_url: string | null
+          uptime_percentage: number | null
+          url: string
+        }
+        Insert: {
+          added_by: string
+          avg_response_time?: number | null
+          created_at?: string
+          icon?: string
+          id?: string
+          incidents?: Json
+          last_check?: string | null
+          name: string
+          sla_promised_default?: number
+          status?: string
+          status_page_status?: string | null
+          status_page_url?: string | null
+          uptime_percentage?: number | null
+          url: string
+        }
+        Update: {
+          added_by?: string
+          avg_response_time?: number | null
+          created_at?: string
+          icon?: string
+          id?: string
+          incidents?: Json
+          last_check?: string | null
+          name?: string
+          sla_promised_default?: number
+          status?: string
+          status_page_status?: string | null
+          status_page_url?: string | null
+          uptime_percentage?: number | null
+          url?: string
+        }
+        Relationships: []
+      }
       saved_reports: {
         Row: {
           created_at: string
@@ -902,6 +991,48 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "services_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_saas_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          saas_provider_id: string
+          sla_promised_override: number | null
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          saas_provider_id: string
+          sla_promised_override?: number | null
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          saas_provider_id?: string
+          sla_promised_override?: number | null
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_saas_subscriptions_saas_provider_id_fkey"
+            columns: ["saas_provider_id"]
+            isOneToOne: false
+            referencedRelation: "saas_providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_saas_subscriptions_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
