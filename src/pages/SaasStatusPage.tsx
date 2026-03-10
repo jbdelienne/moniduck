@@ -175,21 +175,21 @@ export default function SaasStatusPage() {
           </Button>
         </div>
       ) : (
-        <div className="border border-border rounded-md overflow-hidden bg-card">
-          <Table>
+        <div className="border border-border rounded-md bg-card">
+          <Table className="table-fixed w-full">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-10"></TableHead>
-                <TableHead>Provider</TableHead>
-                <TableHead>Ping Status</TableHead>
-                <TableHead>Status Page</TableHead>
-                <TableHead className="text-right">Resp. Time</TableHead>
-                <TableHead className="text-right">SLA promis</TableHead>
-                <TableHead className="text-right">Uptime 24h</TableHead>
-                <TableHead className="text-right">Delta</TableHead>
-                <TableHead>Incidents</TableHead>
-                <TableHead>Dernier check</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-8 px-2"></TableHead>
+                <TableHead className="px-2">Provider</TableHead>
+                <TableHead className="w-[90px] px-2">Ping</TableHead>
+                <TableHead className="w-[90px] px-2">Status Page</TableHead>
+                <TableHead className="w-[70px] px-2 text-right">Resp.</TableHead>
+                <TableHead className="w-[65px] px-2 text-right">SLA</TableHead>
+                <TableHead className="w-[65px] px-2 text-right">Uptime</TableHead>
+                <TableHead className="w-[75px] px-2 text-right">Delta</TableHead>
+                <TableHead className="w-[65px] px-2">Incidents</TableHead>
+                <TableHead className="w-[90px] px-2">Checked</TableHead>
+                <TableHead className="w-[70px] px-2 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
