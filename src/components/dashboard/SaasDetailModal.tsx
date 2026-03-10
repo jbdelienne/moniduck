@@ -70,7 +70,7 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
   const slaBreach = slaDelta < 0;
 
   const handleSlaEdit = () => {
-    setSlaInput(String(provider.sla_promised));
+    setSlaInput(String(currentSla));
     setEditingSla(true);
   };
 
@@ -82,6 +82,7 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
     }
     try {
       await updateSla.mutateAsync({ subscriptionId: provider.subscription_id, sla: val });
+      setLocalSla(val);
       toast.success('SLA updated');
       setEditingSla(false);
     } catch (e: any) {
