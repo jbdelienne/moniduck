@@ -94,7 +94,7 @@ export default function PublicReport() {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border pb-4">
           <div>
-            <h1 className="text-xl font-bold text-foreground">🦆 MoniDuck Report</h1>
+            <h1 className="text-xl font-bold text-foreground">🦆 moniduck Report</h1>
             <p className="text-sm text-muted-foreground">{report.period_label}</p>
           </div>
           <p className="text-xs text-muted-foreground">
