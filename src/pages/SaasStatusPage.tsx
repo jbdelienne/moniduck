@@ -25,6 +25,7 @@ import {
 import { Plus, Trash2, RefreshCw, Loader2, ExternalLink, Search } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
+import SaasDetailModal from '@/components/dashboard/SaasDetailModal';
 
 const statusConfig: Record<string, { label: string; dotClass: string }> = {
   operational: { label: 'Operational', dotClass: 'status-dot-up' },
@@ -43,6 +44,7 @@ export default function SaasStatusPage() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SaasProviderWithSubscription | null>(null);
   const [incidentTarget, setIncidentTarget] = useState<SaasProviderWithSubscription | null>(null);
+  const [detailTarget, setDetailTarget] = useState<SaasProviderWithSubscription | null>(null);
 
   // Add modal state
   const [searchQuery, setSearchQuery] = useState('');
@@ -200,7 +202,7 @@ export default function SaasStatusPage() {
                 const recentIncidents = incidents.slice(0, 3);
 
                 return (
-                  <TableRow key={dep.id}>
+                  <TableRow key={dep.id} className="cursor-pointer" onClick={() => setDetailTarget(dep)}>
                     <TableCell>
                       <span className="text-lg">{dep.icon}</span>
                     </TableCell>
@@ -267,7 +269,7 @@ export default function SaasStatusPage() {
                         : 'Never'}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="outline"
                           size="icon"
@@ -496,6 +498,13 @@ export default function SaasStatusPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* SaaS Detail Modal */}
+      <SaasDetailModal
+        provider={detailTarget}
+        open={!!detailTarget}
+        onClose={() => setDetailTarget(null)}
+      />
     </div>
   );
 }
