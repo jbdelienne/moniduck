@@ -108,7 +108,7 @@ export default function ReportPDF({
       <Page size="A4" style={s.page}>
         {/* Header */}
         <View style={s.header}>
-          <Text style={s.logo}>🦆 MoniDuck</Text>
+          <Text style={s.logo}>🦆 moniduck</Text>
           <View style={s.headerRight}>
             <Text style={s.headerPeriod}>{periodLabel}</Text>
             <Text style={s.headerDate}>
