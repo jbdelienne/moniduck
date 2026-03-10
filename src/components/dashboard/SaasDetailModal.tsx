@@ -1,12 +1,14 @@
-import { useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { SaasProviderWithSubscription, SaasIncident } from '@/hooks/use-saas-dependencies';
+import { SaasProviderWithSubscription, SaasIncident, useUpdateSlaOverride } from '@/hooks/use-saas-dependencies';
 import { useSaasChecks } from '@/hooks/use-saas-checks';
 import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 import { format } from 'date-fns';
-import { Loader2, ExternalLink, Activity, Clock, ShieldCheck, ChevronDown } from 'lucide-react';
+import { Loader2, ExternalLink, Activity, Clock, ShieldCheck, ChevronDown, Pencil, Check, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
 const statusConfig: Record<string, { label: string; color: string; bg: string; dot: string }> = {
   operational: { label: 'Operational', color: 'text-success', bg: 'bg-success/10', dot: 'bg-success' },
@@ -23,6 +25,17 @@ interface SaasDetailModalProps {
 
 export default function SaasDetailModal({ provider, open, onClose }: SaasDetailModalProps) {
   const { data: checks = [], isLoading: checksLoading } = useSaasChecks(provider?.id, 50);
+  const updateSla = useUpdateSlaOverride();
+  const [editingSla, setEditingSla] = useState(false);
+  const [slaInput, setSlaInput] = useState('');
+  const slaInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingSla && slaInputRef.current) {
+      slaInputRef.current.focus();
+      slaInputRef.current.select();
+    }
+  }, [editingSla]);
 
   if (!provider) return null;
 
@@ -46,6 +59,30 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
   const uptime = provider.uptime_percentage ?? 100;
   const slaDelta = uptime - provider.sla_promised;
   const slaBreach = slaDelta < 0;
+
+  const handleSlaEdit = () => {
+    setSlaInput(String(provider.sla_promised));
+    setEditingSla(true);
+  };
+
+  const handleSlaSave = async () => {
+    const val = parseFloat(slaInput);
+    if (isNaN(val) || val < 0 || val > 100) {
+      toast.error('SLA must be between 0 and 100');
+      return;
+    }
+    try {
+      await updateSla.mutateAsync({ subscriptionId: provider.subscription_id, sla: val });
+      toast.success('SLA updated');
+      setEditingSla(false);
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  };
+
+  const handleSlaCancel = () => {
+    setEditingSla(false);
+  };
 
   const incidents: SaasIncident[] = Array.isArray(provider.incidents) ? provider.incidents : [];
 
