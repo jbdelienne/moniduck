@@ -201,8 +201,8 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {slaBreach
-                ? `SLA breached — uptime ${uptime}% vs promised ${provider.sla_promised}%`
-                : `SLA respected — ${uptime}% uptime vs ${provider.sla_promised}% promised`}
+                ? `SLA breached — uptime ${uptime}% vs promised ${currentSla}%`
+                : `SLA respected — ${uptime}% uptime vs ${currentSla}% promised`}
             </p>
           </div>
         </div>
