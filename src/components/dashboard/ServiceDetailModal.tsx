@@ -108,7 +108,7 @@ export default function ServiceDetailModal({ service, open, onClose, onDelete }:
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 bg-card border-border rounded-2xl">
+      <DialogContent className="sm:max-w-3xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden p-0 gap-0 bg-card border-border rounded-2xl">
         {/* Header */}
         <div className="px-6 pt-6 pb-5">
           <div className="flex items-center justify-between gap-4">
