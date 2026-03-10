@@ -288,7 +288,7 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
       toast.error('No share token available');
       return;
     }
-    const url = `${window.location.origin}/reports/shared/${report.shareToken}`;
+    const url = `https://moniduck.io/reports/shared/${report.shareToken}`;
     navigator.clipboard.writeText(url);
     toast.success('Public link copied to clipboard');
   }, [report.shareToken]);
