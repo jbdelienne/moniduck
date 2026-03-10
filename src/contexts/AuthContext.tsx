@@ -19,10 +19,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // On sign-in, check for pending workspace invitations
+      if (event === 'SIGNED_IN' && session?.user) {
+        setTimeout(async () => {
+          try {
+            await supabase.rpc('accept_pending_invitation', { _user_id: session.user.id });
+          } catch (e) {
+            console.error('Failed to check pending invitations:', e);
+          }
+        }, 0);
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
