@@ -614,13 +614,14 @@ export default function CloudResourcesPage() {
   };
 
   return (
-    <>
-      <h1 className="text-2xl font-bold text-foreground mb-6">Cloud Resources</h1>
-      <div className="max-w-6xl mx-auto w-full animate-fade-in">
-        <div className="flex items-center justify-between mb-5">
-          <p className="text-sm text-muted-foreground">Ressources importées depuis vos cloud providers</p>
-          <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
+    <div className="animate-fade-in">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Cloud Resources</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Ressources importées depuis vos cloud providers</p>
         </div>
+        <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
+      </div>
 
         {isLoading ? (
           <div className="flex justify-center py-16">
