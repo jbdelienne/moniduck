@@ -106,7 +106,7 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto animate-fade-in">
+    <div className="animate-fade-in">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-foreground">HTTP Services</h1>

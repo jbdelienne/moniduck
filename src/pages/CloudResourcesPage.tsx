@@ -614,49 +614,49 @@ export default function CloudResourcesPage() {
   };
 
   return (
-    <>
-      <h1 className="text-2xl font-bold text-foreground mb-6">Cloud Resources</h1>
-      <div className="max-w-6xl mx-auto w-full animate-fade-in">
-        <div className="flex items-center justify-between mb-5">
-          <p className="text-sm text-muted-foreground">Ressources importées depuis vos cloud providers</p>
-          <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
+    <div className="animate-fade-in">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Cloud Resources</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Ressources importées depuis vos cloud providers</p>
         </div>
-
-        {isLoading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : cloudResources.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <Cloud className="w-12 h-12 text-muted-foreground/40 mb-4" />
-            <p className="text-muted-foreground mb-2">Aucune ressource cloud importée</p>
-            <p className="text-xs text-muted-foreground/70">Connectez un cloud provider depuis l'onglet Intégrations pour voir vos ressources ici.</p>
-          </div>
-        ) : (
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ResourceCategory)}>
-            <TabsList className="mb-4">
-              {tabCounts.map(({ key, count }) => (
-                <TabsTrigger key={key} value={key} className="gap-1.5 text-xs">
-                  {categoryLabels[key]}
-                  {count > 0 && (
-                    <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-bold ml-1">
-                      {count}
-                    </span>
-                  )}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {Object.keys(categoryLabels).map((key) => (
-              <TabsContent key={key} value={key}>
-                <div className="border border-border rounded-md overflow-hidden bg-card">
-                  {renderTable()}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        )}
+        <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
       </div>
-    </>
+
+      {isLoading ? (
+        <div className="flex justify-center py-16">
+          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : cloudResources.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <Cloud className="w-12 h-12 text-muted-foreground/40 mb-4" />
+          <p className="text-muted-foreground mb-2">Aucune ressource cloud importée</p>
+          <p className="text-xs text-muted-foreground/70">Connectez un cloud provider depuis l'onglet Intégrations pour voir vos ressources ici.</p>
+        </div>
+      ) : (
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ResourceCategory)}>
+          <TabsList className="mb-4">
+            {tabCounts.map(({ key, count }) => (
+              <TabsTrigger key={key} value={key} className="gap-1.5 text-xs">
+                {categoryLabels[key]}
+                {count > 0 && (
+                  <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-bold ml-1">
+                    {count}
+                  </span>
+                )}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {Object.keys(categoryLabels).map((key) => (
+            <TabsContent key={key} value={key}>
+              <div className="border border-border rounded-md overflow-hidden bg-card">
+                {renderTable()}
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
+      )}
+    </div>
   );
 }
