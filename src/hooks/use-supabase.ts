@@ -52,7 +52,7 @@ export function useAddService() {
 export function useUpdateService() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; owner_id?: string | null; tags?: string[]; content_keyword?: string | null; alert_email_enabled?: boolean; alert_email?: string | null; alert_checks_threshold?: number; maintenance_until?: string | null }) => {
+    mutationFn: async ({ id, ...updates }: { id: string; owner_id?: string | null; tags?: string[]; content_keyword?: string | null; alert_email_enabled?: boolean; alert_email?: string | null; alert_checks_threshold?: number; maintenance_until?: string | null; icon?: string; check_interval?: number; name?: string; url?: string; visibility?: string; notification_email?: string | null; alert_notify_down?: boolean; alert_notify_up?: boolean }) => {
       const { error } = await supabase.from('services').update(updates).eq('id', id);
       if (error) throw error;
     },
