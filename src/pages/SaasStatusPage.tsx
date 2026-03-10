@@ -269,7 +269,7 @@ export default function SaasStatusPage() {
                         : 'Never'}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="outline"
                           size="icon"
