@@ -269,7 +269,7 @@ function DashboardDetailView({
         {/* Logo watermark bottom-right */}
         <img
           src={moniduckLogo}
-          alt="MoniDuck"
+          alt="moniduck"
           className="fixed bottom-4 right-4 w-24 h-24 z-50 pointer-events-none"
         />
         <div className="p-6 pt-14 h-full overflow-auto" ref={containerRef}>
