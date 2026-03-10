@@ -28,7 +28,14 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
   const updateSla = useUpdateSlaOverride();
   const [editingSla, setEditingSla] = useState(false);
   const [slaInput, setSlaInput] = useState('');
+  const [localSla, setLocalSla] = useState<number | null>(null);
   const slaInputRef = useRef<HTMLInputElement>(null);
+
+  // Reset local SLA when provider changes
+  useEffect(() => {
+    setLocalSla(null);
+    setEditingSla(false);
+  }, [provider?.subscription_id]);
 
   useEffect(() => {
     if (editingSla && slaInputRef.current) {
@@ -38,6 +45,8 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
   }, [editingSla]);
 
   if (!provider) return null;
+
+  const currentSla = localSla ?? provider.sla_promised;
 
   const cfg = statusConfig[provider.status] ?? statusConfig.unknown;
   const pageCfg = statusConfig[provider.status_page_status] ?? statusConfig.unknown;
@@ -57,7 +66,7 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
     : 0;
 
   const uptime = provider.uptime_percentage ?? 100;
-  const slaDelta = uptime - provider.sla_promised;
+  const slaDelta = uptime - currentSla;
   const slaBreach = slaDelta < 0;
 
   const handleSlaEdit = () => {
