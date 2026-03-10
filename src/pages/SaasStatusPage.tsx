@@ -44,6 +44,7 @@ export default function SaasStatusPage() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SaasProviderWithSubscription | null>(null);
   const [incidentTarget, setIncidentTarget] = useState<SaasProviderWithSubscription | null>(null);
+  const [detailTarget, setDetailTarget] = useState<SaasProviderWithSubscription | null>(null);
 
   // Add modal state
   const [searchQuery, setSearchQuery] = useState('');
