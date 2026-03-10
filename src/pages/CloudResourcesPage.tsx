@@ -658,6 +658,6 @@ export default function CloudResourcesPage() {
           </Tabs>
         )}
       </div>
-    </>
+    </div>
   );
 }
