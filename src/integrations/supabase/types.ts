@@ -1163,6 +1163,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_pending_invitation: { Args: { _user_id: string }; Returns: Json }
       create_default_thresholds: {
         Args: { p_integration_type: string; p_user_id: string }
         Returns: undefined
