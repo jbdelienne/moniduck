@@ -1,13 +1,18 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Service, useChecks, useAlerts } from '@/hooks/use-supabase';
+import { Service, useChecks, useAlerts, useUpdateService } from '@/hooks/use-supabase';
 import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 import { format, differenceInDays, formatDistanceToNow } from 'date-fns';
-import { Loader2, ExternalLink, ShieldCheck, Clock, Activity, AlertTriangle, XCircle, Info, ChevronRight, ChevronDown } from 'lucide-react';
+import { Loader2, ExternalLink, ShieldCheck, Clock, Activity, AlertTriangle, XCircle, Info, ChevronDown, Pencil, Check, X } from 'lucide-react';
 import { UptimePeriod, useUptimeForServices } from '@/hooks/use-uptime';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import ServiceAlertSettings from './ServiceAlertSettings';
+import IconPicker from './IconPicker';
 
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
   up: { label: 'Operational', color: 'text-success', bg: 'bg-success/10' },
@@ -35,6 +40,12 @@ const severityBadge: Record<string, string> = {
   info: 'bg-info/15 text-info border-info/20',
 };
 
+const intervalLabels: Record<string, string> = {
+  '1': 'Every minute',
+  '2': 'Every 2 minutes',
+  '5': 'Every 5 minutes',
+};
+
 interface ServiceDetailModalProps {
   service: Service | null;
   open: boolean;
@@ -45,13 +56,53 @@ interface ServiceDetailModalProps {
 export default function ServiceDetailModal({ service, open, onClose, onDelete }: ServiceDetailModalProps) {
   const { data: checks = [], isLoading: checksLoading } = useChecks(service?.id, 50);
   const { data: allAlerts = [], isLoading: alertsLoading } = useAlerts();
+  const updateService = useUpdateService();
+
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editIcon, setEditIcon] = useState('');
+  const [editUrl, setEditUrl] = useState('');
+  const [editInterval, setEditInterval] = useState('2');
+  const [editVisibility, setEditVisibility] = useState('public');
+  const [editKeyword, setEditKeyword] = useState('');
+
+  const startEditing = () => {
+    if (!service) return;
+    setEditName(service.name);
+    setEditIcon(service.icon);
+    setEditUrl(service.url);
+    setEditInterval(String(service.check_interval));
+    setEditVisibility((service as any).visibility ?? 'public');
+    setEditKeyword((service as any).content_keyword ?? '');
+    setEditing(true);
+  };
+
+  const cancelEditing = () => setEditing(false);
+
+  const saveEditing = async () => {
+    if (!service) return;
+    try {
+      await updateService.mutateAsync({
+        id: service.id,
+        name: editName,
+        icon: editIcon,
+        url: editUrl,
+        check_interval: Number(editInterval),
+        visibility: editVisibility,
+        content_keyword: editKeyword || null,
+      });
+      toast.success('Service updated');
+      setEditing(false);
+    } catch {
+      toast.error('Failed to update service');
+    }
+  };
 
   const serviceIds = useMemo(() => service ? [service.id] : [], [service?.id]);
   const { data: uptime24h } = useUptimeForServices(serviceIds, '24h');
   const { data: uptime7d } = useUptimeForServices(serviceIds, '7d');
   const { data: uptime30d } = useUptimeForServices(serviceIds, '30d');
 
-  // Filter alerts related to this service
   const serviceAlerts = useMemo(() => {
     if (!service) return [];
     return allAlerts.filter((a) => {
@@ -69,13 +120,11 @@ export default function ServiceDetailModal({ service, open, onClose, onDelete }:
     : null;
   const sslDaysLeft = sslExpiry ? differenceInDays(sslExpiry, new Date()) : null;
 
-  // Response time sparkline data (last 30 checks)
   const sparklineData = checks
     .slice(0, 30)
     .reverse()
     .map((c) => ({ v: c.response_time, t: format(new Date(c.checked_at), 'HH:mm') }));
 
-  // Response time stats
   const responseTimes = checks.slice(0, 30).map(c => c.response_time).filter(Boolean);
   const minResponse = responseTimes.length ? Math.min(...responseTimes) : 0;
   const avgResponse = responseTimes.length ? Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length) : 0;
@@ -93,7 +142,6 @@ export default function ServiceDetailModal({ service, open, onClose, onDelete }:
     { label: '30d', value: u30, color: getUptimeColor(u30) },
   ];
 
-  // Incidents from checks
   const incidents = checks
     .filter(c => c.status !== 'up')
     .slice(0, 5)
@@ -107,30 +155,103 @@ export default function ServiceDetailModal({ service, open, onClose, onDelete }:
     });
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) { setEditing(false); onClose(); } }}>
       <DialogContent className="sm:max-w-3xl w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden p-0 gap-0 bg-card border-border rounded-2xl">
         {/* Header */}
         <div className="px-6 pt-6 pb-5">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3 mb-1.5">
-                <span className="text-2xl">{service.icon}</span>
-                <h2 className="text-lg font-bold text-foreground truncate">{service.name}</h2>
+              {editing ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <IconPicker value={editIcon} onChange={setEditIcon} />
+                    <Input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      className="text-lg font-bold"
+                      placeholder="Service name"
+                    />
+                  </div>
+                  <Input
+                    value={editUrl}
+                    onChange={(e) => setEditUrl(e.target.value)}
+                    className="text-sm"
+                    placeholder="https://..."
+                    type="url"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Select value={editInterval} onValueChange={setEditInterval}>
+                      <SelectTrigger className="text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Every minute</SelectItem>
+                        <SelectItem value="2">Every 2 minutes</SelectItem>
+                        <SelectItem value="5">Every 5 minutes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={editVisibility} onValueChange={setEditVisibility}>
+                      <SelectTrigger className="text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="public">🌐 Public</SelectItem>
+                        <SelectItem value="private">🔒 Private</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Input
+                    value={editKeyword}
+                    onChange={(e) => setEditKeyword(e.target.value)}
+                    className="text-sm"
+                    placeholder="Content keyword (optional)"
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={saveEditing} disabled={updateService.isPending} className="gradient-primary text-primary-foreground">
+                      {updateService.isPending ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Check className="w-3 h-3 mr-1" />}
+                      Save
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={cancelEditing}>
+                      <X className="w-3 h-3 mr-1" />
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 mb-1.5">
+                    <span className="text-2xl">{service.icon}</span>
+                    <h2 className="text-lg font-bold text-foreground truncate">{service.name}</h2>
+                    <button
+                      onClick={startEditing}
+                      className="p-1.5 rounded-lg hover:bg-muted/30 text-muted-foreground hover:text-foreground transition-colors"
+                      title="Edit service"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <a
+                      href={service.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {service.url}
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                    <span className="text-xs text-muted-foreground/60">•</span>
+                    <span className="text-xs text-muted-foreground">{intervalLabels[String(service.check_interval)] ?? `Every ${service.check_interval}m`}</span>
+                  </div>
+                </>
+              )}
+            </div>
+            {!editing && (
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${cfg.bg}`}>
+                <span className={`w-2 h-2 rounded-full ${statusDotColor[service.status] ?? statusDotColor.unknown} animate-pulse`} />
+                <span className={`text-sm font-semibold ${cfg.color}`}>{cfg.label}</span>
               </div>
-              <a
-                href={service.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                {service.url}
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            </div>
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${cfg.bg}`}>
-              <span className={`w-2 h-2 rounded-full ${statusDotColor[service.status] ?? statusDotColor.unknown} animate-pulse`} />
-              <span className={`text-sm font-semibold ${cfg.color}`}>{cfg.label}</span>
-            </div>
+            )}
           </div>
         </div>
 
