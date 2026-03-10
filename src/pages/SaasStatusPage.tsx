@@ -202,7 +202,7 @@ export default function SaasStatusPage() {
                 const recentIncidents = incidents.slice(0, 3);
 
                 return (
-                  <TableRow key={dep.id}>
+                  <TableRow key={dep.id} className="cursor-pointer" onClick={() => setDetailTarget(dep)}>
                     <TableCell>
                       <span className="text-lg">{dep.icon}</span>
                     </TableCell>
