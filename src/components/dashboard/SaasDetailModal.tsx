@@ -178,7 +178,7 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
               <div className="rounded-xl bg-muted/15 border border-border p-3 text-center group cursor-pointer" onClick={handleSlaEdit}>
                 <div className="flex justify-center mb-2"><ShieldCheck className="w-4 h-4 text-info" /></div>
                 <div className="flex items-center justify-center gap-1.5">
-                  <p className="text-lg font-bold text-foreground">{provider.sla_promised}%</p>
+                  <p className="text-lg font-bold text-foreground">{currentSla}%</p>
                   <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <p className="text-[11px] text-muted-foreground mt-0.5">SLA promis</p>
