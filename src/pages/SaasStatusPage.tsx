@@ -175,21 +175,21 @@ export default function SaasStatusPage() {
           </Button>
         </div>
       ) : (
-        <div className="border border-border rounded-md overflow-hidden bg-card">
-          <Table>
+        <div className="border border-border rounded-md bg-card">
+          <Table className="table-fixed w-full">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-10"></TableHead>
-                <TableHead>Provider</TableHead>
-                <TableHead>Ping Status</TableHead>
-                <TableHead>Status Page</TableHead>
-                <TableHead className="text-right">Resp. Time</TableHead>
-                <TableHead className="text-right">SLA promis</TableHead>
-                <TableHead className="text-right">Uptime 24h</TableHead>
-                <TableHead className="text-right">Delta</TableHead>
-                <TableHead>Incidents</TableHead>
-                <TableHead>Dernier check</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-8 px-2"></TableHead>
+                <TableHead className="px-2">Provider</TableHead>
+                <TableHead className="w-[90px] px-2">Ping</TableHead>
+                <TableHead className="w-[90px] px-2">Status Page</TableHead>
+                <TableHead className="w-[70px] px-2 text-right">Resp.</TableHead>
+                <TableHead className="w-[65px] px-2 text-right">SLA</TableHead>
+                <TableHead className="w-[65px] px-2 text-right">Uptime</TableHead>
+                <TableHead className="w-[75px] px-2 text-right">Delta</TableHead>
+                <TableHead className="w-[65px] px-2">Incidents</TableHead>
+                <TableHead className="w-[90px] px-2">Checked</TableHead>
+                <TableHead className="w-[70px] px-2 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -203,29 +203,28 @@ export default function SaasStatusPage() {
 
                 return (
                   <TableRow key={dep.id} className="cursor-pointer" onClick={() => setDetailTarget(dep)}>
-                    <TableCell>
-                      <span className="text-lg">{dep.icon}</span>
+                    <TableCell className="px-2 py-2">
+                      <span className="text-base">{dep.icon}</span>
                     </TableCell>
-                    <TableCell className="font-medium text-foreground">
-                      <div className="flex items-center gap-2">
-                        {dep.name}
+                    <TableCell className="px-2 py-2 font-medium text-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <span className="truncate">{dep.name}</span>
                         {dep.status_page_url && (
-                          <a href={dep.status_page_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+                          <a href={dep.status_page_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground shrink-0" onClick={(e) => e.stopPropagation()}>
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         )}
                       </div>
-                      <p className="text-[10px] text-muted-foreground font-normal truncate max-w-[200px]">{dep.url}</p>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
+                    <TableCell className="px-2 py-2">
+                      <div className="flex items-center gap-1.5">
                         <div className={pingStatus.dotClass} />
                         <span className="text-xs">{pingStatus.label}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-2 py-2">
                       {dep.status_page_url ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                           <div className={pageStatus.dotClass} />
                           <span className="text-xs">{pageStatus.label}</span>
                         </div>
@@ -233,42 +232,42 @@ export default function SaasStatusPage() {
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-right font-mono text-sm">
+                    <TableCell className="px-2 py-2 text-right font-mono text-xs">
                       {(dep.avg_response_time ?? 0) > 0 ? `${dep.avg_response_time}ms` : '—'}
                     </TableCell>
-                    <TableCell className="text-right font-mono text-sm">{dep.sla_promised}%</TableCell>
-                    <TableCell className={`text-right font-mono text-sm ${slaBreach ? 'text-destructive font-semibold' : ''}`}>
+                    <TableCell className="px-2 py-2 text-right font-mono text-xs">{dep.sla_promised}%</TableCell>
+                    <TableCell className={`px-2 py-2 text-right font-mono text-xs ${slaBreach ? 'text-destructive font-semibold' : ''}`}>
                       {dep.uptime_percentage ?? 100}%
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="px-2 py-2 text-right">
                       {slaBreach ? (
-                        <Badge variant="destructive" className="text-xs font-mono">
+                        <Badge variant="destructive" className="text-[10px] font-mono px-1.5">
                           {delta.toFixed(2)}%
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="text-xs font-mono border-emerald-500/30 text-emerald-400">
+                        <Badge variant="outline" className="text-[10px] font-mono px-1.5 border-emerald-500/30 text-emerald-400">
                           +{delta.toFixed(2)}%
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-2 py-2">
                       {recentIncidents.length > 0 ? (
                         <button
-                          onClick={() => setIncidentTarget(dep)}
+                          onClick={(e) => { e.stopPropagation(); setIncidentTarget(dep); }}
                           className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
                         >
-                          {recentIncidents.length} incident{recentIncidents.length > 1 ? 's' : ''}
+                          {recentIncidents.length}
                         </button>
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
+                    <TableCell className="px-2 py-2 text-xs text-muted-foreground">
                       {dep.last_check
                         ? formatDistanceToNow(new Date(dep.last_check), { addSuffix: true })
                         : 'Never'}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="px-2 py-2 text-right">
                       <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="outline"
