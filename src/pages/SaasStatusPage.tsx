@@ -498,6 +498,13 @@ export default function SaasStatusPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* SaaS Detail Modal */}
+      <SaasDetailModal
+        provider={detailTarget}
+        open={!!detailTarget}
+        onClose={() => setDetailTarget(null)}
+      />
     </div>
   );
 }
