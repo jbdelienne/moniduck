@@ -248,7 +248,7 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
                         <span className="text-xs">{inc.severity === 'critical' ? '🔴' : inc.severity === 'major' ? '🟠' : '🟡'}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">{inc.title}</p>
+                        <p className="text-sm font-medium text-foreground">{inc.title}</p>
                         <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                           <span>{new Date(inc.date).toLocaleDateString()}</span>
                           <span>{inc.duration_minutes}min</span>
