@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
             method: "GET",
             signal: controller.signal,
             redirect: "follow",
-            headers: { "User-Agent": "MoniDuck/1.0 SaaS Monitor" },
+            headers: { "User-Agent": "moniduck/1.0 SaaS Monitor" },
           });
           clearTimeout(timeout);
           responseTime = Date.now() - start;
