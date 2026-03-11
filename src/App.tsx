@@ -42,8 +42,7 @@ function ProtectedLayout() {
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<Landing />} />
-    <Route path="/waitlist" element={<Waitlist />} />
+    <Route path="/" element={<Waitlist />} />
     <Route path="/auth" element={<Auth />} />
     <Route path="/reports/shared/:shareToken" element={<PublicReport />} />
     <Route element={<ProtectedLayout />}>
