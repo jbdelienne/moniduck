@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAlerts } from '@/hooks/use-supabase';
+import DocsDrawer from './DocsDrawer';
 
 interface TopBarProps {
   onToggleSidebar: () => void;
