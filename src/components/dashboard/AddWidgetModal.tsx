@@ -82,7 +82,7 @@ interface Props {
 export default function AddWidgetModal({ open, onOpenChange, onAdd, isLoading }: Props) {
   const { data: services = [] } = useServices();
   const { data: integrations = [] } = useIntegrations();
-  const { data: saasProviders = [] } = useSaasSubscriptions();
+  const { data: saasProviders = [] } = useSaasDependencies();
 
   const [source, setSource] = useState<SourceType | null>(null);
   const [resourceId, setResourceId] = useState<string | null>(null);
