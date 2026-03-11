@@ -372,13 +372,13 @@ export default function Waitlist() {
           }}
         />
 
-        <div ref={heroRef} className="relative text-center max-w-2xl mx-auto">
+        <div ref={heroRef} className="relative max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-xs text-primary font-medium mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             Early Access — Limited Spots
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08] mb-5">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-5 text-left">
             One platform for
             <br />
             <span className="text-green-600">full-stack visibility.</span>
