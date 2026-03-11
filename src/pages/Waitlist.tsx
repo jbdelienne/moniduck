@@ -311,9 +311,9 @@ export default function Waitlist() {
   const solutionsHeaderRef = useScrollReveal();
   const faqHeaderRef = useScrollReveal();
   const finalCtaRef = useScrollReveal();
-  const servicesTableRef = useScrollReveal({ delay: 0 });
-  const cloudTableRef = useScrollReveal({ delay: 0 });
-  const saasTableRef = useScrollReveal({ delay: 0 });
+  const servicesTableRef = useScrollReveal({ duration: 1 });
+  const cloudTableRef = useScrollReveal({ duration: 1 });
+  const saasTableRef = useScrollReveal({ duration: 1 });
 
   const handleSuccess = () => {
     setSubmitted(true);

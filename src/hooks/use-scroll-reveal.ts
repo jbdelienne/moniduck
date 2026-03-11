@@ -5,18 +5,19 @@ import { useEffect, useRef } from "react";
  * Uses IntersectionObserver for performance.
  */
 export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
-  options?: { threshold?: number; rootMargin?: string; delay?: number }
+  options?: { threshold?: number; rootMargin?: string; delay?: number; duration?: number }
 ) {
   const ref = useRef<T>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    const dur = options?.duration ?? 0.6;
 
     // Start hidden
     el.style.opacity = "0";
     el.style.transform = "translateY(24px)";
-    el.style.transition = `opacity 0.6s ease-out ${options?.delay ?? 0}ms, transform 0.6s ease-out ${options?.delay ?? 0}ms`;
+    el.style.transition = `opacity ${dur}s ease-out ${options?.delay ?? 0}ms, transform ${dur}s ease-out ${options?.delay ?? 0}ms`;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
