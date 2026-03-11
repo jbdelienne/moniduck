@@ -259,7 +259,7 @@ function WaitlistForm({
         }
       </Button>
       <p className="text-xs text-muted-foreground text-center">
-        🔥 <AnimatedCounter target={124} /> people on the waitlist · Early access closes soon
+        🔥 <AnimatedCounter target={12} /> people on the waitlist · Early access closes soon
       </p>
     </form>);
 
