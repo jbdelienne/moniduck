@@ -322,7 +322,7 @@ export default function Waitlist() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Shimmer CSS */}
+      {/* Shimmer + Grid pattern CSS */}
       <style>{`
         .shimmer-btn::after {
           content: '';
@@ -344,6 +344,14 @@ export default function Waitlist() {
           30% { left: 100%; }
           100% { left: 100%; }
         }
+        .hero-grid {
+          background-image: 
+            linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
+          background-size: 64px 64px;
+          mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 100%);
+          -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 100%);
+        }
       `}</style>
 
       {/* Confetti */}
@@ -364,56 +372,66 @@ export default function Waitlist() {
         </div>
       </nav>
 
-      {/* ─── Hero (centered, single column) ──────── */}
-      <section className="relative max-w-6xl mx-auto px-6 pt-16 pb-16 md:pt-24 md:pb-24">
-        {/* Radial glow */}
+      {/* ─── Hero ────────────────────────────────── */}
+      <section className="relative overflow-hidden">
+        {/* Background layers */}
+        <div className="absolute inset-0 hero-grid pointer-events-none" />
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse 600px 400px at 50% 30%, rgba(146, 127, 191, 0.15), transparent)"
+            background: "radial-gradient(ellipse 800px 500px at 30% 40%, hsl(160 84% 39% / 0.06), transparent), radial-gradient(ellipse 600px 400px at 70% 30%, hsl(280 65% 60% / 0.06), transparent)"
           }}
         />
 
-        <div ref={heroRef} className="relative max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-xs text-primary font-medium mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Early Access — Limited Spots
-          </div>
-
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-5 text-left">
-            One platform for
-            <br />
-            <span className="text-green-600">full-stack visibility.</span>
-          </h1>
-
-          <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg mx-auto">
-            Services, cloud, and SaaS — monitored from a single dashboard.
-            Set up in 5 minutes. Works out of the box.
-          </p>
-
-          {/* Form */}
-          <div id="waitlist-form" className="scroll-mt-24 max-w-[480px] mx-auto mb-8">
-            {submitted ? <SuccessCard email={capturedEmail} /> :
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-lg hover:shadow-xl hover:border-primary/20 transition-all duration-500">
-                <div className="flex items-center gap-2 mb-4">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Get early access</span>
-                </div>
-                <WaitlistForm onSuccess={handleSuccess} onEmailCapture={setCapturedEmail} />
+        <div ref={heroRef} className="relative max-w-6xl mx-auto px-6 pt-20 pb-20 md:pt-32 md:pb-28">
+          <div className="grid lg:grid-cols-[1fr_420px] gap-12 lg:gap-16 items-center">
+            
+            {/* Left: Copy */}
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-success/20 bg-success/5 text-xs font-medium mb-8">
+                <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                <span className="text-success">Early Access — Limited Spots</span>
               </div>
-            }
-          </div>
 
-          {/* Differentiators */}
-          <div className="flex flex-wrap justify-center gap-4">
-            {differentiators.map((d) => <div key={d.text} className="flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
-                  <d.icon className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <span>{d.text}</span>
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-6">
+                One platform for
+                <br />
+                <span className="text-success">full-stack visibility.</span>
+              </h1>
+
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 max-w-md">
+                Services, cloud, and SaaS — monitored from a single dashboard.
+                Set up in 5 minutes. Works out of the box.
+              </p>
+
+              {/* Differentiators */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                {differentiators.map((d) => (
+                  <div key={d.text} className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                    <div className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                      <d.icon className="w-3.5 h-3.5 text-foreground" />
+                    </div>
+                    <span>{d.text}</span>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+
+            {/* Right: Form */}
+            <div id="waitlist-form" className="scroll-mt-24">
+              {submitted ? <SuccessCard email={capturedEmail} /> :
+              <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-7 shadow-[0_0_80px_-20px_hsl(160_84%_39%_/_0.08)]">
+                  <div className="flex items-center gap-2 mb-5">
+                    <Sparkles className="w-4 h-4 text-success" />
+                    <span className="text-sm font-medium text-foreground">Get early access</span>
+                  </div>
+                  <WaitlistForm onSuccess={handleSuccess} onEmailCapture={setCapturedEmail} />
+                </div>
+              }
+            </div>
           </div>
+        </div>
+      </section>
         </div>
       </section>
 
