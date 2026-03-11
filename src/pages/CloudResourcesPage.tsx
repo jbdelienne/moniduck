@@ -454,7 +454,7 @@ export default function CloudResourcesPage() {
         {filteredResources.map((r) => {
           const cost = getResourceCost(r);
           return (
-            <TableRow key={r.id}>
+            <TableRow key={r.id} className="cursor-pointer" onClick={() => setSelectedResource(r)}>
               <TableCell className="font-medium text-foreground">{r.name}</TableCell>
               <TableCell>
                 {r.errorRate !== undefined ? (
