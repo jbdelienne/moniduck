@@ -43,26 +43,21 @@ function ProtectedLayout() {
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Waitlist />} />
-    <Route path="/auth" element={<Auth />} />
     <Route path="/reports/shared/:shareToken" element={<PublicReport />} />
-    <Route element={<ProtectedLayout />}>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/services" element={<ServicesPage />} />
-      <Route path="/cloud-resources" element={<CloudResourcesPage />} />
-      <Route path="/saas-status" element={<SaasStatusPage />} />
-      <Route path="/integrations" element={<Integrations />} />
-      <Route path="/integrations/aws/costs" element={<AwsCostDashboard />} />
-      <Route path="/integrations/aws" element={<AwsIntegrationDetail />} />
-      <Route path="/integrations/:type" element={<IntegrationDetail />} />
-      <Route path="/alerts" element={<Alerts />} />
-      <Route path="/reports" element={<ReportsPage />} />
-      <Route path="/settings" element={<SettingsPage />} />
-    </Route>
-    {/* Legacy lang-prefixed routes redirect to root */}
+    {/* All app routes hidden during beta — redirect to waitlist */}
+    <Route path="/auth" element={<Navigate to="/" replace />} />
+    <Route path="/dashboard" element={<Navigate to="/" replace />} />
+    <Route path="/services" element={<Navigate to="/" replace />} />
+    <Route path="/cloud-resources" element={<Navigate to="/" replace />} />
+    <Route path="/saas-status" element={<Navigate to="/" replace />} />
+    <Route path="/integrations/*" element={<Navigate to="/" replace />} />
+    <Route path="/alerts" element={<Navigate to="/" replace />} />
+    <Route path="/reports" element={<Navigate to="/" replace />} />
+    <Route path="/settings" element={<Navigate to="/" replace />} />
     <Route path="/en/*" element={<Navigate to="/" replace />} />
     <Route path="/fr/*" element={<Navigate to="/" replace />} />
     <Route path="/de/*" element={<Navigate to="/" replace />} />
-    <Route path="*" element={<NotFound />} />
+    <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );
 
