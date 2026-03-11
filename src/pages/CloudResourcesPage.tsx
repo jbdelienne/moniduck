@@ -89,6 +89,7 @@ export default function CloudResourcesPage() {
   const [costPeriod, setCostPeriod] = useState<CostPeriod>('month');
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<ResourceCategory>('compute');
+  const [selectedResource, setSelectedResource] = useState<CloudResource | null>(null);
 
   const cloudServices = useMemo(
     () => services.filter(s => s.tags?.some(tag => CLOUD_TAGS.includes(tag))),
