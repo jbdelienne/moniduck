@@ -7,7 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import '@/i18n';
 import AppLayout from "@/components/layout/AppLayout";
-import Landing from "@/pages/Landing";
+
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import ServicesPage from "@/pages/ServicesPage";
@@ -42,8 +42,7 @@ function ProtectedLayout() {
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<Landing />} />
-    <Route path="/waitlist" element={<Waitlist />} />
+    <Route path="/" element={<Waitlist />} />
     <Route path="/auth" element={<Auth />} />
     <Route path="/reports/shared/:shareToken" element={<PublicReport />} />
     <Route element={<ProtectedLayout />}>
