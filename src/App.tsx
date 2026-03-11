@@ -53,7 +53,7 @@ const AppRoutes = () => (
       <Route path="/integrations" element={<Integrations />} />
       <Route path="/integrations/aws" element={<AwsIntegrationDetail />} />
       <Route path="/integrations/aws/costs" element={<AwsCostDashboard />} />
-      <Route path="/integrations/:id" element={<IntegrationDetail />} />
+      <Route path="/integrations/:type" element={<IntegrationDetail />} />
       <Route path="/alerts" element={<Alerts />} />
       <Route path="/reports" element={<ReportsPage />} />
       <Route path="/settings" element={<SettingsPage />} />
