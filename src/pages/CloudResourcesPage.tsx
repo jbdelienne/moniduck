@@ -17,6 +17,7 @@ import { useLatestSyncMetrics } from '@/hooks/use-all-sync-data';
 import { useCostByResource } from '@/hooks/use-cost-by-resource';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import ResourceSlidePanel, { type CloudResourceDetail } from '@/components/cloud/ResourceSlidePanel';
 
 const CLOUD_TAGS = ['aws', 'ec2', 's3', 'lambda', 'rds', 'alb', 'cloudfront', 'gcp', 'azure'];
 
