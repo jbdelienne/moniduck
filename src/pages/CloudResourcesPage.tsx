@@ -658,6 +658,17 @@ export default function CloudResourcesPage() {
           ))}
         </Tabs>
       )}
+
+      <ResourceSlidePanel
+        resource={selectedResource ? {
+          ...selectedResource,
+          tags: services.find(s => s.id === selectedResource.id)?.tags ?? undefined,
+          url: services.find(s => s.id === selectedResource.id)?.url,
+          monthlyCost: getResourceCost(selectedResource) ?? undefined,
+        } : null}
+        open={!!selectedResource}
+        onClose={() => setSelectedResource(null)}
+      />
     </div>
   );
 }
