@@ -25,6 +25,7 @@ export default function TopBar({ onToggleSidebar, sidebarCollapsed }: TopBarProp
       </div>
 
       <div className="flex items-center gap-1">
+        <DocsDrawer />
         <Button variant="ghost" size="icon" className="relative text-muted-foreground h-8 w-8">
           <Bell className="w-4 h-4" />
           {unreadCount > 0 && (
