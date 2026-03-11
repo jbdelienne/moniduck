@@ -422,8 +422,7 @@ export default function CloudResourcesPage() {
               <TableCell className="text-xs text-muted-foreground font-mono">{r.instanceType || '—'}</TableCell>
               <TableCell>
                 {hasPublicIp ? (
-                  <span className="text-xs font-mono text-warning flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" />
+                  <span className="text-xs font-mono text-muted-foreground">
                     {r.publicIp}
                   </span>
                 ) : (
