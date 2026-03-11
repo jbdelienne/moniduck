@@ -114,7 +114,7 @@ function useConfetti() {
 }
 
 /* ── Animated Counter ─────────────────────────────── */
-function AnimatedCounter({ target, duration = 1500 }: { target: number; duration?: number }) {
+function AnimatedCounter({ target, duration = 1500 }: {target: number;duration?: number;}) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const hasAnimated = useRef(false);
@@ -380,8 +380,8 @@ export default function Waitlist() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background: "radial-gradient(ellipse 800px 500px at 30% 40%, hsl(160 84% 39% / 0.06), transparent), radial-gradient(ellipse 600px 400px at 70% 30%, hsl(280 65% 60% / 0.06), transparent)"
-          }}
-        />
+          }} />
+        
 
         <div ref={heroRef} className="relative max-w-6xl mx-auto px-6 pt-20 pb-20 md:pt-32 md:pb-28">
           <div className="grid lg:grid-cols-[1fr_420px] gap-12 lg:gap-16 items-center">
@@ -396,7 +396,7 @@ export default function Waitlist() {
               <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-6">
                 One platform for
                 <br />
-                <span className="text-success">full-stack visibility.</span>
+                <span className="text-green-600">full-stack visibility.</span>
               </h1>
 
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 max-w-md">
@@ -406,14 +406,14 @@ export default function Waitlist() {
 
               {/* Differentiators */}
               <div className="flex flex-col sm:flex-row gap-4">
-                {differentiators.map((d) => (
-                  <div key={d.text} className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                {differentiators.map((d) =>
+                <div key={d.text} className="flex items-center gap-2.5 text-sm text-muted-foreground">
                     <div className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
                       <d.icon className="w-3.5 h-3.5 text-foreground" />
                     </div>
                     <span>{d.text}</span>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
@@ -491,29 +491,29 @@ export default function Waitlist() {
                 </thead>
                 <tbody>
                   {[
-                    { name: "Payment API", url: "api.myapp.com", status: "up", uptime: "99.94%" },
-                    { name: "Auth Service", url: "auth.myapp.com", status: "up", uptime: "100%" },
-                    { name: "Dashboard", url: "app.myapp.com", status: "down", uptime: "Down 14 min" },
-                    { name: "Webhook Handler", url: "hooks.myapp.com", status: "up", uptime: "99.71%" },
-                  ].map((s) => (
-                    <tr key={s.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+                  { name: "Payment API", url: "api.myapp.com", status: "up", uptime: "99.94%" },
+                  { name: "Auth Service", url: "auth.myapp.com", status: "up", uptime: "100%" },
+                  { name: "Dashboard", url: "app.myapp.com", status: "down", uptime: "Down 14 min" },
+                  { name: "Webhook Handler", url: "hooks.myapp.com", status: "up", uptime: "99.71%" }].
+                  map((s) =>
+                  <tr key={s.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
                       <td className="px-5 py-3.5 font-medium text-foreground">{s.name}</td>
                       <td className="px-5 py-3.5 text-muted-foreground font-mono text-xs">{s.url}</td>
                       <td className="px-5 py-3.5 text-right">
-                        {s.status === "up" ? (
-                          <span className="inline-flex items-center gap-1.5 text-success font-medium">
+                        {s.status === "up" ?
+                      <span className="inline-flex items-center gap-1.5 text-success font-medium">
                             <span className="w-2 h-2 rounded-full bg-success" />
                             {s.uptime}
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 text-destructive font-medium">
+                          </span> :
+
+                      <span className="inline-flex items-center gap-1.5 text-destructive font-medium">
                             <span className="w-2 h-2 rounded-full bg-destructive" />
                             {s.uptime}
                           </span>
-                        )}
+                      }
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -536,10 +536,10 @@ export default function Waitlist() {
                 </thead>
                 <tbody>
                   {[
-                    { name: "web-prod-01", type: "EC2", status: "Running", instance: "t3.medium", cost: "$47/mo" },
-                    { name: "prod-db", type: "RDS", status: "Available", instance: "—", cost: "$89/mo" },
-                  ].map((r) => (
-                    <tr key={r.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+                  { name: "web-prod-01", type: "EC2", status: "Running", instance: "t3.medium", cost: "$47/mo" },
+                  { name: "prod-db", type: "RDS", status: "Available", instance: "—", cost: "$89/mo" }].
+                  map((r) =>
+                  <tr key={r.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
                       <td className="px-5 py-3.5">
                         <div className="font-medium text-foreground">{r.name}</div>
                         <div className="text-xs text-muted-foreground">{r.type}</div>
@@ -553,7 +553,7 @@ export default function Waitlist() {
                       <td className="px-5 py-3.5 text-muted-foreground font-mono text-xs">{r.instance}</td>
                       <td className="px-5 py-3.5 text-right font-medium text-foreground">{r.cost}</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -575,10 +575,10 @@ export default function Waitlist() {
                 </thead>
                 <tbody>
                   {[
-                    { name: "Stripe", status: "Operational", sla: "99.71%", warning: true },
-                    { name: "GitHub", status: "Operational", sla: "99.99%", warning: false },
-                  ].map((s) => (
-                    <tr key={s.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+                  { name: "Stripe", status: "Operational", sla: "99.71%", warning: true },
+                  { name: "GitHub", status: "Operational", sla: "99.99%", warning: false }].
+                  map((s) =>
+                  <tr key={s.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
                       <td className="px-5 py-3.5 font-medium text-foreground">{s.name}</td>
                       <td className="px-5 py-3.5">
                         <span className="inline-flex items-center gap-1.5 text-success text-xs font-medium">
@@ -591,7 +591,7 @@ export default function Waitlist() {
                         {s.warning && <span className="ml-1.5 text-warning">⚠️</span>}
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
