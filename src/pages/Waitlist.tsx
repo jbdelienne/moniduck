@@ -432,8 +432,8 @@ export default function Waitlist() {
           </div>
         </div>
       </section>
-        </div>
-      </section>
+
+
 
       {/* ─── Solutions ───────────────────────────── */}
       <section className="border-t border-border">
