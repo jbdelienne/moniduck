@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useServices } from '@/hooks/use-supabase';
 import { useIntegrations } from '@/hooks/use-supabase';
 import { useSyncData } from '@/hooks/use-integrations';
-import { useSaasSubscriptions } from '@/hooks/use-saas-dependencies';
+import { useSaasDependencies } from '@/hooks/use-saas-dependencies';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
