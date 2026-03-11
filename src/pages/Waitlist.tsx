@@ -457,10 +457,10 @@ export default function Waitlist() {
                 </thead>
                 <tbody>
                   {[
-                    { name: "Payment API", url: "api.moniduck.com", status: "up", uptime: "99.94%" },
-                    { name: "Auth Service", url: "auth.moniduck.com", status: "up", uptime: "100%" },
-                    { name: "Dashboard", url: "app.moniduck.com", status: "down", uptime: "Down 14 min" },
-                    { name: "Webhook Handler", url: "hooks.moniduck.com", status: "up", uptime: "99.71%" },
+                    { name: "Payment API", url: "api.myapp.com", status: "up", uptime: "99.94%" },
+                    { name: "Auth Service", url: "auth.myapp.com", status: "up", uptime: "100%" },
+                    { name: "Dashboard", url: "app.myapp.com", status: "down", uptime: "Down 14 min" },
+                    { name: "Webhook Handler", url: "hooks.myapp.com", status: "up", uptime: "99.71%" },
                   ].map((s) => (
                     <tr key={s.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
                       <td className="px-5 py-3.5 font-medium text-foreground">{s.name}</td>
