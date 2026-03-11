@@ -458,7 +458,7 @@ export default function Waitlist() {
           </div>
 
           {/* Services Table */}
-          <div className="mb-12">
+          <div ref={servicesTableRef} className="mb-12">
             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-2">
               <Globe className="w-4 h-4" /> Services
             </h3>
