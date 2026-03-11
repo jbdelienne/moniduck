@@ -309,9 +309,11 @@ export default function Waitlist() {
   // Scroll reveal refs
   const heroRef = useScrollReveal({ delay: 100 });
   const solutionsHeaderRef = useScrollReveal();
-  const solutionsGridRef = useStaggerReveal(solutions.length, 120);
   const faqHeaderRef = useScrollReveal();
   const finalCtaRef = useScrollReveal();
+  const servicesTableRef = useScrollReveal({ delay: 0 });
+  const cloudTableRef = useScrollReveal({ delay: 0 });
+  const saasTableRef = useScrollReveal({ delay: 0 });
 
   const handleSuccess = () => {
     setSubmitted(true);
