@@ -309,9 +309,11 @@ export default function Waitlist() {
   // Scroll reveal refs
   const heroRef = useScrollReveal({ delay: 100 });
   const solutionsHeaderRef = useScrollReveal();
-  const solutionsGridRef = useStaggerReveal(solutions.length, 120);
   const faqHeaderRef = useScrollReveal();
   const finalCtaRef = useScrollReveal();
+  const servicesTableRef = useScrollReveal({ delay: 0 });
+  const cloudTableRef = useScrollReveal({ delay: 0 });
+  const saasTableRef = useScrollReveal({ delay: 0 });
 
   const handleSuccess = () => {
     setSubmitted(true);
@@ -428,7 +430,7 @@ export default function Waitlist() {
             </p>
           </div>
 
-          <div ref={solutionsGridRef} className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {solutions.map((sol) =>
             <div
               key={sol.title}
@@ -456,7 +458,7 @@ export default function Waitlist() {
           </div>
 
           {/* Services Table */}
-          <div className="mb-12">
+          <div ref={servicesTableRef} className="mb-12">
             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-2">
               <Globe className="w-4 h-4" /> Services
             </h3>
@@ -500,7 +502,7 @@ export default function Waitlist() {
           </div>
 
           {/* Cloud Table */}
-          <div className="mb-12">
+          <div ref={cloudTableRef} className="mb-12">
             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-2">
               <Cloud className="w-4 h-4" /> Cloud
             </h3>
@@ -540,7 +542,7 @@ export default function Waitlist() {
           </div>
 
           {/* SaaS Table */}
-          <div>
+          <div ref={saasTableRef}>
             <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-2">
               <Plug className="w-4 h-4" /> SaaS
             </h3>
