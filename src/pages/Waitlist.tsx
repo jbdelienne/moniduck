@@ -336,7 +336,7 @@ export default function Waitlist() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08] mb-5">
               One platform for
               <br />
-              <span className="text-primary">full-stack visibility.</span>
+              <span className="text-green-400">full-stack visibility.</span>
             </h1>
 
             <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
