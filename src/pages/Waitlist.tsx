@@ -340,14 +340,14 @@ export default function Waitlist() {
             </h1>
 
             <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
-              Monitor your endpoints, cloud providers, and SaaS tools. 
-              Surface costs, security gaps, and compliance risks — automatically.
+              Services, cloud, and SaaS — monitored from a single dashboard.
+ Set up in 5 minutes. Works out of the box.
+            
             </p>
 
             {/* Differentiators */}
             <div className="flex flex-wrap gap-4">
-              {differentiators.map((d) =>
-              <div key={d.text} className="flex items-center gap-2 text-sm text-muted-foreground">
+              {differentiators.map((d) => <div key={d.text} className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
                     <d.icon className="w-3.5 h-3.5 text-primary" />
                   </div>
