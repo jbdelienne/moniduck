@@ -391,11 +391,11 @@ export default function Waitlist() {
               key={sol.title}
               className="rounded-xl border border-border bg-card p-6 hover:border-primary/30 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group">
               
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/15 transition-colors">
-                  <sol.icon className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/15 transition-colors text-2xl">
+                  {sol.emoji}
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{sol.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{sol.desc}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{sol.desc}</p>
               </div>
             )}
           </div>
