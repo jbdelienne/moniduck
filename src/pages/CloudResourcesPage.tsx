@@ -664,7 +664,7 @@ export default function CloudResourcesPage() {
           ...selectedResource,
           tags: services.find(s => s.id === selectedResource.id)?.tags ?? undefined,
           url: services.find(s => s.id === selectedResource.id)?.url,
-          monthlyCost: getResourceCost(selectedResource) ?? undefined,
+          monthlyCost: getResourceCost(selectedResource)?.amount ?? undefined,
         } : null}
         open={!!selectedResource}
         onClose={() => setSelectedResource(null)}
