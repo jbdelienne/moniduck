@@ -431,6 +431,140 @@ export default function Waitlist() {
         </div>
       </section>
 
+      {/* ─── Preview: Services ─────────────────── */}
+      <section className="border-t border-border">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
+          <div className="text-center mb-10">
+            <p className="text-sm font-medium text-primary mb-3 tracking-wide uppercase">Preview</p>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+              See what's inside.
+            </h2>
+          </div>
+
+          {/* Services Table */}
+          <div className="mb-12">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-2">
+              <Globe className="w-4 h-4" /> Services
+            </h3>
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-muted-foreground text-left">
+                    <th className="px-5 py-3 font-medium">Name</th>
+                    <th className="px-5 py-3 font-medium">URL</th>
+                    <th className="px-5 py-3 font-medium text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { name: "Payment API", url: "api.moniduck.com", status: "up", uptime: "99.94%" },
+                    { name: "Auth Service", url: "auth.moniduck.com", status: "up", uptime: "100%" },
+                    { name: "Dashboard", url: "app.moniduck.com", status: "down", uptime: "Down 14 min" },
+                    { name: "Webhook Handler", url: "hooks.moniduck.com", status: "up", uptime: "99.71%" },
+                  ].map((s) => (
+                    <tr key={s.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+                      <td className="px-5 py-3.5 font-medium text-foreground">{s.name}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground font-mono text-xs">{s.url}</td>
+                      <td className="px-5 py-3.5 text-right">
+                        {s.status === "up" ? (
+                          <span className="inline-flex items-center gap-1.5 text-success font-medium">
+                            <span className="w-2 h-2 rounded-full bg-success" />
+                            {s.uptime}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-destructive font-medium">
+                            <span className="w-2 h-2 rounded-full bg-destructive" />
+                            {s.uptime}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Cloud Table */}
+          <div className="mb-12">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-2">
+              <Cloud className="w-4 h-4" /> Cloud
+            </h3>
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-muted-foreground text-left">
+                    <th className="px-5 py-3 font-medium">Resource</th>
+                    <th className="px-5 py-3 font-medium">Status</th>
+                    <th className="px-5 py-3 font-medium">Type</th>
+                    <th className="px-5 py-3 font-medium text-right">Cost</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { name: "web-prod-01", type: "EC2", status: "Running", instance: "t3.medium", cost: "$47/mo" },
+                    { name: "prod-db", type: "RDS", status: "Available", instance: "—", cost: "$89/mo" },
+                  ].map((r) => (
+                    <tr key={r.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+                      <td className="px-5 py-3.5">
+                        <div className="font-medium text-foreground">{r.name}</div>
+                        <div className="text-xs text-muted-foreground">{r.type}</div>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span className="inline-flex items-center gap-1.5 text-success text-xs font-medium">
+                          <span className="w-2 h-2 rounded-full bg-success" />
+                          {r.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 text-muted-foreground font-mono text-xs">{r.instance}</td>
+                      <td className="px-5 py-3.5 text-right font-medium text-foreground">{r.cost}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* SaaS Table */}
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-2">
+              <Plug className="w-4 h-4" /> SaaS
+            </h3>
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-muted-foreground text-left">
+                    <th className="px-5 py-3 font-medium">Provider</th>
+                    <th className="px-5 py-3 font-medium">Status</th>
+                    <th className="px-5 py-3 font-medium text-right">SLA</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { name: "Stripe", status: "Operational", sla: "99.71%", warning: true },
+                    { name: "GitHub", status: "Operational", sla: "99.99%", warning: false },
+                  ].map((s) => (
+                    <tr key={s.name} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+                      <td className="px-5 py-3.5 font-medium text-foreground">{s.name}</td>
+                      <td className="px-5 py-3.5">
+                        <span className="inline-flex items-center gap-1.5 text-success text-xs font-medium">
+                          <span className="w-2 h-2 rounded-full bg-success" />
+                          {s.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 text-right">
+                        <span className="font-medium text-foreground">{s.sla}</span>
+                        {s.warning && <span className="ml-1.5 text-warning">⚠️</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── Built for ───────────────────────────── */}
       <section className="border-t border-border">
         <div ref={builtForRef} className="max-w-4xl mx-auto px-6 py-16 md:py-20 text-center">
