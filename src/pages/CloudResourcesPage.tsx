@@ -411,7 +411,7 @@ export default function CloudResourcesPage() {
           const cost = getResourceCost(r);
           const hasPublicIp = !!r.publicIp;
           return (
-            <TableRow key={r.id}>
+            <TableRow key={r.id} className="cursor-pointer" onClick={() => setSelectedResource(r)}>
               <TableCell className="font-medium text-foreground">{r.name}</TableCell>
               <TableCell><StatusCell status={r.status} /></TableCell>
               <TableCell className="text-xs text-muted-foreground">
