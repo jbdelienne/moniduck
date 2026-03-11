@@ -88,8 +88,8 @@ export default function DocsDrawer() {
             <p className="text-xs text-muted-foreground">
               <span className="font-medium text-foreground">Need help?</span>{' '}
               Reach out to us at{' '}
-              <a href="mailto:support@moniduck.com" className="text-primary hover:underline">
-                support@moniduck.com
+              <a href="mailto:support@moniduck.io" className="text-primary hover:underline">
+                support@moniduck.io
               </a>
             </p>
           </div>
