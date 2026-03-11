@@ -435,16 +435,16 @@ export default function Waitlist() {
 
 
 
-      {/* ─── Solutions ───────────────────────────── */}
+      {/* ─── Solution ───────────────────────────── */}
       <section className="border-t border-border">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-28">
           <div ref={solutionsHeaderRef} className="text-center mb-16">
             <p className="text-sm font-medium text-primary mb-3 tracking-wide uppercase">Solutions</p>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Four problems. <span className="text-primary">One platform.</span>
+              Four features. <span className="text-primary">One platform.</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              moniduck doesn't just ping URLs. It solves real operational challenges for DevOps and Platform teams.
+              moniduck doesn't just ping URLs. It brings real operational vision for tech teams.
             </p>
           </div>
 
