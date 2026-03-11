@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
   ArrowRight, Check, ChevronDown, Copy, Linkedin,
-  Sparkles, Eye, TrendingDown, ShieldCheck, FileCheck,
+  Sparkles,
   Globe, Cloud, Plug, Shield, Clock, Layers } from
 "lucide-react";
 import { Button } from "@/components/ui/button";
