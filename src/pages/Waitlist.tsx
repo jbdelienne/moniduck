@@ -430,7 +430,7 @@ export default function Waitlist() {
             </p>
           </div>
 
-          <div ref={solutionsGridRef} className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {solutions.map((sol) =>
             <div
               key={sol.title}
