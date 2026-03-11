@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 // layout provided by route
 import { useServices } from '@/hooks/use-supabase';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import { useLatestSyncMetrics } from '@/hooks/use-all-sync-data';
 import { useCostByResource } from '@/hooks/use-cost-by-resource';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import ResourceSlidePanel, { type CloudResourceDetail } from '@/components/cloud/ResourceSlidePanel';
 
 const CLOUD_TAGS = ['aws', 'ec2', 's3', 'lambda', 'rds', 'alb', 'cloudfront', 'gcp', 'azure'];
 
@@ -88,6 +89,7 @@ export default function CloudResourcesPage() {
   const [costPeriod, setCostPeriod] = useState<CostPeriod>('month');
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<ResourceCategory>('compute');
+  const [selectedResource, setSelectedResource] = useState<CloudResource | null>(null);
 
   const cloudServices = useMemo(
     () => services.filter(s => s.tags?.some(tag => CLOUD_TAGS.includes(tag))),
@@ -409,7 +411,7 @@ export default function CloudResourcesPage() {
           const cost = getResourceCost(r);
           const hasPublicIp = !!r.publicIp;
           return (
-            <TableRow key={r.id}>
+            <TableRow key={r.id} className="cursor-pointer" onClick={() => setSelectedResource(r)}>
               <TableCell className="font-medium text-foreground">{r.name}</TableCell>
               <TableCell><StatusCell status={r.status} /></TableCell>
               <TableCell className="text-xs text-muted-foreground">
@@ -452,7 +454,7 @@ export default function CloudResourcesPage() {
         {filteredResources.map((r) => {
           const cost = getResourceCost(r);
           return (
-            <TableRow key={r.id}>
+            <TableRow key={r.id} className="cursor-pointer" onClick={() => setSelectedResource(r)}>
               <TableCell className="font-medium text-foreground">{r.name}</TableCell>
               <TableCell>
                 {r.errorRate !== undefined ? (
@@ -490,7 +492,7 @@ export default function CloudResourcesPage() {
           const storagePercent = r.storageUsed && r.storageTotal ? Math.round((r.storageUsed / r.storageTotal) * 100) : null;
           const storageAlert = storagePercent !== null && storagePercent >= 80;
           return (
-            <TableRow key={r.id}>
+            <TableRow key={r.id} className="cursor-pointer" onClick={() => setSelectedResource(r)}>
               <TableCell className="font-medium text-foreground">{r.name}</TableCell>
               <TableCell><StatusCell status={r.status} /></TableCell>
               <TableCell>
@@ -535,7 +537,7 @@ export default function CloudResourcesPage() {
         {filteredResources.map((r) => {
           const cost = getResourceCost(r);
           return (
-            <TableRow key={r.id}>
+            <TableRow key={r.id} className="cursor-pointer" onClick={() => setSelectedResource(r)}>
               <TableCell className="font-medium text-foreground">{r.name}</TableCell>
               <TableCell>
                 {r.publicAccess !== undefined ? (
@@ -575,7 +577,7 @@ export default function CloudResourcesPage() {
         ) : filteredResources.map((r) => {
           const cost = getResourceCost(r);
           return (
-            <TableRow key={r.id}>
+            <TableRow key={r.id} className="cursor-pointer" onClick={() => setSelectedResource(r)}>
               <TableCell className="font-medium text-foreground">{r.name}</TableCell>
               <TableCell className="text-xs font-mono text-muted-foreground">
                 {r.requests24h !== undefined ? r.requests24h.toLocaleString() : '—'}
@@ -656,6 +658,17 @@ export default function CloudResourcesPage() {
           ))}
         </Tabs>
       )}
+
+      <ResourceSlidePanel
+        resource={selectedResource ? {
+          ...selectedResource,
+          tags: services.find(s => s.id === selectedResource.id)?.tags ?? undefined,
+          url: services.find(s => s.id === selectedResource.id)?.url,
+          monthlyCost: getResourceCost(selectedResource)?.amount ?? undefined,
+        } : null}
+        open={!!selectedResource}
+        onClose={() => setSelectedResource(null)}
+      />
     </div>
   );
 }
