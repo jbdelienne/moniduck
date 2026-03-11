@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import {
   ArrowRight, Check, ChevronDown, Copy, Linkedin,
   Sparkles,
-  Globe, Cloud, Plug, Shield, Clock, Layers } from
+  Globe, Cloud, Plug, Zap, Settings, Clock } from
 "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,8 +37,8 @@ const solutions = [
 
 
 const differentiators = [
-{ text: "No agents to install", icon: Shield },
-{ text: "No YAML to configure", icon: Layers },
+{ text: "Ready in under 5 minutes", icon: Zap },
+{ text: "Works out of the box", icon: Settings },
 { text: "2-minute setup per integration", icon: Clock }];
 
 
@@ -113,6 +113,30 @@ function useConfetti() {
   return { canvasRef, fire };
 }
 
+/* ── Animated Counter ─────────────────────────────── */
+function AnimatedCounter({ target, duration = 1500 }: { target: number; duration?: number }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+    const startTime = performance.now();
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }, [target, duration]);
+
+  return <span ref={ref}>{count}</span>;
+}
+
 /* ── FAQ Item ─────────────────────────────────────── */
 function FaqItem({ q, a }: {q: string;a: string;}) {
   const [open, setOpen] = useState(false);
@@ -137,10 +161,6 @@ function WaitlistForm({
   onSuccess,
   onEmailCapture,
   variant = "default"
-
-
-
-
 }: {onSuccess: () => void;onEmailCapture?: (email: string) => void;variant?: "default" | "compact";}) {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -162,7 +182,6 @@ function WaitlistForm({
       if (error && error.code !== "23505") {
         throw error;
       }
-      // Send welcome email (both for new signups and duplicates)
       try {
         await supabase.functions.invoke("waitlist-welcome", {
           body: { email: normalizedEmail, firstName: firstName.trim() || null, company: company.trim() || null }
@@ -229,7 +248,7 @@ function WaitlistForm({
         className="h-12 text-base"
         maxLength={200} />
       
-      <Button type="submit" size="lg" className="w-full h-12 text-base group" disabled={loading}>
+      <Button type="submit" size="lg" className="w-full h-12 text-base group relative overflow-hidden shimmer-btn" disabled={loading}>
         {loading ?
         <span className="flex items-center gap-2">
             <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
@@ -240,7 +259,7 @@ function WaitlistForm({
         }
       </Button>
       <p className="text-xs text-muted-foreground text-center">
-        Free during beta · No credit card required
+        🔥 <AnimatedCounter target={124} /> people on the waitlist · Early access closes soon
       </p>
     </form>);
 
@@ -289,12 +308,8 @@ export default function Waitlist() {
 
   // Scroll reveal refs
   const heroRef = useScrollReveal({ delay: 100 });
-  const formRef = useScrollReveal({ delay: 250 });
   const solutionsHeaderRef = useScrollReveal();
   const solutionsGridRef = useStaggerReveal(solutions.length, 120);
-  const productsHeaderRef = useScrollReveal();
-  const productsGridRef = useStaggerReveal(3, 150);
-  const builtForRef = useScrollReveal();
   const faqHeaderRef = useScrollReveal();
   const finalCtaRef = useScrollReveal();
 
@@ -305,6 +320,30 @@ export default function Waitlist() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* Shimmer CSS */}
+      <style>{`
+        .shimmer-btn::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.12),
+            transparent
+          );
+          animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+          0% { left: -100%; }
+          30% { left: 100%; }
+          100% { left: 100%; }
+        }
+      `}</style>
+
       {/* Confetti */}
       <canvas ref={canvasRef} className="fixed inset-0 z-[100] pointer-events-none" style={{ width: "100%", height: "100%" }} />
 
@@ -323,42 +362,35 @@ export default function Waitlist() {
         </div>
       </nav>
 
-      {/* ─── Hero ────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 pt-16 pb-16 md:pt-24 md:pb-24">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left — Copy */}
-          <div ref={heroRef}>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-xs text-primary font-medium mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              Early Access — Limited Spots
-            </div>
+      {/* ─── Hero (centered, single column) ──────── */}
+      <section className="relative max-w-6xl mx-auto px-6 pt-16 pb-16 md:pt-24 md:pb-24">
+        {/* Radial glow */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse 600px 400px at 50% 30%, rgba(146, 127, 191, 0.15), transparent)"
+          }}
+        />
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08] mb-5">
-              One platform for
-              <br />
-              <span className="text-green-600">full-stack visibility.</span>
-            </h1>
-
-            <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
-              Services, cloud, and SaaS — monitored from a single dashboard.
- Set up in 5 minutes. Works out of the box.
-            
-            </p>
-
-            {/* Differentiators */}
-            <div className="flex flex-wrap gap-4">
-              {differentiators.map((d) => <div key={d.text} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
-                    <d.icon className="w-3.5 h-3.5 text-primary" />
-                  </div>
-                  <span>{d.text}</span>
-                </div>
-              )}
-            </div>
+        <div ref={heroRef} className="relative text-center max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-xs text-primary font-medium mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            Early Access — Limited Spots
           </div>
 
-          {/* Right — Form */}
-          <div ref={formRef} id="waitlist-form" className="scroll-mt-24">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08] mb-5">
+            One platform for
+            <br />
+            <span className="text-green-600">full-stack visibility.</span>
+          </h1>
+
+          <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg mx-auto">
+            Services, cloud, and SaaS — monitored from a single dashboard.
+            Set up in 5 minutes. Works out of the box.
+          </p>
+
+          {/* Form */}
+          <div id="waitlist-form" className="scroll-mt-24 max-w-[480px] mx-auto mb-8">
             {submitted ? <SuccessCard email={capturedEmail} /> :
             <div className="rounded-2xl border border-border bg-card p-6 shadow-lg hover:shadow-xl hover:border-primary/20 transition-all duration-500">
                 <div className="flex items-center gap-2 mb-4">
@@ -368,6 +400,17 @@ export default function Waitlist() {
                 <WaitlistForm onSuccess={handleSuccess} onEmailCapture={setCapturedEmail} />
               </div>
             }
+          </div>
+
+          {/* Differentiators */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {differentiators.map((d) => <div key={d.text} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                  <d.icon className="w-3.5 h-3.5 text-primary" />
+                </div>
+                <span>{d.text}</span>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -396,35 +439,6 @@ export default function Waitlist() {
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{sol.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{sol.desc}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Products ────────────────────────────── */}
-      <section className="border-t border-border bg-card/30">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <div ref={productsHeaderRef} className="text-center mb-12">
-            <p className="text-sm font-medium text-primary mb-3 tracking-wide uppercase">Products</p>
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
-              Three engines powering your monitoring.
-            </h2>
-          </div>
-          <div ref={productsGridRef} className="grid md:grid-cols-3 gap-6">
-            {[
-            { icon: Globe, title: "HTTP Monitoring", desc: "Uptime, response time, SSL & content checks for any URL." },
-            { icon: Cloud, title: "Cloud Discovery", desc: "Auto-discover EC2, Lambda, RDS, S3 across AWS, GCP & Azure." },
-            { icon: Plug, title: "SaaS Integrations", desc: "Google Workspace, Microsoft 365, Stripe — one OAuth, live data." }].
-            map((p) =>
-            <div key={p.title} className="flex items-start gap-4 p-4 rounded-lg border border-border bg-card hover:border-primary/30 hover:shadow-md transition-all duration-300">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <p.icon className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm mb-1">{p.title}</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{p.desc}</p>
-                </div>
               </div>
             )}
           </div>
@@ -562,18 +576,6 @@ export default function Waitlist() {
               </table>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ─── Built for ───────────────────────────── */}
-      <section className="border-t border-border">
-        <div ref={builtForRef} className="max-w-4xl mx-auto px-6 py-16 md:py-20 text-center">
-          <p className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
-            Built for scale-ups. <span className="text-primary">Not enterprises with 200 tools.</span>
-          </p>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            If your team is 30–200 people and you're tired of Datadog bills and tool sprawl, moniduck is for you.
-          </p>
         </div>
       </section>
 
