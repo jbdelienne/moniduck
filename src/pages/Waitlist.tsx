@@ -2,8 +2,8 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import {
   ArrowRight, Check, ChevronDown, Copy, Linkedin,
   Sparkles, Eye, TrendingDown, ShieldCheck, FileCheck,
-  Globe, Cloud, Plug, Shield, Clock, Layers,
-} from "lucide-react";
+  Globe, Cloud, Plug, Shield, Clock, Layers } from
+"lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,53 +14,53 @@ import { useScrollReveal, useStaggerReveal } from "@/hooks/use-scroll-reveal";
 /* ── Solutions data ───────────────────────────────── */
 
 const solutions = [
-  {
-    icon: Eye,
-    title: "Full-Stack Visibility",
-    desc: "Real-time view of endpoints, cloud resources, and SaaS tools — from one dashboard.",
-  },
-  {
-    icon: TrendingDown,
-    title: "Cost Intelligence",
-    desc: "Surface billing anomalies, unused resources, and SaaS license waste automatically.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Security Posture",
-    desc: "Monitor SSL, MFA adoption, suspended accounts, and public exposure across your stack.",
-  },
-  {
-    icon: FileCheck,
-    title: "Operational Compliance",
-    desc: "Generate SLA reports, export audit trails, and prove uptime for contractual obligations.",
-  },
-];
+{
+  icon: Eye,
+  title: "Full-Stack Visibility",
+  desc: "Real-time view of endpoints, cloud resources, and SaaS tools — from one dashboard."
+},
+{
+  icon: TrendingDown,
+  title: "Cost Intelligence",
+  desc: "Surface billing anomalies, unused resources, and SaaS license waste automatically."
+},
+{
+  icon: ShieldCheck,
+  title: "Security Posture",
+  desc: "Monitor SSL, MFA adoption, suspended accounts, and public exposure across your stack."
+},
+{
+  icon: FileCheck,
+  title: "Operational Compliance",
+  desc: "Generate SLA reports, export audit trails, and prove uptime for contractual obligations."
+}];
+
 
 const differentiators = [
-  { text: "No agents to install", icon: Shield },
-  { text: "No YAML to configure", icon: Layers },
-  { text: "2-minute setup per integration", icon: Clock },
-];
+{ text: "No agents to install", icon: Shield },
+{ text: "No YAML to configure", icon: Layers },
+{ text: "2-minute setup per integration", icon: Clock }];
+
 
 const faqs = [
-  { q: "Is moniduck free during the beta?", a: "Yes. Early access users get the full product free during our beta period. No credit card required." },
-  { q: "What makes moniduck different from Datadog?", a: "Datadog is infrastructure-level (CPU, RAM, logs). moniduck monitors your stack at the service level — URLs, cloud services, SaaS tools — without installing agents or writing config." },
-  { q: "What can moniduck monitor?", a: "Any HTTP endpoint, cloud providers (AWS, GCP, Azure), PaaS platforms (Vercel, Railway), and SaaS tools (Google Workspace, Microsoft 365, Stripe, GitHub)." },
-  { q: "How does alerting work?", a: "You define thresholds (e.g. storage > 85%, uptime < 99.9%) and we notify you via email, Slack webhook, or both. Downtime alerts are instant." },
-  { q: "Can my whole team use it?", a: "Absolutely. moniduck supports workspaces with role-based access. Invite your ops team in seconds." },
-  { q: "What happens after the beta?", a: "Early adopters will be grandfathered into a generous plan. We'll always have a free tier." },
-];
+{ q: "Is moniduck free during the beta?", a: "Yes. Early access users get the full product free during our beta period. No credit card required." },
+{ q: "What makes moniduck different from Datadog?", a: "Datadog is infrastructure-level (CPU, RAM, logs). moniduck monitors your stack at the service level — URLs, cloud services, SaaS tools — without installing agents or writing config." },
+{ q: "What can moniduck monitor?", a: "Any HTTP endpoint, cloud providers (AWS, GCP, Azure), PaaS platforms (Vercel, Railway), and SaaS tools (Google Workspace, Microsoft 365, Stripe, GitHub)." },
+{ q: "How does alerting work?", a: "You define thresholds (e.g. storage > 85%, uptime < 99.9%) and we notify you via email, Slack webhook, or both. Downtime alerts are instant." },
+{ q: "Can my whole team use it?", a: "Absolutely. moniduck supports workspaces with role-based access. Invite your ops team in seconds." },
+{ q: "What happens after the beta?", a: "Early adopters will be grandfathered into a generous plan. We'll always have a free tier." }];
+
 
 /* ── Confetti ─────────────────────────────────────── */
 interface Particle {
-  x: number; y: number; vx: number; vy: number;
-  color: string; size: number; rotation: number; rotationSpeed: number; life: number;
+  x: number;y: number;vx: number;vy: number;
+  color: string;size: number;rotation: number;rotationSpeed: number;life: number;
 }
 
 const CONFETTI_COLORS = [
-  "hsl(161, 93%, 30%)", "hsl(38, 92%, 50%)", "hsl(217, 91%, 60%)",
-  "hsl(160, 84%, 39%)", "hsl(280, 70%, 55%)", "hsl(350, 80%, 55%)",
-];
+"hsl(161, 93%, 30%)", "hsl(38, 92%, 50%)", "hsl(217, 91%, 60%)",
+"hsl(160, 84%, 39%)", "hsl(280, 70%, 55%)", "hsl(350, 80%, 55%)"];
+
 
 function useConfetti() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -84,7 +84,7 @@ function useConfetti() {
         size: Math.random() * 7 + 3,
         rotation: Math.random() * 360,
         rotationSpeed: (Math.random() - 0.5) * 14,
-        life: 1,
+        life: 1
       });
     }
     const animate = () => {
@@ -93,11 +93,11 @@ function useConfetti() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.current = particles.current.filter((p) => p.life > 0);
       for (const p of particles.current) {
-        p.x += p.vx; p.vy += 0.35; p.y += p.vy;
-        p.rotation += p.rotationSpeed; p.life -= 0.01;
+        p.x += p.vx;p.vy += 0.35;p.y += p.vy;
+        p.rotation += p.rotationSpeed;p.life -= 0.01;
         ctx.save();
         ctx.translate(p.x, p.y);
-        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.rotate(p.rotation * Math.PI / 180);
         ctx.globalAlpha = Math.max(0, p.life);
         ctx.fillStyle = p.color;
         ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
@@ -109,39 +109,39 @@ function useConfetti() {
     animate();
   }, []);
 
-  useEffect(() => () => { if (raf.current) cancelAnimationFrame(raf.current); }, []);
+  useEffect(() => () => {if (raf.current) cancelAnimationFrame(raf.current);}, []);
   return { canvasRef, fire };
 }
 
 /* ── FAQ Item ─────────────────────────────────────── */
-function FaqItem({ q, a }: { q: string; a: string }) {
+function FaqItem({ q, a }: {q: string;a: string;}) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b border-border">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-5 text-left group"
-      >
+        className="w-full flex items-center justify-between py-5 text-left group">
+        
         <span className="font-medium text-foreground pr-4">{q}</span>
         <ChevronDown className={`w-5 h-5 text-muted-foreground shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
       <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-40 pb-5" : "max-h-0"}`}>
         <p className="text-sm text-muted-foreground leading-relaxed">{a}</p>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 /* ── Waitlist Form ────────────────────────────────── */
 function WaitlistForm({
   onSuccess,
   onEmailCapture,
-  variant = "default",
-}: {
-  onSuccess: () => void;
-  onEmailCapture?: (email: string) => void;
-  variant?: "default" | "compact";
-}) {
+  variant = "default"
+
+
+
+
+}: {onSuccess: () => void;onEmailCapture?: (email: string) => void;variant?: "default" | "compact";}) {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [company, setCompany] = useState("");
@@ -157,7 +157,7 @@ function WaitlistForm({
       const { error } = await supabase.from("waitlist_signups").insert({
         email: normalizedEmail,
         first_name: firstName.trim() || null,
-        company: company.trim() || null,
+        company: company.trim() || null
       });
       if (error && error.code !== "23505") {
         throw error;
@@ -165,9 +165,9 @@ function WaitlistForm({
       // Send welcome email (both for new signups and duplicates)
       try {
         await supabase.functions.invoke("waitlist-welcome", {
-          body: { email: normalizedEmail, firstName: firstName.trim() || null, company: company.trim() || null },
+          body: { email: normalizedEmail, firstName: firstName.trim() || null, company: company.trim() || null }
         });
-      } catch { /* best-effort */ }
+      } catch {/* best-effort */}
       onSuccess();
     } catch (err: any) {
       toast.error("Something went wrong. Please try again.");
@@ -186,20 +186,20 @@ function WaitlistForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="h-12 text-base flex-1"
-        />
+          className="h-12 text-base flex-1" />
+        
         <Button type="submit" size="lg" className="h-12 px-8 shrink-0 group" disabled={loading}>
-          {loading ? (
-            <span className="flex items-center gap-2">
+          {loading ?
+          <span className="flex items-center gap-2">
               <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
               Joining...
-            </span>
-          ) : (
-            <>Join the waitlist <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" /></>
-          )}
+            </span> :
+
+          <>Join the waitlist <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" /></>
+          }
         </Button>
-      </form>
-    );
+      </form>);
+
   }
 
   return (
@@ -210,8 +210,8 @@ function WaitlistForm({
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
         className="h-12 text-base"
-        maxLength={100}
-      />
+        maxLength={100} />
+      
       <Input
         type="email"
         placeholder="you@company.com"
@@ -219,35 +219,35 @@ function WaitlistForm({
         onChange={(e) => setEmail(e.target.value)}
         required
         className="h-12 text-base"
-        maxLength={255}
-      />
+        maxLength={255} />
+      
       <Input
         type="text"
         placeholder="Company (optional)"
         value={company}
         onChange={(e) => setCompany(e.target.value)}
         className="h-12 text-base"
-        maxLength={200}
-      />
+        maxLength={200} />
+      
       <Button type="submit" size="lg" className="w-full h-12 text-base group" disabled={loading}>
-        {loading ? (
-          <span className="flex items-center gap-2">
+        {loading ?
+        <span className="flex items-center gap-2">
             <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
             Joining...
-          </span>
-        ) : (
-          <>Join the waitlist <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" /></>
-        )}
+          </span> :
+
+        <>Join the waitlist <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" /></>
+        }
       </Button>
       <p className="text-xs text-muted-foreground text-center">
         Free during beta · No credit card required
       </p>
-    </form>
-  );
+    </form>);
+
 }
 
 /* ── Success state ────────────────────────────────── */
-function SuccessCard({ email }: { email: string }) {
+function SuccessCard({ email }: {email: string;}) {
   const pageUrl = typeof window !== "undefined" ? window.location.href : "";
 
   const shareOnLinkedIn = () => {
@@ -276,8 +276,8 @@ function SuccessCard({ email }: { email: string }) {
           <Copy className="w-4 h-4" /> Copy link
         </Button>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 /* ── Page ──────────────────────────────────────────── */
@@ -336,7 +336,7 @@ export default function Waitlist() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08] mb-5">
               One platform for
               <br />
-              <span className="text-green-400">full-stack visibility.</span>
+              <span className="text-green-600">full-stack visibility.</span>
             </h1>
 
             <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
@@ -346,28 +346,28 @@ export default function Waitlist() {
 
             {/* Differentiators */}
             <div className="flex flex-wrap gap-4">
-              {differentiators.map((d) => (
-                <div key={d.text} className="flex items-center gap-2 text-sm text-muted-foreground">
+              {differentiators.map((d) =>
+              <div key={d.text} className="flex items-center gap-2 text-sm text-muted-foreground">
                   <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
                     <d.icon className="w-3.5 h-3.5 text-primary" />
                   </div>
                   <span>{d.text}</span>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
           {/* Right — Form */}
           <div ref={formRef} id="waitlist-form" className="scroll-mt-24">
-            {submitted ? <SuccessCard email={capturedEmail} /> : (
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-lg hover:shadow-xl hover:border-primary/20 transition-all duration-500">
+            {submitted ? <SuccessCard email={capturedEmail} /> :
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-lg hover:shadow-xl hover:border-primary/20 transition-all duration-500">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-4 h-4 text-primary" />
                   <span className="text-sm font-medium text-foreground">Get early access</span>
                 </div>
                 <WaitlistForm onSuccess={handleSuccess} onEmailCapture={setCapturedEmail} />
               </div>
-            )}
+            }
           </div>
         </div>
       </section>
@@ -386,18 +386,18 @@ export default function Waitlist() {
           </div>
 
           <div ref={solutionsGridRef} className="grid md:grid-cols-2 gap-6">
-            {solutions.map((sol) => (
-              <div
-                key={sol.title}
-                className="rounded-xl border border-border bg-card p-6 hover:border-primary/30 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group"
-              >
+            {solutions.map((sol) =>
+            <div
+              key={sol.title}
+              className="rounded-xl border border-border bg-card p-6 hover:border-primary/30 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group">
+              
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/15 transition-colors">
                   <sol.icon className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{sol.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{sol.desc}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -413,11 +413,11 @@ export default function Waitlist() {
           </div>
           <div ref={productsGridRef} className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: Globe, title: "HTTP Monitoring", desc: "Uptime, response time, SSL & content checks for any URL." },
-              { icon: Cloud, title: "Cloud Discovery", desc: "Auto-discover EC2, Lambda, RDS, S3 across AWS, GCP & Azure." },
-              { icon: Plug, title: "SaaS Integrations", desc: "Google Workspace, Microsoft 365, Stripe — one OAuth, live data." },
-            ].map((p) => (
-              <div key={p.title} className="flex items-start gap-4 p-4 rounded-lg border border-border bg-card hover:border-primary/30 hover:shadow-md transition-all duration-300">
+            { icon: Globe, title: "HTTP Monitoring", desc: "Uptime, response time, SSL & content checks for any URL." },
+            { icon: Cloud, title: "Cloud Discovery", desc: "Auto-discover EC2, Lambda, RDS, S3 across AWS, GCP & Azure." },
+            { icon: Plug, title: "SaaS Integrations", desc: "Google Workspace, Microsoft 365, Stripe — one OAuth, live data." }].
+            map((p) =>
+            <div key={p.title} className="flex items-start gap-4 p-4 rounded-lg border border-border bg-card hover:border-primary/30 hover:shadow-md transition-all duration-300">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                   <p.icon className="w-5 h-5 text-primary" />
                 </div>
@@ -426,7 +426,7 @@ export default function Waitlist() {
                   <p className="text-xs text-muted-foreground leading-relaxed">{p.desc}</p>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -450,9 +450,9 @@ export default function Waitlist() {
             Questions?
           </h2>
           <div>
-            {faqs.map((f) => (
-              <FaqItem key={f.q} q={f.q} a={f.a} />
-            ))}
+            {faqs.map((f) =>
+            <FaqItem key={f.q} q={f.q} a={f.a} />
+            )}
           </div>
         </div>
       </section>
@@ -466,9 +466,9 @@ export default function Waitlist() {
           <p className="text-muted-foreground text-lg mb-10 max-w-xl mx-auto">
             Join the waitlist and be among the first to try moniduck. No credit card required.
           </p>
-          {submitted ? <SuccessCard email={capturedEmail} /> : (
-            <WaitlistForm onSuccess={handleSuccess} onEmailCapture={setCapturedEmail} variant="compact" />
-          )}
+          {submitted ? <SuccessCard email={capturedEmail} /> :
+          <WaitlistForm onSuccess={handleSuccess} onEmailCapture={setCapturedEmail} variant="compact" />
+          }
         </div>
       </section>
 
@@ -481,6 +481,6 @@ export default function Waitlist() {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>);
+
 }
