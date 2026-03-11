@@ -44,11 +44,11 @@ const differentiators = [
 
 const faqs = [
 { q: "Is moniduck free during the beta?", a: "Yes. Early access users get the full product free during our beta period. No credit card required." },
-{ q: "What makes moniduck different from Datadog?", a: "Datadog is infrastructure-level (CPU, RAM, logs). moniduck monitors your stack at the service level — URLs, cloud services, SaaS tools — without installing agents or writing config." },
-{ q: "What can moniduck monitor?", a: "Any HTTP endpoint, cloud providers (AWS, GCP, Azure), PaaS platforms (Vercel, Railway), and SaaS tools (Google Workspace, Microsoft 365, Stripe, GitHub)." },
-{ q: "How does alerting work?", a: "You define thresholds (e.g. storage > 85%, uptime < 99.9%) and we notify you via email, Slack webhook, or both. Downtime alerts are instant." },
-{ q: "Can my whole team use it?", a: "Absolutely. moniduck supports workspaces with role-based access. Invite your ops team in seconds." },
-{ q: "What happens after the beta?", a: "Early adopters will be grandfathered into a generous plan. We'll always have a free tier." }];
+{ q: "How long does it take to set up?", a: "It takes less than 2 minutes to set up each integration." },
+{ q: "What can moniduck monitor?", a: "HTTP endpoints, AWS resources (EC2, Lambda, RDS, S3), SaaS providers, and Google Drive storage usage." },
+{ q: "How does alerting work?", a: "You define thresholds and we notify you via email, Slack (incoming) or both. Downtime alerts are instant." },
+{ q: "Is my AWS data safe?", a: "MoniDuck only requires read-only access to your AWS account. We never write, modify, or delete anything. Your credentials are encrypted at rest." },
+{ q: "When will early access open?", a: "We're onboarding our first users progressively. Join the waitlist and you'll be among the first to know." }];
 
 
 /* ── Confetti ─────────────────────────────────────── */
