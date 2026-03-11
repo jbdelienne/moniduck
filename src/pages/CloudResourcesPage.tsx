@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 // layout provided by route
 import { useServices } from '@/hooks/use-supabase';
 import { Button } from '@/components/ui/button';
