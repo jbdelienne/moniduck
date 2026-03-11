@@ -492,7 +492,7 @@ export default function CloudResourcesPage() {
           const storagePercent = r.storageUsed && r.storageTotal ? Math.round((r.storageUsed / r.storageTotal) * 100) : null;
           const storageAlert = storagePercent !== null && storagePercent >= 80;
           return (
-            <TableRow key={r.id}>
+            <TableRow key={r.id} className="cursor-pointer" onClick={() => setSelectedResource(r)}>
               <TableCell className="font-medium text-foreground">{r.name}</TableCell>
               <TableCell><StatusCell status={r.status} /></TableCell>
               <TableCell>
