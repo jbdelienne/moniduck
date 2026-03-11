@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
   ArrowRight, Check, ChevronDown, Copy, Linkedin,
-  Sparkles, Eye, TrendingDown, ShieldCheck, FileCheck,
+  Sparkles,
   Globe, Cloud, Plug, Shield, Clock, Layers } from
 "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,24 +15,24 @@ import { useScrollReveal, useStaggerReveal } from "@/hooks/use-scroll-reveal";
 
 const solutions = [
 {
-  icon: Eye,
-  title: "Full-Stack Visibility",
-  desc: "Real-time view of endpoints, cloud resources, and SaaS tools — from one dashboard."
+  emoji: "📡",
+  title: "Endpoint Monitoring",
+  desc: "Add any URL and get notified the moment it goes down.\nCheck intervals from 1 to 5 minutes.\nEvery incident logged with timestamps and duration."
 },
 {
-  icon: TrendingDown,
-  title: "Cost Intelligence",
-  desc: "Surface billing anomalies, unused resources, and SaaS license waste automatically."
+  emoji: "☁️",
+  title: "Cloud Auto-Discovery",
+  desc: "Connect AWS and instantly see all your resources.\nEC2, Lambda, RDS, S3 — their state, cost, and health.\nUpdated every 2 minutes."
 },
 {
-  icon: ShieldCheck,
-  title: "Security Posture",
-  desc: "Monitor SSL, MFA adoption, suspended accounts, and public exposure across your stack."
+  emoji: "🔌",
+  title: "SaaS Status Tracking",
+  desc: "Monitor Stripe, GitHub, Vercel and more.\nTrack their real uptime against their promised SLA.\nExport proof for contract renegotiations."
 },
 {
-  icon: FileCheck,
-  title: "Operational Compliance",
-  desc: "Generate SLA reports, export audit trails, and prove uptime for contractual obligations."
+  emoji: "📊",
+  title: "Reports & Dashboards",
+  desc: "A monthly report sent automatically on the 1st.\nCustomizable dashboards for your team.\nShare a public status page with your clients."
 }];
 
 
@@ -391,11 +391,11 @@ export default function Waitlist() {
               key={sol.title}
               className="rounded-xl border border-border bg-card p-6 hover:border-primary/30 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group">
               
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/15 transition-colors">
-                  <sol.icon className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/15 transition-colors text-2xl">
+                  {sol.emoji}
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{sol.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{sol.desc}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{sol.desc}</p>
               </div>
             )}
           </div>
