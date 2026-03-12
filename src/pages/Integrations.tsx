@@ -155,8 +155,9 @@ export default function Integrations() {
                                 <div className="flex gap-1">
                                   <Button
                                     variant="ghost"
-                                    size="sm"
-                                    className="gap-1 text-xs"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    title={t('integrations.sync')}
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       syncAws.mutate(awsCred!.id, {
@@ -167,43 +168,22 @@ export default function Integrations() {
                                     disabled={syncAws.isPending}
                                   >
                                     {syncAws.isPending ? (
-                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                     ) : (
-                                      <RefreshCw className="w-3 h-3" />
+                                      <RefreshCw className="w-3.5 h-3.5" />
                                     )}
-                                    {t('integrations.sync')}
                                   </Button>
                                   <Button
                                     variant="ghost"
-                                    size="sm"
-                                    className="gap-1 text-xs text-muted-foreground"
+                                    size="icon"
+                                    className="h-7 w-7 text-muted-foreground"
+                                    title="Settings"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setAwsModalOpen(true);
                                     }}
                                   >
-                                    <Settings className="w-3 h-3" />
-                                    Settings
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="gap-1 text-xs text-destructive hover:bg-destructive/10"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      disconnectAws.mutate(awsCred!.id, {
-                                        onSuccess: () => toast.success('AWS disconnected'),
-                                        onError: (err) => toast.error(err.message),
-                                      });
-                                    }}
-                                    disabled={disconnectAws.isPending}
-                                  >
-                                    {disconnectAws.isPending ? (
-                                      <Loader2 className="w-3 h-3 animate-spin" />
-                                    ) : (
-                                      <Unlink className="w-3 h-3" />
-                                    )}
-                                    Disconnect
+                                    <Settings className="w-3.5 h-3.5" />
                                   </Button>
                                 </div>
                                 {awsIntegration && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
