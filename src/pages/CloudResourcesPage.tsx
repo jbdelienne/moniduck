@@ -472,7 +472,12 @@ export default function CloudResourcesPage() {
                       <TableCell><StatusCell status={r.status} /></TableCell>
                       <TableCell>{renderDetail(r)}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">
-                        {r.syncedAt ? formatDistanceToNow(new Date(r.syncedAt), { addSuffix: true }) : '—'}
+                        {r.syncedAt
+                          ? (() => {
+                              const dist = formatDistanceToNow(new Date(r.syncedAt), { addSuffix: true });
+                              return dist.includes('less than') ? 'just now' : dist;
+                            })()
+                          : '—'}
                       </TableCell>
                       <CostCell cost={cost} />
                     </TableRow>
