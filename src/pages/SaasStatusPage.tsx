@@ -264,7 +264,10 @@ export default function SaasStatusPage() {
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {dep.last_check
-                        ? formatDistanceToNow(new Date(dep.last_check), { addSuffix: true })
+                        ? (() => {
+                            const dist = formatDistanceToNow(new Date(dep.last_check), { addSuffix: true });
+                            return dist.includes('less than') ? 'just now' : dist;
+                          })()
                         : 'Never'}
                     </TableCell>
                     <TableCell className="text-right">
