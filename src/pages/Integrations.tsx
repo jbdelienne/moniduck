@@ -151,13 +151,13 @@ export default function Integrations() {
                           {awsConnected ? (
                             <div className="mt-auto space-y-3">
                               {awsIntegration && <MetricPreview integrationId={awsIntegration.id} />}
+                              {awsIntegration && <MetricPreview integrationId={awsIntegration.id} />}
                               <div className="flex items-center justify-between gap-1">
                                 <div className="flex gap-1">
                                   <Button
                                     variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7"
-                                    title={t('integrations.sync')}
+                                    size="sm"
+                                    className="gap-1 text-xs"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       syncAws.mutate(awsCred!.id, {
@@ -168,22 +168,23 @@ export default function Integrations() {
                                     disabled={syncAws.isPending}
                                   >
                                     {syncAws.isPending ? (
-                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                      <Loader2 className="w-3 h-3 animate-spin" />
                                     ) : (
-                                      <RefreshCw className="w-3.5 h-3.5" />
+                                      <RefreshCw className="w-3 h-3" />
                                     )}
+                                    {t('integrations.sync')}
                                   </Button>
                                   <Button
                                     variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 text-muted-foreground"
-                                    title="Settings"
+                                    size="sm"
+                                    className="gap-1 text-xs text-muted-foreground"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setAwsModalOpen(true);
                                     }}
                                   >
-                                    <Settings className="w-3.5 h-3.5" />
+                                    <Settings className="w-3 h-3" />
+                                    Settings
                                   </Button>
                                 </div>
                                 {awsIntegration && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
