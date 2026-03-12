@@ -117,12 +117,19 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
     metrics.push({ label: 'Avg Latency', value: lat, icon: Clock });
   }
 
+  const syncDisplay = resource.syncedAt
+    ? (() => {
+        const dist = formatDistanceToNow(new Date(resource.syncedAt), { addSuffix: true });
+        return dist.includes('less than') ? 'just now' : dist;
+      })()
+    : '—';
+
   return (
     <>
       {/* Backdrop */}
       <div
         className={cn(
-          "fixed inset-0 z-50 bg-black/60 transition-opacity duration-300",
+          "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300",
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={onClose}
@@ -132,21 +139,21 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
       <div
         className={cn(
           "fixed right-0 top-0 bottom-0 w-full max-w-xl z-50",
-          "bg-card border-l border-border",
+          "bg-gradient-to-b from-card to-background border-l border-border/50",
           "flex flex-col shadow-2xl",
           "transition-transform duration-300 ease-out",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
         {/* Header */}
-        <div className="p-6 border-b border-border">
+        <div className="p-6 border-b border-border/50">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 border border-primary/20">
-                <Icon className="w-6 h-6 text-primary" />
+              <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-muted/50 border border-border/50">
+                <Icon className="w-7 h-7 text-foreground" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-foreground mb-1">{resource.name}</h2>
+                <h2 className="text-xl font-bold text-foreground mb-1">{resource.name}</h2>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="text-[10px] font-mono uppercase tracking-wider">
                     {getTypeLabel(resource.type)}
@@ -160,14 +167,10 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
             </Button>
           </div>
 
-          {/* Quick stats */}
-          <div className="grid grid-cols-3 gap-3 mt-5">
+          {/* Quick stats row */}
+          <div className="grid grid-cols-3 gap-3 mt-6">
             <QuickStat icon={Cloud} label="Provider" value={resource.provider.toUpperCase()} />
-            <QuickStat icon={Clock} label="Last Sync" value={
-              resource.syncedAt
-                ? formatDistanceToNow(new Date(resource.syncedAt), { addSuffix: true })
-                : '—'
-            } />
+            <QuickStat icon={Clock} label="Last Sync" value={syncDisplay} />
             <QuickStat icon={DollarSign} label="Cost" value={
               resource.monthlyCost !== undefined ? `$${resource.monthlyCost.toFixed(2)}/mo` : '—'
             } />
@@ -176,7 +179,7 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
 
         {/* Content */}
         <Tabs defaultValue="overview" className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="mx-6 mt-4 bg-muted/50 border border-border">
+          <TabsList className="mx-6 mt-4 bg-muted/50 border border-border/50">
             <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
             <TabsTrigger value="metrics" className="text-xs">Metrics</TabsTrigger>
           </TabsList>
@@ -185,7 +188,7 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
             <TabsContent value="overview" className="mt-0 space-y-6">
               {/* Identifiers with copy */}
               <div className="space-y-3">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                   Identifiers
                 </h3>
                 <div className="space-y-2">
@@ -207,8 +210,8 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
                 <>
                   <Separator />
                   <div className="space-y-3">
-                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                      <Tag className="w-3.5 h-3.5" />
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      <Tag className="w-4 h-4" />
                       Tags
                     </h3>
                     <div className="flex flex-wrap gap-1.5">
@@ -222,22 +225,22 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
                 </>
               )}
 
-              {/* Flags */}
+              {/* Security flags */}
               {(resource.publiclyAccessible || resource.publicAccess) && (
                 <>
                   <Separator />
                   <div className="space-y-3">
-                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                       Security
                     </h3>
                     {resource.publiclyAccessible && (
-                      <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20 text-xs text-destructive">
+                      <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-xs text-destructive">
                         <Globe className="w-4 h-4 shrink-0" />
                         Publicly accessible
                       </div>
                     )}
                     {resource.publicAccess && (
-                      <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 border border-destructive/20 text-xs text-destructive">
+                      <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-xs text-destructive">
                         <Globe className="w-4 h-4 shrink-0" />
                         Public access enabled
                       </div>
@@ -250,17 +253,17 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
             <TabsContent value="metrics" className="mt-0 space-y-6">
               {metrics.length > 0 ? (
                 <div className="space-y-3">
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
                     Current Metrics
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     {metrics.map((m) => (
-                      <div key={m.label} className="p-3 rounded-md bg-muted/30 border border-border">
+                      <div key={m.label} className="p-3 rounded-lg bg-muted/30 border border-border/50">
                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-1">
-                          <m.icon className="w-3 h-3" />
+                          <m.icon className="w-3.5 h-3.5" />
                           {m.label}
                         </div>
-                        <p className="text-sm font-bold text-foreground font-mono">{m.value}</p>
+                        <p className="text-lg font-bold text-foreground font-mono">{m.value}</p>
                       </div>
                     ))}
                   </div>
@@ -274,7 +277,7 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
 
         {/* Footer */}
         {resource.url && (
-          <div className="p-6 border-t border-border">
+          <div className="p-6 border-t border-border/50">
             <Button
               variant="outline"
               className="w-full"
@@ -294,12 +297,12 @@ export default function ResourceSlidePanel({ resource, open, onClose }: Resource
 
 function QuickStat({ icon: IconComp, label, value }: { icon: typeof Server; label: string; value: string }) {
   return (
-    <div className="p-3 rounded-md bg-muted/30 border border-border">
-      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mb-1">
-        <IconComp className="w-3 h-3" />
+    <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+        <IconComp className="w-3.5 h-3.5" />
         {label}
       </div>
-      <p className="text-sm font-bold text-foreground truncate">{value}</p>
+      <p className="text-lg font-bold text-foreground truncate">{value}</p>
     </div>
   );
 }
@@ -309,7 +312,7 @@ function StatusDot({ status }: { status: string }) {
   return (
     <span className="flex items-center gap-1.5 text-[10px]">
       <span className={cn("w-2 h-2 rounded-full", isUp ? "bg-success" : "bg-warning")} />
-      <span className={isUp ? "text-success" : "text-warning"}>
+      <span className={isUp ? "text-[hsl(var(--success))]" : "text-[hsl(var(--warning))]"}>
         {isUp ? 'Running' : status}
       </span>
     </span>
@@ -324,21 +327,21 @@ function CopyableRow({ label, value, fieldKey, copiedField, onCopy }: {
   onCopy: (text: string, field: string) => void;
 }) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-md bg-muted/30 border border-border group">
+    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/50 group">
       <div className="min-w-0 flex-1 mr-3">
-        <p className="text-[10px] text-muted-foreground mb-0.5">{label}</p>
-        <p className="text-xs font-mono text-foreground truncate">{value}</p>
+        <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+        <p className="text-sm font-mono text-foreground truncate">{value}</p>
       </div>
       <Button
         variant="ghost"
         size="icon"
-        className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="h-8 w-8 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
         onClick={() => onCopy(value, fieldKey)}
       >
         {copiedField === fieldKey ? (
-          <Check className="w-3.5 h-3.5 text-success" />
+          <Check className="w-4 h-4 text-[hsl(var(--success))]" />
         ) : (
-          <Copy className="w-3.5 h-3.5" />
+          <Copy className="w-4 h-4" />
         )}
       </Button>
     </div>
