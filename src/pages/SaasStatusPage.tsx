@@ -175,7 +175,7 @@ export default function SaasStatusPage() {
           </Button>
         </div>
       ) : (
-        <div className="border border-border rounded-md bg-card overflow-hidden">
+        <div className="table-container">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
