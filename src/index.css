@@ -121,6 +121,10 @@
     --shadow-lg: none;
     --shadow-xl: none;
     --shadow-2xl: none;
+
+    /* Surface tokens */
+    --surface-elevated: 0 0% 8%;
+    --surface-hover: 0 0% 12%;
   }
 }
 
@@ -129,14 +133,38 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+  }
 }
 
 @layer components {
+  /* Status dots */
   .status-dot {
     @apply w-2.5 h-2.5 rounded-full;
   }
@@ -160,12 +188,32 @@
     @apply status-dot bg-muted-foreground/40;
   }
 
+  /* Glass card effect */
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
+    box-shadow:
+      0 0 0 1px hsl(var(--border) / 0.1),
+      0 4px 16px -4px hsl(0 0% 0% / 0.2);
+  }
+
+  /* Hover lift */
+  .hover-lift {
+    @apply transition-all duration-200;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -8px hsl(0 0% 0% / 0.3);
+  }
+
+  /* Service card */
   .service-card {
-    @apply bg-card border border-border rounded-lg p-5 transition-all duration-200 cursor-pointer;
+    @apply bg-card border border-border/50 rounded-xl p-5 transition-all duration-200 cursor-pointer;
   }
 
   .service-card:hover {
-    @apply border-border/60;
+    @apply border-border;
+    box-shadow: 0 8px 24px -8px hsl(0 0% 0% / 0.2);
   }
 
   .gradient-primary {
@@ -179,12 +227,40 @@
   .tv-mode .service-card .text-3xl {
     @apply text-5xl;
   }
+
+  /* Sidebar styling */
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors;
+    @apply text-muted-foreground hover:text-foreground hover:bg-accent;
+  }
+
+  .sidebar-item-active {
+    @apply text-foreground bg-accent;
+  }
+
+  /* Table container */
+  .table-container {
+    @apply rounded-xl border border-border/50 bg-card/60 backdrop-blur-sm overflow-hidden;
+  }
 }
 
 @layer utilities {
   @keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+
+  @keyframes animate-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-in {
+    animation: animate-in 0.3s ease-out;
   }
 
   @keyframes pulse-glow {

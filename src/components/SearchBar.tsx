@@ -24,13 +24,13 @@ export default function SearchBar({ value, onChange, placeholder = 'Rechercherâ€
 
   return (
     <div className="relative w-72">
-      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
       <Input
         ref={inputRef}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="pl-8 pr-14 h-9 text-sm bg-muted/50 border-border"
+        className="pl-9 pr-14 h-9 text-sm bg-card/60 border-border/50 focus:border-foreground/30"
       />
       <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground bg-muted border border-border rounded px-1.5 py-0.5 font-mono pointer-events-none">
         âŒ˜K
