@@ -151,7 +151,6 @@ export default function Integrations() {
                           {awsConnected ? (
                             <div className="mt-auto space-y-3">
                               {awsIntegration && <MetricPreview integrationId={awsIntegration.id} />}
-                              {awsIntegration && <MetricPreview integrationId={awsIntegration.id} />}
                               <div className="flex items-center justify-between gap-1">
                                 <div className="flex gap-1">
                                   <Button
@@ -185,6 +184,26 @@ export default function Integrations() {
                                   >
                                     <Settings className="w-3 h-3" />
                                     Settings
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 text-destructive hover:bg-destructive/10"
+                                    title="Disconnect"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      disconnectAws.mutate(awsCred!.id, {
+                                        onSuccess: () => toast.success('AWS disconnected'),
+                                        onError: (err) => toast.error(err.message),
+                                      });
+                                    }}
+                                    disabled={disconnectAws.isPending}
+                                  >
+                                    {disconnectAws.isPending ? (
+                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                    ) : (
+                                      <Unlink className="w-3 h-3" />
+                                    )}
                                   </Button>
                                 </div>
                                 {awsIntegration && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
