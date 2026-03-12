@@ -150,7 +150,7 @@ export default function ServicesPage() {
             </Button>
           </div>
         ) : (
-          <div className="border border-border rounded-xl overflow-hidden bg-card">
+          <div className="table-container">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">

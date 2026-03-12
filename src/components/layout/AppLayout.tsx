@@ -14,7 +14,7 @@ export default function AppLayout() {
           onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
           sidebarCollapsed={sidebarCollapsed}
         />
-        <main className="flex-1 p-6 max-w-[1400px]">
+        <main className="flex-1 p-4 lg:p-6 max-w-[1400px]">
           <Outlet />
         </main>
       </div>

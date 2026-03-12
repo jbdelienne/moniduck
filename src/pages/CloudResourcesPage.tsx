@@ -419,7 +419,7 @@ export default function CloudResourcesPage() {
           </div>
 
           {/* Unified table */}
-          <div className="border border-border rounded-md overflow-hidden bg-card">
+          <div className="table-container">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
