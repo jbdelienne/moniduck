@@ -23,6 +23,7 @@ import AwsCostDashboard from "@/pages/AwsCostDashboard";
 import AwsIntegrationDetail from "@/pages/AwsIntegrationDetail";
 import PublicReport from "@/pages/PublicReport";
 import SaasStatusPage from "@/pages/SaasStatusPage";
+import CloudProvidersPage from "@/pages/CloudProvidersPage";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const AppRoutes = () => (
       <Route path="/services" element={<ServicesPage />} />
       <Route path="/cloud-resources" element={<CloudResourcesPage />} />
       <Route path="/saas-status" element={<SaasStatusPage />} />
+      <Route path="/cloud-providers" element={<CloudProvidersPage />} />
       <Route path="/integrations" element={<Integrations />} />
       <Route path="/integrations/aws" element={<AwsIntegrationDetail />} />
       <Route path="/integrations/aws/costs" element={<AwsCostDashboard />} />

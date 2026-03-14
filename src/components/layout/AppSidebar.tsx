@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { LayoutDashboard, Server, Plug, Bell, Settings, FileText, Cloud, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Server, Plug, Bell, Settings, FileText, Cloud, Globe, ChevronLeft, ChevronRight, CloudCog } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useTranslation } from "react-i18next";
 import { useLangPrefix } from "@/hooks/use-lang-prefix";
@@ -28,6 +28,7 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
     { title: "Dashboard", url: `${lp}/dashboard`, icon: LayoutDashboard },
     { title: "Services", url: `${lp}/services`, icon: Server },
     { title: "Cloud", url: `${lp}/cloud-resources`, icon: Cloud },
+    { title: "Providers", url: `${lp}/cloud-providers`, icon: CloudCog },
     { title: "SaaS", url: `${lp}/saas-status`, icon: Globe },
   ];
 
