@@ -89,7 +89,8 @@ export { PROVIDER_ICONS, PROVIDER_LABELS };
 
 export function useCloudRegionFavorites() {
   const { user } = useAuth();
-  const { workspaceId } = useWorkspace();
+  const { data: workspace } = useWorkspace();
+  const workspaceId = workspace?.id;
   const queryClient = useQueryClient();
 
   const favoritesQuery = useQuery({
