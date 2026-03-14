@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkspace } from '@/hooks/use-workspace';
-// layout provided by route
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -29,14 +28,13 @@ import {
 import { format, subDays, subMonths } from 'date-fns';
 import { fr, enUS, de } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { FileText, Plus, Eye, Download, Link2, CalendarIcon, Trash2 } from 'lucide-react';
+import { FileText, Plus, Eye, Download, Link2, CalendarIcon, Trash2, Globe, Cloud } from 'lucide-react';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { cn } from '@/lib/utils';
 import ReportView from '@/components/reports/ReportView';
 
 type PeriodOption = '7d' | '30d' | '3m' | 'custom';
+type ReportType = 'services' | 'saas';
 
 export interface GeneratedReport {
   id: string;
@@ -45,7 +43,9 @@ export interface GeneratedReport {
   periodLabel: string;
   scope: string;
   includeSla: boolean;
-  serviceIds: string[]; // empty = all
+  serviceIds: string[];
+  saasProviderIds: string[];
+  reportType: ReportType;
   periodStart: string;
   periodEnd: string;
   shareToken?: string;
@@ -78,11 +78,13 @@ export default function ReportsPage() {
   const reportViewRef = useRef<HTMLDivElement>(null);
 
   // Form state
+  const [reportType, setReportType] = useState<ReportType>('services');
   const [period, setPeriod] = useState<PeriodOption>('7d');
   const [customFrom, setCustomFrom] = useState<Date | undefined>();
   const [customTo, setCustomTo] = useState<Date | undefined>();
   const [scopeAll, setScopeAll] = useState(true);
   const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
+  const [selectedSaasIds, setSelectedSaasIds] = useState<string[]>([]);
   const [includeSla, setIncludeSla] = useState(false);
 
   // Fetch saved reports from DB
@@ -103,6 +105,8 @@ export default function ReportsPage() {
         scope: r.scope,
         includeSla: r.include_sla,
         serviceIds: r.service_ids || [],
+        saasProviderIds: r.saas_provider_ids || [],
+        reportType: (r.report_type || 'services') as ReportType,
         periodStart: r.period_start,
         periodEnd: r.period_end,
         shareToken: r.share_token,
@@ -125,6 +129,8 @@ export default function ReportsPage() {
         scope: report.scope,
         include_sla: report.includeSla,
         service_ids: report.serviceIds,
+        report_type: report.reportType,
+        saas_provider_ids: report.saasProviderIds,
       });
       if (error) throw error;
     },
@@ -159,8 +165,28 @@ export default function ReportsPage() {
     enabled: !!workspaceId,
   });
 
+  // Fetch SaaS providers for scope selector
+  const { data: saasProviders = [] } = useQuery({
+    queryKey: ['report-saas-providers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('saas_providers')
+        .select('id, name, icon')
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
   const toggleService = (id: string) => {
     setSelectedServiceIds((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSaas = (id: string) => {
+    setSelectedSaasIds((prev) =>
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
   };
@@ -171,10 +197,13 @@ export default function ReportsPage() {
       periodLabel = `${format(customFrom, 'dd/MM/yyyy')} → ${format(customTo, 'dd/MM/yyyy')}`;
     }
 
+    const items = reportType === 'services' ? services : saasProviders;
+    const selectedIds = reportType === 'services' ? selectedServiceIds : selectedSaasIds;
+
     const scopeLabel = scopeAll
-      ? 'All services'
-      : services
-          .filter((s) => selectedServiceIds.includes(s.id))
+      ? reportType === 'services' ? 'All services' : 'All SaaS providers'
+      : items
+          .filter((s) => selectedIds.includes(s.id))
           .map((s) => s.name)
           .join(', ') || 'None';
 
@@ -193,7 +222,9 @@ export default function ReportsPage() {
       periodLabel,
       scope: scopeLabel,
       includeSla,
-      serviceIds: scopeAll ? [] : [...selectedServiceIds],
+      reportType,
+      serviceIds: reportType === 'services' ? (scopeAll ? [] : [...selectedServiceIds]) : [],
+      saasProviderIds: reportType === 'saas' ? (scopeAll ? [] : [...selectedSaasIds]) : [],
       periodStart: pStart.toISOString(),
       periodEnd: pEnd.toISOString(),
     };
@@ -206,54 +237,18 @@ export default function ReportsPage() {
     }
 
     setDrawerOpen(false);
+    resetForm();
+  };
 
-    // Reset form
+  const resetForm = () => {
+    setReportType('services');
     setPeriod('7d');
     setCustomFrom(undefined);
     setCustomTo(undefined);
     setScopeAll(true);
     setSelectedServiceIds([]);
+    setSelectedSaasIds([]);
     setIncludeSla(false);
-  };
-
-  const handleExportPDF = async (report: GeneratedReport) => {
-    // If not viewing, open the report first
-    if (!viewingReport || viewingReport.id !== report.id) {
-      setViewingReport(report);
-      // Wait for render
-      await new Promise((r) => setTimeout(r, 500));
-    }
-    setExportingId(report.id);
-    try {
-      // Wait a tick for ref to be available
-      await new Promise((r) => setTimeout(r, 200));
-      const el = reportViewRef.current;
-      if (!el) {
-        toast.error('Could not capture report');
-        return;
-      }
-      const canvas = await html2canvas(el, { backgroundColor: null, scale: 2, useCORS: true });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      let heightLeft = pdfHeight;
-      let position = 0;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-      heightLeft -= pageHeight;
-      while (heightLeft > 0) {
-        position -= pageHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pageHeight;
-      }
-      const dateStr = format(new Date(), 'yyyy-MM-dd');
-      pdf.save(`moniduck-report-${report.period}-${dateStr}.pdf`);
-      toast.success('PDF exported');
-    } finally {
-      setExportingId(null);
-    }
   };
 
   const handleCopyLink = (report: GeneratedReport) => {
@@ -268,7 +263,8 @@ export default function ReportsPage() {
 
   const isGenerateDisabled =
     (period === 'custom' && (!customFrom || !customTo)) ||
-    (!scopeAll && selectedServiceIds.length === 0);
+    (!scopeAll && reportType === 'services' && selectedServiceIds.length === 0) ||
+    (!scopeAll && reportType === 'saas' && selectedSaasIds.length === 0);
 
   return (
     <>
@@ -309,6 +305,7 @@ export default function ReportsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead>Period</TableHead>
                   <TableHead>Scope</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -319,6 +316,12 @@ export default function ReportsPage() {
                   <TableRow key={report.id}>
                     <TableCell className="font-medium">
                       {format(new Date(report.createdAt), 'PPp', { locale: dateLocale })}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="gap-1">
+                        {report.reportType === 'saas' ? <Cloud className="w-3 h-3" /> : <Globe className="w-3 h-3" />}
+                        {report.reportType === 'saas' ? 'SaaS' : 'Services'}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary">{report.periodLabel}</Badge>
@@ -333,9 +336,6 @@ export default function ReportsPage() {
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8" title="View" onClick={() => setViewingReport(report)}>
                           <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" title="Export PDF" onClick={() => handleExportPDF(report)} disabled={exportingId === report.id}>
-                          <Download className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8" title="Copy link" onClick={() => handleCopyLink(report)}>
                           <Link2 className="w-4 h-4" />
@@ -366,6 +366,33 @@ export default function ReportsPage() {
           </SheetHeader>
 
           <div className="space-y-6 mt-6">
+            {/* Report Type */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold">Report Type</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant={reportType === 'services' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => { setReportType('services'); setScopeAll(true); setSelectedSaasIds([]); }}
+                  className="gap-1.5 text-xs"
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  Services
+                </Button>
+                <Button
+                  type="button"
+                  variant={reportType === 'saas' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => { setReportType('saas'); setScopeAll(true); setSelectedServiceIds([]); }}
+                  className="gap-1.5 text-xs"
+                >
+                  <Cloud className="w-3.5 h-3.5" />
+                  SaaS Providers
+                </Button>
+              </div>
+            </div>
+
             {/* Period */}
             <div className="space-y-3">
               <Label className="text-sm font-semibold">Period</Label>
@@ -421,13 +448,15 @@ export default function ReportsPage() {
                   checked={scopeAll}
                   onCheckedChange={(checked) => {
                     setScopeAll(!!checked);
-                    if (checked) setSelectedServiceIds([]);
+                    if (checked) { setSelectedServiceIds([]); setSelectedSaasIds([]); }
                   }}
                 />
-                <Label htmlFor="scope-all" className="text-sm cursor-pointer">All services</Label>
+                <Label htmlFor="scope-all" className="text-sm cursor-pointer">
+                  {reportType === 'services' ? 'All services' : 'All SaaS providers'}
+                </Label>
               </div>
 
-              {!scopeAll && (
+              {!scopeAll && reportType === 'services' && (
                 <div className="space-y-2 pl-1 max-h-48 overflow-y-auto border border-border rounded-md p-3">
                   {services.length === 0 ? (
                     <p className="text-xs text-muted-foreground">No services found</p>
@@ -448,18 +477,42 @@ export default function ReportsPage() {
                   )}
                 </div>
               )}
+
+              {!scopeAll && reportType === 'saas' && (
+                <div className="space-y-2 pl-1 max-h-48 overflow-y-auto border border-border rounded-md p-3">
+                  {saasProviders.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">No SaaS providers found</p>
+                  ) : (
+                    saasProviders.map((provider) => (
+                      <div key={provider.id} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`saas-${provider.id}`}
+                          checked={selectedSaasIds.includes(provider.id)}
+                          onCheckedChange={() => toggleSaas(provider.id)}
+                        />
+                        <Label htmlFor={`saas-${provider.id}`} className="text-sm cursor-pointer flex items-center gap-1.5">
+                          <span>{provider.icon}</span>
+                          {provider.name}
+                        </Label>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* SLA Toggle */}
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-sm font-semibold">Include SaaS providers SLA</Label>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Add SLA comparison from connected integrations
-                </p>
+            {/* SLA Toggle — only for services reports */}
+            {reportType === 'services' && (
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-semibold">Include SaaS providers SLA</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Add SLA comparison from connected integrations
+                  </p>
+                </div>
+                <Switch checked={includeSla} onCheckedChange={setIncludeSla} />
               </div>
-              <Switch checked={includeSla} onCheckedChange={setIncludeSla} />
-            </div>
+            )}
 
             {/* Generate */}
             <Button
