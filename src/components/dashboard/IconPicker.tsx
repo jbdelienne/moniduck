@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import EmojiPicker, { Theme, EmojiClickData } from 'emoji-picker-react';
 import { Ban } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -8,35 +9,31 @@ interface IconPickerProps {
 }
 
 export default function IconPicker({ value, onChange }: IconPickerProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleClick = () => {
-    inputRef.current?.focus();
-  };
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    if (open) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
 
-  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
-    const text = e.currentTarget.value;
-    // Extract the last emoji entered (in case of multiple)
-    const emojiRegex = /\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu;
-    const matches = text.match(emojiRegex);
-    if (matches && matches.length > 0) {
-      onChange(matches[matches.length - 1]);
-      e.currentTarget.value = '';
-    }
-  };
-
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange('');
+  const handleSelect = (emojiData: EmojiClickData) => {
+    onChange(emojiData.emoji);
+    setOpen(false);
   };
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <Button
         type="button"
         variant="outline"
         className="w-full justify-start h-10 font-normal gap-2"
-        onClick={handleClick}
+        onClick={() => setOpen(!open)}
       >
         {value ? (
           <>
@@ -46,27 +43,31 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
         ) : (
           <>
             <Ban className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Click to pick an emoji</span>
+            <span className="text-sm text-muted-foreground">Pick an emoji</span>
           </>
         )}
       </Button>
       {value && (
         <button
           type="button"
-          onClick={handleClear}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          onClick={(e) => { e.stopPropagation(); onChange(''); }}
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors z-10"
         >
           Clear
         </button>
       )}
-      {/* Hidden input to capture emoji keyboard input */}
-      <input
-        ref={inputRef}
-        className="absolute inset-0 opacity-0 cursor-pointer"
-        onInput={handleInput}
-        autoComplete="off"
-        aria-label="Emoji picker input"
-      />
+      {open && (
+        <div className="absolute z-50 top-full left-0 mt-1">
+          <EmojiPicker
+            onEmojiClick={handleSelect}
+            theme={Theme.DARK}
+            width={320}
+            height={400}
+            searchPlaceholder="Search emoji..."
+            lazyLoadEmojis
+          />
+        </div>
+      )}
     </div>
   );
 }
