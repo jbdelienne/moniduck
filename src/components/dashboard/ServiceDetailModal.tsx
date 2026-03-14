@@ -189,14 +189,18 @@ export default function ServiceDetailModal({ service, open, onClose, onDelete }:
         <div className="p-6 border-b border-border/50">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-4 min-w-0 flex-1">
-              <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-muted/50 border border-border/50 text-2xl">
-                {service.icon}
-              </div>
+              {editing ? (
+                <IconPicker value={editIcon} onChange={setEditIcon} compact />
+              ) : (
+                <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-muted/50 border border-border/50 text-2xl">
+                  {service.icon}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 {editing ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <IconPicker value={editIcon} onChange={setEditIcon} compact />
+                      <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-lg font-bold" placeholder="Service name" />
                       <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-lg font-bold" placeholder="Service name" />
                     </div>
                     <Input value={editUrl} onChange={(e) => setEditUrl(e.target.value)} className="text-sm" placeholder="https://..." type="url" />
