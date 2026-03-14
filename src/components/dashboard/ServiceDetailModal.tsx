@@ -196,7 +196,7 @@ export default function ServiceDetailModal({ service, open, onClose, onDelete }:
                 {editing ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <IconPicker value={editIcon} onChange={setEditIcon} />
+                      <IconPicker value={editIcon} onChange={setEditIcon} compact />
                       <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-lg font-bold" placeholder="Service name" />
                     </div>
                     <Input value={editUrl} onChange={(e) => setEditUrl(e.target.value)} className="text-sm" placeholder="https://..." type="url" />

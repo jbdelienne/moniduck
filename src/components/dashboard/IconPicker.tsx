@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button';
 interface IconPickerProps {
   value: string;
   onChange: (icon: string) => void;
+  compact?: boolean;
 }
 
-export default function IconPicker({ value, onChange }: IconPickerProps) {
+export default function IconPicker({ value, onChange, compact = false }: IconPickerProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +27,33 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
     onChange(emojiData.emoji);
     setOpen(false);
   };
+
+  if (compact) {
+    return (
+      <div ref={containerRef} className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          className="w-10 h-10 rounded-md border border-border bg-muted/50 hover:bg-accent flex items-center justify-center text-xl transition-colors"
+          title="Change icon"
+        >
+          {value || '🌐'}
+        </button>
+        {open && (
+          <div className="absolute z-50 top-full left-0 mt-1">
+            <EmojiPicker
+              onEmojiClick={handleSelect}
+              theme={Theme.DARK}
+              width={320}
+              height={400}
+              searchPlaceholder="Search emoji..."
+              lazyLoadEmojis
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="relative">
