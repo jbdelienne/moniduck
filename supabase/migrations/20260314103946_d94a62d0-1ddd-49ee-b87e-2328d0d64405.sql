@@ -1,0 +1,1 @@
+ALTER TABLE public.saas_providers ALTER COLUMN is_public SET DEFAULT false;
