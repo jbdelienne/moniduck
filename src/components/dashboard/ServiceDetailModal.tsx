@@ -199,10 +199,7 @@ export default function ServiceDetailModal({ service, open, onClose, onDelete }:
               <div className="min-w-0 flex-1">
                 {editing ? (
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-lg font-bold" placeholder="Service name" />
-                      <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-lg font-bold" placeholder="Service name" />
-                    </div>
+                    <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="text-lg font-bold" placeholder="Service name" />
                     <Input value={editUrl} onChange={(e) => setEditUrl(e.target.value)} className="text-sm" placeholder="https://..." type="url" />
                     <div className="grid grid-cols-2 gap-2">
                       <Select value={editInterval} onValueChange={setEditInterval}>
