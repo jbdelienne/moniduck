@@ -857,6 +857,8 @@ export type Database = {
           period_end: string
           period_label: string
           period_start: string
+          report_type: string
+          saas_provider_ids: string[]
           scope: string
           service_ids: string[]
           share_token: string
@@ -871,6 +873,8 @@ export type Database = {
           period_end: string
           period_label: string
           period_start: string
+          report_type?: string
+          saas_provider_ids?: string[]
           scope: string
           service_ids?: string[]
           share_token?: string
@@ -885,6 +889,8 @@ export type Database = {
           period_end?: string
           period_label?: string
           period_start?: string
+          report_type?: string
+          saas_provider_ids?: string[]
           scope?: string
           service_ids?: string[]
           share_token?: string
