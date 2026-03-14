@@ -8,7 +8,6 @@ import {
 } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 
-// Register a clean font
 Font.register({
   family: 'Inter',
   fonts: [
@@ -25,6 +24,7 @@ const s = StyleSheet.create({
   headerRight: { textAlign: 'right' },
   headerPeriod: { fontSize: 11, fontWeight: 600 },
   headerDate: { fontSize: 8, color: '#666', marginTop: 2 },
+  headerType: { fontSize: 8, color: '#4F3B78', marginTop: 2, fontWeight: 600 },
   sectionTitle: { fontSize: 13, fontWeight: 700, marginBottom: 8, marginTop: 20, color: '#4F3B78' },
   summaryRow: { flexDirection: 'row', gap: 12, marginBottom: 16 },
   summaryCard: { flex: 1, backgroundColor: '#f8f7fc', borderRadius: 6, padding: 12, alignItems: 'center' },
@@ -78,6 +78,7 @@ interface ReportPDFProps {
   allIncidents: { serviceName: string; start: string; duration: number; cause: string }[];
   slaRows?: SlaRow[];
   includeSla?: boolean;
+  reportType?: string;
 }
 
 function uptimeStyle(v: number | null) {
@@ -93,16 +94,12 @@ function fmtDuration(min: number) {
 }
 
 export default function ReportPDF({
-  periodLabel,
-  createdAt,
-  globalUptime,
-  totalIncidents,
-  servicesCount,
-  serviceMetrics,
-  allIncidents,
-  slaRows = [],
-  includeSla = false,
+  periodLabel, createdAt, globalUptime, totalIncidents, servicesCount,
+  serviceMetrics, allIncidents, slaRows = [], includeSla = false, reportType = 'services',
 }: ReportPDFProps) {
+  const isSaas = reportType === 'saas';
+  const itemLabel = isSaas ? 'Providers' : 'Services';
+
   return (
     <Document>
       <Page size="A4" style={s.page}>
@@ -111,9 +108,8 @@ export default function ReportPDF({
           <Text style={s.logo}>🦆 moniduck</Text>
           <View style={s.headerRight}>
             <Text style={s.headerPeriod}>{periodLabel}</Text>
-            <Text style={s.headerDate}>
-              Generated {format(new Date(createdAt), 'PPPp')}
-            </Text>
+            <Text style={s.headerType}>{isSaas ? 'SaaS Providers Report' : 'Services Report'}</Text>
+            <Text style={s.headerDate}>Generated {format(new Date(createdAt), 'PPPp')}</Text>
           </View>
         </View>
 
@@ -130,34 +126,28 @@ export default function ReportPDF({
           </View>
           <View style={s.summaryCard}>
             <Text style={s.summaryValue}>{servicesCount}</Text>
-            <Text style={s.summaryLabel}>Services</Text>
+            <Text style={s.summaryLabel}>{itemLabel}</Text>
           </View>
         </View>
 
-        {/* Services Uptime Table */}
-        <Text style={s.sectionTitle}>Services Uptime</Text>
+        {/* Uptime Table */}
+        <Text style={s.sectionTitle}>{itemLabel} Uptime</Text>
         <View style={s.table}>
           <View style={s.tableHeader}>
-            <Text style={[s.tableHeaderCell, s.col1]}>Service</Text>
+            <Text style={[s.tableHeaderCell, s.col1]}>{isSaas ? 'Provider' : 'Service'}</Text>
             <Text style={[s.tableHeaderCell, s.col2]}>Uptime</Text>
             <Text style={[s.tableHeaderCell, s.col3]}>Incidents</Text>
             <Text style={[s.tableHeaderCell, s.col4]}>Avg Response</Text>
           </View>
           {serviceMetrics.length === 0 ? (
-            <Text style={s.noData}>No services in scope</Text>
+            <Text style={s.noData}>No {itemLabel.toLowerCase()} in scope</Text>
           ) : (
             serviceMetrics.map((m, i) => (
               <View key={i} style={s.tableRow}>
                 <Text style={[s.tableCell, s.col1]}>{m.icon} {m.name}</Text>
-                <Text style={[s.tableCell, s.col2, uptimeStyle(m.uptime)]}>
-                  {m.uptime !== null ? `${m.uptime}%` : 'N/A'}
-                </Text>
-                <Text style={[s.tableCell, s.col3]}>
-                  {m.incidents.length > 0 ? String(m.incidents.length) : '✓'}
-                </Text>
-                <Text style={[s.tableCell, s.col4]}>
-                  {m.avgResponse !== null ? `${m.avgResponse}ms` : '—'}
-                </Text>
+                <Text style={[s.tableCell, s.col2, uptimeStyle(m.uptime)]}>{m.uptime !== null ? `${m.uptime}%` : 'N/A'}</Text>
+                <Text style={[s.tableCell, s.col3]}>{m.incidents.length > 0 ? String(m.incidents.length) : '✓'}</Text>
+                <Text style={[s.tableCell, s.col4]}>{m.avgResponse !== null ? `${m.avgResponse}ms` : '—'}</Text>
               </View>
             ))
           )}
@@ -185,7 +175,7 @@ export default function ReportPDF({
         {/* SLA Section */}
         {includeSla && slaRows.length > 0 && (
           <>
-            <Text style={s.sectionTitle}>SaaS Providers SLA</Text>
+            <Text style={s.sectionTitle}>{isSaas ? 'SLA Compliance' : 'SaaS Providers SLA'}</Text>
             <View style={s.table}>
               <View style={s.tableHeader}>
                 <Text style={[s.tableHeaderCell, s.col1]}>Provider</Text>
@@ -197,9 +187,7 @@ export default function ReportPDF({
                 <View key={i} style={s.tableRow}>
                   <Text style={[s.tableCell, s.col1]}>{row.provider}</Text>
                   <Text style={[s.tableCell, s.col2]}>{row.promised}%</Text>
-                  <Text style={[s.tableCell, s.col3, uptimeStyle(row.real)]}>
-                    {row.real !== null ? `${row.real}%` : 'N/A'}
-                  </Text>
+                  <Text style={[s.tableCell, s.col3, uptimeStyle(row.real)]}>{row.real !== null ? `${row.real}%` : 'N/A'}</Text>
                   <Text style={[s.tableCell, s.col4, row.delta !== null ? (row.delta >= 0 ? s.uptimeGood : s.uptimeBad) : {}]}>
                     {row.delta !== null ? `${row.delta >= 0 ? '+' : ''}${row.delta}%` : '—'}
                   </Text>
@@ -209,7 +197,6 @@ export default function ReportPDF({
           </>
         )}
 
-        {/* Footer */}
         <Text style={s.footer}>Generated by moniduck · moniduck.io</Text>
       </Page>
     </Document>

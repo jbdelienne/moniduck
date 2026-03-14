@@ -18,7 +18,7 @@ import {
 import { format } from 'date-fns';
 import { fr, enUS, de } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Activity, Shield, Clock, TrendingUp, Layers, Download, Link2 } from 'lucide-react';
+import { ArrowLeft, Activity, Shield, Clock, TrendingUp, Layers, Download, Link2, Cloud } from 'lucide-react';
 import { toast } from 'sonner';
 import ReportPDF from './ReportPDF';
 import type { GeneratedReport } from '@/pages/ReportsPage';
@@ -29,25 +29,11 @@ function getDateLocale(lang: string) {
   return enUS;
 }
 
-// Known SaaS SLA commitments
 const SAAS_SLA_PROMISES: Record<string, number> = {
-  google: 99.9,
-  microsoft: 99.9,
-  aws: 99.99,
-  gcp: 99.95,
-  azure: 99.95,
-  slack: 99.99,
-  stripe: 99.99,
+  google: 99.9, microsoft: 99.9, aws: 99.99, gcp: 99.95, azure: 99.95, slack: 99.99, stripe: 99.99,
 };
-
 const SAAS_LABELS: Record<string, string> = {
-  google: 'Google Workspace',
-  microsoft: 'Microsoft 365',
-  aws: 'AWS',
-  gcp: 'Google Cloud',
-  azure: 'Microsoft Azure',
-  slack: 'Slack',
-  stripe: 'Stripe',
+  google: 'Google Workspace', microsoft: 'Microsoft 365', aws: 'AWS', gcp: 'Google Cloud', azure: 'Microsoft Azure', slack: 'Slack', stripe: 'Stripe',
 };
 
 interface ReportViewProps {
@@ -66,25 +52,23 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
 
   const periodStart = report.periodStart;
   const periodEnd = report.periodEnd;
+  const isSaasReport = report.reportType === 'saas';
 
-  // Fetch services in scope
+  // ── Services report data ──
   const { data: services = [] } = useQuery({
     queryKey: ['report-view-services', workspaceId, report.serviceIds],
     queryFn: async () => {
       let query = supabase.from('services').select('*').eq('workspace_id', workspaceId!);
-      if (report.serviceIds.length > 0) {
-        query = query.in('id', report.serviceIds);
-      }
+      if (report.serviceIds.length > 0) query = query.in('id', report.serviceIds);
       const { data, error } = await query;
       if (error) throw error;
       return data;
     },
-    enabled: !!workspaceId,
+    enabled: !!workspaceId && !isSaasReport,
   });
 
   const serviceIds = services.map((s) => s.id);
 
-  // Fetch checks with pagination
   const { data: checks = [] } = useQuery({
     queryKey: ['report-view-checks', serviceIds, periodStart, periodEnd],
     queryFn: async () => {
@@ -109,10 +93,52 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
       }
       return allChecks;
     },
-    enabled: serviceIds.length > 0,
+    enabled: serviceIds.length > 0 && !isSaasReport,
   });
 
-  // Fetch integrations for SLA section
+  // ── SaaS report data ──
+  const { data: saasProviders = [] } = useQuery({
+    queryKey: ['report-view-saas-providers', report.saasProviderIds],
+    queryFn: async () => {
+      let query = supabase.from('saas_providers').select('*');
+      if (report.saasProviderIds.length > 0) query = query.in('id', report.saasProviderIds);
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+    enabled: isSaasReport,
+  });
+
+  const saasProviderIds = saasProviders.map((p) => p.id);
+
+  const { data: saasChecks = [] } = useQuery({
+    queryKey: ['report-view-saas-checks', saasProviderIds, periodStart, periodEnd],
+    queryFn: async () => {
+      if (saasProviderIds.length === 0) return [];
+      const allChecks: any[] = [];
+      let from = 0;
+      const pageSize = 1000;
+      let hasMore = true;
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('saas_checks')
+          .select('*')
+          .in('saas_provider_id', saasProviderIds)
+          .gte('checked_at', periodStart)
+          .lte('checked_at', periodEnd)
+          .order('checked_at', { ascending: true })
+          .range(from, from + pageSize - 1);
+        if (error) throw error;
+        allChecks.push(...(data || []));
+        hasMore = (data?.length ?? 0) === pageSize;
+        from += pageSize;
+      }
+      return allChecks;
+    },
+    enabled: saasProviderIds.length > 0 && isSaasReport,
+  });
+
+  // ── SLA data for services reports ──
   const { data: integrations = [] } = useQuery({
     queryKey: ['report-view-integrations', workspaceId],
     queryFn: async () => {
@@ -124,10 +150,9 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
       if (error) throw error;
       return data;
     },
-    enabled: !!workspaceId && report.includeSla,
+    enabled: !!workspaceId && report.includeSla && !isSaasReport,
   });
 
-  // Fetch integration sync data for SLA calculation
   const integrationIds = integrations.map((i) => i.id);
   const { data: syncData = [] } = useQuery({
     queryKey: ['report-view-sync', integrationIds],
@@ -142,10 +167,10 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
       if (error) throw error;
       return data;
     },
-    enabled: integrationIds.length > 0 && report.includeSla,
+    enabled: integrationIds.length > 0 && report.includeSla && !isSaasReport,
   });
 
-  // Compute per-service metrics
+  // ── Compute per-service metrics ──
   const serviceMetrics = services.map((service) => {
     const sChecks = checks.filter((c) => c.service_id === service.id);
     const total = sChecks.length;
@@ -155,75 +180,85 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
       ? Math.round(sChecks.reduce((sum: number, c: any) => sum + c.response_time, 0) / total)
       : null;
 
-    // Incidents: consecutive down checks
     const incidents: { start: string; end: string; duration: number; cause: string }[] = [];
     let currentInc: { start: string; end: string; cause: string } | null = null;
-
     for (const check of sChecks) {
       if (check.status === 'down') {
-        if (!currentInc) {
-          currentInc = {
-            start: check.checked_at,
-            end: check.checked_at,
-            cause: check.error_message || `HTTP ${check.status_code || 'timeout'}`,
-          };
-        }
+        if (!currentInc) currentInc = { start: check.checked_at, end: check.checked_at, cause: check.error_message || `HTTP ${check.status_code || 'timeout'}` };
         currentInc.end = check.checked_at;
         if (check.error_message) currentInc.cause = check.error_message;
       } else if (currentInc) {
-        const dur = Math.round(
-          (new Date(currentInc.end).getTime() - new Date(currentInc.start).getTime()) / 60000
-        );
+        const dur = Math.round((new Date(currentInc.end).getTime() - new Date(currentInc.start).getTime()) / 60000);
         incidents.push({ ...currentInc, duration: Math.max(dur, 1) });
         currentInc = null;
       }
     }
     if (currentInc) {
-      const dur = Math.round(
-        (new Date(currentInc.end).getTime() - new Date(currentInc.start).getTime()) / 60000
-      );
+      const dur = Math.round((new Date(currentInc.end).getTime() - new Date(currentInc.start).getTime()) / 60000);
       incidents.push({ ...currentInc, duration: Math.max(dur, 1) });
     }
-
     return { service, uptime, avgResponse, total, incidents };
   });
 
-  // Global stats
-  const validUptimes = serviceMetrics.filter((m) => m.uptime !== null);
+  // ── Compute per-SaaS provider metrics ──
+  const saasMetrics = saasProviders.map((provider) => {
+    const pChecks = saasChecks.filter((c: any) => c.saas_provider_id === provider.id);
+    const total = pChecks.length;
+    const up = pChecks.filter((c: any) => c.status === 'up').length;
+    const uptime = total > 0 ? Math.round((up / total) * 10000) / 100 : null;
+    const avgResponse = total > 0
+      ? Math.round(pChecks.reduce((sum: number, c: any) => sum + c.response_time, 0) / total)
+      : null;
+
+    const incidents: { start: string; end: string; duration: number; cause: string }[] = [];
+    let currentInc: { start: string; end: string; cause: string } | null = null;
+    for (const check of pChecks) {
+      if (check.status === 'down') {
+        if (!currentInc) currentInc = { start: check.checked_at, end: check.checked_at, cause: check.error_message || `HTTP ${check.status_code || 'timeout'}` };
+        currentInc.end = check.checked_at;
+        if (check.error_message) currentInc.cause = check.error_message;
+      } else if (currentInc) {
+        const dur = Math.round((new Date(currentInc.end).getTime() - new Date(currentInc.start).getTime()) / 60000);
+        incidents.push({ ...currentInc, duration: Math.max(dur, 1) });
+        currentInc = null;
+      }
+    }
+    if (currentInc) {
+      const dur = Math.round((new Date(currentInc.end).getTime() - new Date(currentInc.start).getTime()) / 60000);
+      incidents.push({ ...currentInc, duration: Math.max(dur, 1) });
+    }
+
+    const slaPromised = provider.sla_promised_default ?? 99.9;
+    return { provider, uptime, avgResponse, total, incidents, slaPromised };
+  });
+
+  // ── Global stats ──
+  const metrics = isSaasReport ? saasMetrics : serviceMetrics;
+  const validUptimes = metrics.filter((m) => m.uptime !== null);
   const globalUptime = validUptimes.length > 0
     ? Math.round(validUptimes.reduce((s, m) => s + (m.uptime ?? 0), 0) / validUptimes.length * 100) / 100
     : 0;
-  const totalIncidents = serviceMetrics.reduce((s, m) => s + m.incidents.length, 0);
+  const totalIncidents = metrics.reduce((s, m) => s + m.incidents.length, 0);
 
-  // All incidents flat & sorted
-  const allIncidents = serviceMetrics
+  const allIncidents = metrics
     .flatMap((m) =>
       m.incidents.map((inc) => ({
         ...inc,
-        serviceName: m.service.name,
-        serviceIcon: m.service.icon,
+        serviceName: 'service' in m ? (m as any).service.name : (m as any).provider.name,
+        serviceIcon: 'service' in m ? (m as any).service.icon : (m as any).provider.icon,
       }))
     )
     .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
 
-  // SLA data
-  const slaRows = report.includeSla
+  // SLA data for services reports
+  const slaRows = report.includeSla && !isSaasReport
     ? integrations.map((integ) => {
         const promised = SAAS_SLA_PROMISES[integ.integration_type] ?? 99.9;
-        // Compute real SLA from uptime-related sync data or default to promised
-        const uptimeMetrics = syncData.filter(
-          (d) => d.integration_id === integ.id && d.metric_key === 'uptime_percent'
-        );
+        const uptimeMetrics = syncData.filter((d) => d.integration_id === integ.id && d.metric_key === 'uptime_percent');
         const realSla = uptimeMetrics.length > 0
           ? Math.round(uptimeMetrics.reduce((s, d) => s + Number(d.metric_value), 0) / uptimeMetrics.length * 100) / 100
           : null;
-
-        return {
-          provider: SAAS_LABELS[integ.integration_type] || integ.integration_type,
-          promised,
-          real: realSla,
-          delta: realSla !== null ? Math.round((realSla - promised) * 100) / 100 : null,
-        };
+        return { provider: SAAS_LABELS[integ.integration_type] || integ.integration_type, promised, real: realSla, delta: realSla !== null ? Math.round((realSla - promised) * 100) / 100 : null };
       })
     : [];
 
@@ -242,18 +277,15 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
   const handleExportPDF = useCallback(async () => {
     setExporting(true);
     try {
-      const pdfServiceMetrics = serviceMetrics.map((m) => ({
-        name: m.service.name,
-        icon: m.service.icon,
+      const pdfServiceMetrics = (isSaasReport ? saasMetrics : serviceMetrics).map((m) => ({
+        name: 'service' in m ? (m as any).service.name : (m as any).provider.name,
+        icon: 'service' in m ? (m as any).service.icon : (m as any).provider.icon,
         uptime: m.uptime,
         avgResponse: m.avgResponse,
         incidents: m.incidents,
       }));
       const pdfAllIncidents = allIncidents.map((inc) => ({
-        serviceName: inc.serviceName,
-        start: inc.start,
-        duration: inc.duration,
-        cause: inc.cause,
+        serviceName: inc.serviceName, start: inc.start, duration: inc.duration, cause: inc.cause,
       }));
       const blob = await pdf(
         <ReportPDF
@@ -261,17 +293,23 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
           createdAt={report.createdAt}
           globalUptime={globalUptime}
           totalIncidents={totalIncidents}
-          servicesCount={services.length}
+          servicesCount={metrics.length}
           serviceMetrics={pdfServiceMetrics}
           allIncidents={pdfAllIncidents}
-          slaRows={slaRows}
-          includeSla={report.includeSla}
+          slaRows={isSaasReport ? saasMetrics.map(m => ({
+            provider: m.provider.name,
+            promised: m.slaPromised,
+            real: m.uptime,
+            delta: m.uptime !== null ? Math.round((m.uptime - m.slaPromised) * 100) / 100 : null,
+          })) : slaRows}
+          includeSla={isSaasReport || report.includeSla}
+          reportType={report.reportType}
         />
       ).toBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `moniduck-report-${report.period}-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
+      a.download = `moniduck-report-${report.reportType}-${report.period}-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success('PDF exported');
@@ -281,48 +319,46 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
     } finally {
       setExporting(false);
     }
-  }, [serviceMetrics, allIncidents, report, globalUptime, totalIncidents, services.length, slaRows]);
+  }, [serviceMetrics, saasMetrics, allIncidents, report, globalUptime, totalIncidents, metrics.length, slaRows, isSaasReport]);
 
   const handleShareLink = useCallback(() => {
-    if (!report.shareToken) {
-      toast.error('No share token available');
-      return;
-    }
+    if (!report.shareToken) { toast.error('No share token available'); return; }
     const url = `https://moniduck.io/reports/shared/${report.shareToken}`;
     navigator.clipboard.writeText(url);
     toast.success('Public link copied to clipboard');
   }, [report.shareToken]);
 
+  const itemsLabel = isSaasReport ? 'Providers' : 'Services';
+
   return (
     <div className="space-y-6" ref={contentRef}>
-      {/* Back button + title + actions */}
+      {/* Back + title + actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={onBack} className="h-8 w-8">
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              {isSaasReport ? <Cloud className="w-4 h-4 text-primary" /> : null}
               Report — {report.periodLabel}
             </h2>
             <p className="text-xs text-muted-foreground">
-              Generated {format(new Date(report.createdAt), 'PPPp', { locale: dateLocale })}
+              {isSaasReport ? 'SaaS Providers' : 'Services'} · Generated {format(new Date(report.createdAt), 'PPPp', { locale: dateLocale })}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleExportPDF} disabled={exporting} className="gap-1.5">
-            <Download className="w-4 h-4" />
-            Export PDF
+            <Download className="w-4 h-4" /> Export PDF
           </Button>
           <Button variant="outline" size="sm" onClick={handleShareLink} className="gap-1.5">
-            <Link2 className="w-4 h-4" />
-            Share
+            <Link2 className="w-4 h-4" /> Share
           </Button>
         </div>
       </div>
 
-      {/* Section 1 — Summary */}
+      {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
@@ -348,35 +384,62 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
         <Card>
           <CardContent className="p-4 text-center">
             <Layers className="w-5 h-5 text-primary mx-auto mb-2" />
-            <p className="text-2xl font-bold text-foreground">{services.length}</p>
-            <p className="text-xs text-muted-foreground">Services</p>
+            <p className="text-2xl font-bold text-foreground">{metrics.length}</p>
+            <p className="text-xs text-muted-foreground">{itemsLabel}</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Section 2 — Services Uptime */}
+      {/* Uptime table */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Activity className="w-4 h-4 text-primary" />
-            Services Uptime
+            {isSaasReport ? 'SaaS Providers Uptime' : 'Services Uptime'}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {serviceMetrics.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">No services in scope</p>
+          {metrics.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">No {itemsLabel.toLowerCase()} in scope</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Service</TableHead>
+                  <TableHead>{isSaasReport ? 'Provider' : 'Service'}</TableHead>
                   <TableHead className="text-right">Uptime %</TableHead>
                   <TableHead className="text-right">Incidents</TableHead>
                   <TableHead className="text-right">Avg Response</TableHead>
+                  {isSaasReport && <TableHead className="text-right">SLA Promised</TableHead>}
+                  {isSaasReport && <TableHead className="text-right">Delta</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {serviceMetrics.map(({ service, uptime, avgResponse, incidents }) => (
+                {isSaasReport ? saasMetrics.map(({ provider, uptime, avgResponse, incidents, slaPromised }) => {
+                  const delta = uptime !== null ? Math.round((uptime - slaPromised) * 100) / 100 : null;
+                  return (
+                    <TableRow key={provider.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span>{provider.icon}</span>
+                          <span className="font-medium text-foreground">{provider.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">{getUptimeBadge(uptime)}</TableCell>
+                      <TableCell className="text-right">
+                        {incidents.length > 0 ? <Badge variant="destructive" className="text-xs">{incidents.length}</Badge> : <span className="text-success">✓</span>}
+                      </TableCell>
+                      <TableCell className="text-right text-foreground">{avgResponse !== null ? `${avgResponse}ms` : '—'}</TableCell>
+                      <TableCell className="text-right text-muted-foreground">{slaPromised}%</TableCell>
+                      <TableCell className="text-right">
+                        {delta !== null ? (
+                          <span className={delta >= 0 ? 'text-success' : 'text-destructive'}>
+                            {delta >= 0 ? '+' : ''}{delta}%
+                          </span>
+                        ) : <span className="text-muted-foreground">—</span>}
+                      </TableCell>
+                    </TableRow>
+                  );
+                }) : serviceMetrics.map(({ service, uptime, avgResponse, incidents }) => (
                   <TableRow key={service.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -386,15 +449,9 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
                     </TableCell>
                     <TableCell className="text-right">{getUptimeBadge(uptime)}</TableCell>
                     <TableCell className="text-right">
-                      {incidents.length > 0 ? (
-                        <Badge variant="destructive" className="text-xs">{incidents.length}</Badge>
-                      ) : (
-                        <span className="text-success">✓</span>
-                      )}
+                      {incidents.length > 0 ? <Badge variant="destructive" className="text-xs">{incidents.length}</Badge> : <span className="text-success">✓</span>}
                     </TableCell>
-                    <TableCell className="text-right text-foreground">
-                      {avgResponse !== null ? `${avgResponse}ms` : '—'}
-                    </TableCell>
+                    <TableCell className="text-right text-foreground">{avgResponse !== null ? `${avgResponse}ms` : '—'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -403,7 +460,7 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
         </CardContent>
       </Card>
 
-      {/* Section 3 — Incidents Log */}
+      {/* Incidents Log */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
@@ -413,32 +470,22 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
         </CardHeader>
         <CardContent>
           {allIncidents.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">
-              No incidents during this period 🎉
-            </p>
+            <p className="text-sm text-muted-foreground text-center py-6">No incidents during this period 🎉</p>
           ) : (
             <div className="space-y-2">
               {allIncidents.map((inc, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between p-3 rounded-lg bg-destructive/5 border border-destructive/10"
-                >
+                <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-destructive/5 border border-destructive/10">
                   <div className="flex items-center gap-3">
                     <span className="text-lg">{inc.serviceIcon}</span>
                     <div>
                       <p className="font-medium text-foreground text-sm">{inc.serviceName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(inc.start), 'PPp', { locale: dateLocale })}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{format(new Date(inc.start), 'PPp', { locale: dateLocale })}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground max-w-[200px] truncate">
-                      {inc.cause}
-                    </span>
+                    <span className="text-xs text-muted-foreground max-w-[200px] truncate">{inc.cause}</span>
                     <Badge variant="destructive" className="text-xs whitespace-nowrap">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {formatDuration(inc.duration)}
+                      <Clock className="w-3 h-3 mr-1" />{formatDuration(inc.duration)}
                     </Badge>
                   </div>
                 </div>
@@ -448,8 +495,8 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
         </CardContent>
       </Card>
 
-      {/* Section 4 — SaaS SLA */}
-      {report.includeSla && (
+      {/* SLA section for services reports */}
+      {report.includeSla && !isSaasReport && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
@@ -459,9 +506,7 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
           </CardHeader>
           <CardContent>
             {slaRows.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                No connected SaaS integrations
-              </p>
+              <p className="text-sm text-muted-foreground text-center py-6">No connected SaaS integrations</p>
             ) : (
               <Table>
                 <TableHeader>
@@ -485,9 +530,7 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
                           <span className={row.delta >= 0 ? 'text-success' : 'text-destructive'}>
                             {row.delta >= 0 ? '+' : ''}{row.delta}%
                           </span>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
+                        ) : <span className="text-muted-foreground">—</span>}
                       </TableCell>
                     </TableRow>
                   ))}
