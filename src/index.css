@@ -276,11 +276,11 @@
 /* Global scrollbar styling */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(0 0% 0% / 0.35) transparent;
+  scrollbar-color: hsl(0 0% 0%) transparent;
 }
 
 .dark * {
-  scrollbar-color: hsl(0 0% 100% / 0.35) transparent;
+  scrollbar-color: hsl(0 0% 100%) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -293,18 +293,10 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background: hsl(0 0% 0% / 0.35);
+  background: hsl(0 0% 0%);
   border-radius: 9999px;
 }
 
-*::-webkit-scrollbar-thumb:hover {
-  background: hsl(0 0% 0% / 0.55);
-}
-
 .dark *::-webkit-scrollbar-thumb {
-  background: hsl(0 0% 100% / 0.35);
-}
-
-.dark *::-webkit-scrollbar-thumb:hover {
-  background: hsl(0 0% 100% / 0.55);
+  background: hsl(0 0% 100%);
 }
