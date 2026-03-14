@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { LayoutDashboard, Server, Plug, Bell, Settings, FileText, Cloud, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Server, Plug, Bell, Settings, FileText, Cloud, Globe, ChevronLeft, ChevronRight, CloudCog } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useTranslation } from "react-i18next";
 import { useLangPrefix } from "@/hooks/use-lang-prefix";
