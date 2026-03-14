@@ -801,6 +801,7 @@ export type Database = {
           icon: string
           id: string
           incidents: Json
+          is_public: boolean
           last_check: string | null
           name: string
           sla_promised_default: number
@@ -817,6 +818,7 @@ export type Database = {
           icon?: string
           id?: string
           incidents?: Json
+          is_public?: boolean
           last_check?: string | null
           name: string
           sla_promised_default?: number
@@ -833,6 +835,7 @@ export type Database = {
           icon?: string
           id?: string
           incidents?: Json
+          is_public?: boolean
           last_check?: string | null
           name?: string
           sla_promised_default?: number

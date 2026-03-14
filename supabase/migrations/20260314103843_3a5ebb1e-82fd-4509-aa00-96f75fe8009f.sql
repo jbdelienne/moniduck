@@ -1,0 +1,1 @@
+ALTER TABLE public.saas_providers ADD COLUMN is_public boolean NOT NULL DEFAULT true;
