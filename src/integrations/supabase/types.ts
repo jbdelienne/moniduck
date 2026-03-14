@@ -236,6 +236,41 @@ export type Database = {
           },
         ]
       }
+      cloud_region_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          provider: string
+          region_code: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider: string
+          region_code: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider?: string
+          region_code?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cloud_region_favorites_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cost_by_resource: {
         Row: {
           account_id: string
