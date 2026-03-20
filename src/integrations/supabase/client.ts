@@ -8,9 +8,13 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Use sessionStorage instead of localStorage to limit token exposure:
+// - Cleared when the tab is closed (reduces long-term theft window)
+// - Isolated per tab (no cross-tab token leakage)
+// Note: for maximum security, consider a BFF proxy with httpOnly cookies.
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: sessionStorage,
     persistSession: true,
     autoRefreshToken: true,
   }
