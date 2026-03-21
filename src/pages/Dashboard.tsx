@@ -295,7 +295,7 @@ function DashboardDetailView({
                     <span className="text-xs font-medium text-muted-foreground truncate">{widget.title}</span>
                   </div>
                   <div className="flex-1 p-3 overflow-hidden">
-                    <WidgetRenderer widget={widget} services={services} syncMetrics={syncMetrics} />
+                    <WidgetRenderer widget={widget} services={services} syncMetrics={syncMetrics} saasProviders={saasProviders} />
                   </div>
                 </div>
               ))}
