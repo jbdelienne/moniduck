@@ -410,7 +410,7 @@ function DashboardDetailView({
                 </button>
               </div>
               <div className="flex-1 p-3 overflow-hidden">
-                <WidgetRenderer widget={widget} services={services} syncMetrics={syncMetrics} />
+                <WidgetRenderer widget={widget} services={services} syncMetrics={syncMetrics} saasProviders={saasProviders} />
               </div>
             </div>
           ))}
