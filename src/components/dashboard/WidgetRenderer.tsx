@@ -1,5 +1,6 @@
 import { Service } from '@/hooks/use-supabase';
 import { SyncMetric } from '@/hooks/use-all-sync-data';
+import { SaasProvider } from '@/hooks/use-saas-dependencies';
 import StatusCardWidget from './widgets/StatusCardWidget';
 import UptimeChartWidget from './widgets/UptimeChartWidget';
 import ResponseTimeChartWidget from './widgets/ResponseTimeChartWidget';
@@ -18,6 +19,8 @@ export interface WidgetConfig {
   title: string;
   config: {
     service_id?: string;
+    resource_id?: string;
+    source_type?: string;
     metric_key?: string;
     source?: string;
     [key: string]: unknown;
@@ -30,36 +33,79 @@ interface WidgetRendererProps {
   widget: WidgetConfig;
   services: Service[];
   syncMetrics?: SyncMetric[];
+  saasProviders?: SaasProvider[];
 }
 
-export default function WidgetRenderer({ widget, services, syncMetrics = [] }: WidgetRendererProps) {
-  const service = widget.config.service_id
-    ? services.find((s) => s.id === widget.config.service_id)
+export default function WidgetRenderer({ widget, services, syncMetrics = [], saasProviders = [] }: WidgetRendererProps) {
+  const { service_id, resource_id, source_type } = widget.config;
+
+  // Resolve service from either service_id or resource_id (for services source type)
+  const resolvedServiceId = service_id || (source_type === 'services' ? resource_id : undefined);
+  const service = resolvedServiceId
+    ? services.find((s) => s.id === resolvedServiceId)
     : undefined;
+
+  // Resolve SaaS provider for saas source type
+  const saasProvider = source_type === 'saas' && resource_id
+    ? saasProviders.find((p) => p.id === resource_id)
+    : undefined;
+
+  // Create a service-like object from SaaS provider for widgets that expect a Service
+  const serviceOrSaas: Service | undefined = service ?? (saasProvider ? {
+    id: saasProvider.id,
+    name: saasProvider.name,
+    icon: saasProvider.icon,
+    status: saasProvider.status === 'operational' ? 'up' : saasProvider.status === 'down' ? 'down' : saasProvider.status === 'degraded' ? 'degraded' : 'unknown',
+    url: saasProvider.url,
+    uptime_percentage: saasProvider.uptime_percentage,
+    avg_response_time: saasProvider.avg_response_time,
+    last_check: saasProvider.last_check,
+    // Fill required fields with defaults
+    user_id: '',
+    check_interval: 0,
+    is_paused: true,
+    created_at: saasProvider.created_at,
+    updated_at: saasProvider.created_at,
+    workspace_id: null,
+    owner_id: null,
+    alert_email_enabled: false,
+    alert_checks_threshold: 0,
+    maintenance_until: null,
+    consecutive_failures: 0,
+    alert_notify_down: false,
+    alert_notify_up: false,
+    visibility: 'public',
+    notification_email: null,
+    ssl_expiry_date: null,
+    ssl_issuer: null,
+    content_keyword: null,
+    tags: null,
+    alert_email: null,
+  } as Service : undefined);
 
   switch (widget.widget_type) {
     case 'big_number':
       return (
         <BigNumberWidget
           metricKey={widget.config.metric_key ?? ''}
-          service={service}
+          service={serviceOrSaas}
           services={services}
           syncMetrics={syncMetrics}
           period={(widget.config.period as any) ?? '24h'}
         />
       );
     case 'status_badge':
-      return <StatusBadgeWidget service={service} />;
+      return <StatusBadgeWidget service={serviceOrSaas} />;
     case 'status_list':
       return <StatusListWidget />;
     case 'alert_count':
       return <AlertCountWidget />;
     case 'status_card':
-      return <StatusCardWidget service={service} />;
+      return <StatusCardWidget service={serviceOrSaas} />;
     case 'uptime_chart':
-      return <UptimeChartWidget serviceId={widget.config.service_id ?? ''} title={widget.title} />;
+      return <UptimeChartWidget serviceId={resolvedServiceId ?? ''} title={widget.title} />;
     case 'response_time_chart':
-      return <ResponseTimeChartWidget serviceId={widget.config.service_id ?? ''} title={widget.title} />;
+      return <ResponseTimeChartWidget serviceId={resolvedServiceId ?? ''} title={widget.title} />;
     case 'alert_list':
       return <AlertListWidget />;
     case 'service_table':
