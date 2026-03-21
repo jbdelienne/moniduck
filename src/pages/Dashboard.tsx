@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import moniduckLogo from '@/assets/moniduck-logo.png';
 // layout provided by route
 import { useServices, Service } from '@/hooks/use-supabase';
+import { useSaasDependencies, SaasProvider } from '@/hooks/use-saas-dependencies';
 import {
   useDashboards,
   useCreateDashboard,
@@ -33,6 +34,7 @@ import { useTranslation } from 'react-i18next';
 export default function Dashboard() {
   const { data: services = [] } = useServices();
   const { data: syncMetrics = [] } = useLatestSyncMetrics();
+  const { data: saasProviders = [] } = useSaasDependencies();
   const { data: dashboards = [], isLoading } = useDashboards();
   const createDashboard = useCreateDashboard();
   const deleteDashboard = useDeleteDashboard();
@@ -67,6 +69,7 @@ export default function Dashboard() {
         dashboardName={selectedDashboard.name}
         services={services}
         syncMetrics={syncMetrics}
+        saasProviders={saasProviders}
         onBack={() => setSelectedDashboardId(null)}
         onDelete={async () => {
           await deleteDashboard.mutateAsync(selectedDashboard.id);
@@ -162,6 +165,7 @@ function DashboardDetailView({
   dashboardName,
   services,
   syncMetrics,
+  saasProviders = [],
   onBack,
   onDelete,
   onRename,
@@ -170,6 +174,7 @@ function DashboardDetailView({
   dashboardName: string;
   services: Service[];
   syncMetrics: SyncMetric[];
+  saasProviders?: SaasProvider[];
   onBack: () => void;
   onDelete: () => void;
   onRename: (name: string) => void;
@@ -405,7 +410,7 @@ function DashboardDetailView({
                 </button>
               </div>
               <div className="flex-1 p-3 overflow-hidden">
-                <WidgetRenderer widget={widget} services={services} syncMetrics={syncMetrics} />
+                <WidgetRenderer widget={widget} services={services} syncMetrics={syncMetrics} saasProviders={saasProviders} />
               </div>
             </div>
           ))}
