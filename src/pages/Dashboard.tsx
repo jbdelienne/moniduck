@@ -69,6 +69,7 @@ export default function Dashboard() {
         dashboardName={selectedDashboard.name}
         services={services}
         syncMetrics={syncMetrics}
+        saasProviders={saasProviders}
         onBack={() => setSelectedDashboardId(null)}
         onDelete={async () => {
           await deleteDashboard.mutateAsync(selectedDashboard.id);
