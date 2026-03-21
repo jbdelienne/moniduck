@@ -136,6 +136,18 @@ function resolveValue(
         label: 'Publicly Shared Files',
       };
     }
+    case 'saas_uptime':
+      return {
+        value: service ? `${service.uptime_percentage ?? 0}` : '—',
+        unit: '%',
+        label: service?.name ?? 'SaaS Uptime',
+      };
+    case 'saas_response_time':
+      return {
+        value: service ? `${service.avg_response_time ?? 0}` : '—',
+        unit: 'ms',
+        label: service?.name ?? 'Response Time',
+      };
     default:
       return { value: '—', label: metricKey };
   }
