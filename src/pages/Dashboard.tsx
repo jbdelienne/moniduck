@@ -165,6 +165,7 @@ function DashboardDetailView({
   dashboardName,
   services,
   syncMetrics,
+  saasProviders = [],
   onBack,
   onDelete,
   onRename,
@@ -173,6 +174,7 @@ function DashboardDetailView({
   dashboardName: string;
   services: Service[];
   syncMetrics: SyncMetric[];
+  saasProviders?: SaasProvider[];
   onBack: () => void;
   onDelete: () => void;
   onRename: (name: string) => void;
