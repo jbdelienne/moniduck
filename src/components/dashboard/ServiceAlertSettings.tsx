@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Bell, Mail, Wrench, Loader2 } from 'lucide-react';
+import { Bell, Mail, Wrench, Loader2, Gauge } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,6 +15,7 @@ interface ServiceAlertSettingsProps {
   alertEmail: string | null;
   alertChecksThreshold: number;
   maintenanceUntil: string | null;
+  latencyThresholdMs: number | null;
 }
 
 export default function ServiceAlertSettings({
@@ -23,12 +24,14 @@ export default function ServiceAlertSettings({
   alertEmail,
   alertChecksThreshold,
   maintenanceUntil,
+  latencyThresholdMs,
 }: ServiceAlertSettingsProps) {
   const qc = useQueryClient();
   const [emailEnabled, setEmailEnabled] = useState(alertEmailEnabled);
   const [email, setEmail] = useState(alertEmail || '');
   const [threshold, setThreshold] = useState(String(alertChecksThreshold));
   const [maintenance, setMaintenance] = useState(maintenanceUntil || '');
+  const [latencyMs, setLatencyMs] = useState(latencyThresholdMs ? String(latencyThresholdMs) : '');
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -41,6 +44,7 @@ export default function ServiceAlertSettings({
           alert_email: email || null,
           alert_checks_threshold: Number(threshold),
           maintenance_until: maintenance || null,
+          latency_threshold_ms: latencyMs ? Number(latencyMs) : null,
         })
         .eq('id', serviceId);
 
@@ -100,6 +104,25 @@ export default function ServiceAlertSettings({
               <SelectItem value="5">5 consecutive checks</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Latency threshold */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <Gauge className="w-3.5 h-3.5 text-muted-foreground" />
+            <Label className="text-xs text-muted-foreground">Latency alert threshold (ms)</Label>
+          </div>
+          <Input
+            type="number"
+            min="50"
+            placeholder="e.g. 2000 — leave empty to disable"
+            value={latencyMs}
+            onChange={(e) => setLatencyMs(e.target.value)}
+            className="h-8 text-sm"
+          />
+          <p className="text-[11px] text-muted-foreground/70">
+            Alert when response time exceeds this value for {threshold} consecutive check(s).
+          </p>
         </div>
 
         {/* Maintenance window */}
