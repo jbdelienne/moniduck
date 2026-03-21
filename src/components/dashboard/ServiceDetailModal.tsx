@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Service, useChecks, useAlerts, useUpdateService } from '@/hooks/use-supabase';
-import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
+import { LineChart, Line, ResponsiveContainer, Tooltip, ReferenceLine } from 'recharts';
 import { format, differenceInDays, formatDistanceToNow } from 'date-fns';
 import { Loader2, ExternalLink, ShieldCheck, Clock, Activity, AlertTriangle, XCircle, Info, ChevronDown, Pencil, Check, X as XIcon, Copy, Server } from 'lucide-react';
 import { UptimePeriod, useUptimeForServices } from '@/hooks/use-uptime';
@@ -323,6 +323,15 @@ export default function ServiceDetailModal({ service, open, onClose, onDelete }:
                             formatter={(v: number) => [`${v}ms`, 'Response']}
                             labelFormatter={(l) => l}
                           />
+                          {(service as any).latency_threshold_ms && (
+                            <ReferenceLine
+                              y={(service as any).latency_threshold_ms}
+                              stroke="hsl(var(--warning))"
+                              strokeDasharray="4 3"
+                              strokeWidth={1.5}
+                              label={{ value: `${(service as any).latency_threshold_ms}ms`, position: 'insideTopRight', fontSize: 10, fill: 'hsl(var(--warning))' }}
+                            />
+                          )}
                           <Line type="monotone" dataKey="v" stroke="url(#responseGrad)" strokeWidth={2} dot={false} activeDot={{ r: 3, fill: 'hsl(var(--foreground))' }} />
                         </LineChart>
                       </ResponsiveContainer>
@@ -425,6 +434,7 @@ export default function ServiceDetailModal({ service, open, onClose, onDelete }:
                 alertEmail={(service as any).alert_email ?? null}
                 alertChecksThreshold={(service as any).alert_checks_threshold ?? 2}
                 maintenanceUntil={(service as any).maintenance_until ?? null}
+                latencyThresholdMs={(service as any).latency_threshold_ms ?? null}
               />
             </TabsContent>
           </ScrollArea>

@@ -951,12 +951,14 @@ export type Database = {
           avg_response_time: number | null
           check_interval: number
           consecutive_failures: number
+          consecutive_slow_checks: number
           content_keyword: string | null
           created_at: string
           icon: string
           id: string
           is_paused: boolean
           last_check: string | null
+          latency_threshold_ms: number | null
           maintenance_until: string | null
           name: string
           notification_email: string | null
@@ -981,12 +983,14 @@ export type Database = {
           avg_response_time?: number | null
           check_interval?: number
           consecutive_failures?: number
+          consecutive_slow_checks?: number
           content_keyword?: string | null
           created_at?: string
           icon?: string
           id?: string
           is_paused?: boolean
           last_check?: string | null
+          latency_threshold_ms?: number | null
           maintenance_until?: string | null
           name: string
           notification_email?: string | null
@@ -1011,12 +1015,14 @@ export type Database = {
           avg_response_time?: number | null
           check_interval?: number
           consecutive_failures?: number
+          consecutive_slow_checks?: number
           content_keyword?: string | null
           created_at?: string
           icon?: string
           id?: string
           is_paused?: boolean
           last_check?: string | null
+          latency_threshold_ms?: number | null
           maintenance_until?: string | null
           name?: string
           notification_email?: string | null

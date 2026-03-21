@@ -323,6 +323,65 @@ Deno.serve(async (req) => {
         }
       }
 
+      // ---- LATENCY ALERTING LOGIC ----
+      if (status === "up" && service.latency_threshold_ms) {
+        const currentSlowChecks = service.consecutive_slow_checks || 0;
+        const isSlow = responseTime > service.latency_threshold_ms;
+
+        if (isSlow) {
+          const newSlowChecks = currentSlowChecks + 1;
+          await supabase
+            .from("services")
+            .update({ consecutive_slow_checks: newSlowChecks })
+            .eq("id", service.id);
+
+          // Alert if threshold breached for enough consecutive checks
+          if (newSlowChecks >= checksBeforeAlert) {
+            const { data: openLatencyAlert } = await supabase
+              .from("alerts")
+              .select("id")
+              .eq("service_id", service.id)
+              .eq("alert_type", "latency")
+              .is("resolved_at", null)
+              .limit(1);
+
+            if (!openLatencyAlert || openLatencyAlert.length === 0) {
+              await supabase.from("alerts").insert({
+                user_id: service.user_id,
+                workspace_id: service.workspace_id,
+                service_id: service.id,
+                alert_type: "latency",
+                severity: "warning",
+                title: `${service.name}: High response time`,
+                description: `Response time ${responseTime}ms exceeds threshold of ${service.latency_threshold_ms}ms for ${newSlowChecks} consecutive checks`,
+                integration_type: "service",
+                metadata: {
+                  service_id: service.id,
+                  url: service.url,
+                  response_time_ms: responseTime,
+                  threshold_ms: service.latency_threshold_ms,
+                  slow_since: now.toISOString(),
+                },
+              });
+            }
+          }
+        } else {
+          // Response is back to normal — reset counter and resolve open latency alert
+          if (currentSlowChecks > 0) {
+            await supabase
+              .from("services")
+              .update({ consecutive_slow_checks: 0 })
+              .eq("id", service.id);
+          }
+          await supabase
+            .from("alerts")
+            .update({ resolved_at: now.toISOString(), is_dismissed: true })
+            .eq("service_id", service.id)
+            .eq("alert_type", "latency")
+            .is("resolved_at", null);
+        }
+      }
+
       // ---- RESOLUTION LOGIC ----
       if (status === "up") {
         // Reset consecutive failures
