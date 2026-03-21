@@ -34,6 +34,7 @@ import { useTranslation } from 'react-i18next';
 export default function Dashboard() {
   const { data: services = [] } = useServices();
   const { data: syncMetrics = [] } = useLatestSyncMetrics();
+  const { data: saasProviders = [] } = useSaasDependencies();
   const { data: dashboards = [], isLoading } = useDashboards();
   const createDashboard = useCreateDashboard();
   const deleteDashboard = useDeleteDashboard();
