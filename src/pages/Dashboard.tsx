@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import moniduckLogo from '@/assets/moniduck-logo.png';
 // layout provided by route
 import { useServices, Service } from '@/hooks/use-supabase';
+import { useSaasDependencies, SaasProvider } from '@/hooks/use-saas-dependencies';
 import {
   useDashboards,
   useCreateDashboard,
