@@ -530,6 +530,9 @@ export default function SaasStatusPage() {
         provider={detailTarget}
         open={!!detailTarget}
         onClose={() => setDetailTarget(null)}
+        uptimePeriod={uptimePeriod}
+        onUptimePeriodChange={setUptimePeriod}
+        computedUptime={detailTarget ? uptimeByProvider[detailTarget.id] : undefined}
       />
     </div>
   );
