@@ -69,7 +69,7 @@ export default function SaasDetailModal({ provider, open, onClose, uptimePeriod 
   const avgResponse = responseTimes.length ? Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length) : 0;
   const p95Response = responseTimes.length ? responseTimes.sort((a, b) => a - b)[Math.floor(responseTimes.length * 0.95)] ?? 0 : 0;
 
-  const uptime = provider.uptime_percentage ?? 100;
+  const uptime = computedUptime ?? provider.uptime_percentage ?? 100;
   const slaDelta = uptime - currentSla;
   const slaBreach = slaDelta < 0;
 
