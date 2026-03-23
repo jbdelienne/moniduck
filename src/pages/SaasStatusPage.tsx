@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   useSaasDependencies,
   useAddSaasDependency,
@@ -26,6 +26,7 @@ import { Plus, Trash2, RefreshCw, Loader2, ExternalLink, Search } from 'lucide-r
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import SaasDetailModal from '@/components/dashboard/SaasDetailModal';
+import { useSaasUptimeByPeriod, type SaasUptimePeriod } from '@/hooks/use-saas-uptime';
 
 const statusConfig: Record<string, { label: string; dotClass: string }> = {
   operational: { label: 'Operational', dotClass: 'status-dot-up' },
@@ -45,6 +46,10 @@ export default function SaasStatusPage() {
   const [deleteTarget, setDeleteTarget] = useState<SaasProviderWithSubscription | null>(null);
   const [incidentTarget, setIncidentTarget] = useState<SaasProviderWithSubscription | null>(null);
   const [detailTarget, setDetailTarget] = useState<SaasProviderWithSubscription | null>(null);
+  const [uptimePeriod, setUptimePeriod] = useState<SaasUptimePeriod>('24h');
+
+  const providerIds = useMemo(() => dependencies.map(d => d.id), [dependencies]);
+  const { data: uptimeByPeriod = {} } = useSaasUptimeByPeriod(providerIds, uptimePeriod);
 
   // Add modal state
   const [searchQuery, setSearchQuery] = useState('');
@@ -157,10 +162,27 @@ export default function SaasStatusPage() {
             Monitor your third-party SaaS providers with HTTP pings and status page data.
           </p>
         </div>
-        <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
-          <Plus className="w-4 h-4" />
-          Add SaaS
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center bg-muted/50 rounded-lg border border-border/50 p-0.5">
+            {(['24h', '7d', '30d', '12m'] as SaasUptimePeriod[]).map((p) => (
+              <button
+                key={p}
+                onClick={() => setUptimePeriod(p)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                  uptimePeriod === p
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+          <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
+            <Plus className="w-4 h-4" />
+            Add SaaS
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -185,7 +207,7 @@ export default function SaasStatusPage() {
                 <TableHead>Status Page</TableHead>
                 <TableHead className="text-right">Resp.</TableHead>
                 <TableHead className="text-right">SLA</TableHead>
-                <TableHead className="text-right">Uptime</TableHead>
+                <TableHead className="text-right">Uptime ({uptimePeriod})</TableHead>
                 <TableHead className="text-right">Delta</TableHead>
                 <TableHead>Incidents</TableHead>
                 <TableHead>Checked</TableHead>
@@ -196,7 +218,8 @@ export default function SaasStatusPage() {
               {dependencies.map((dep) => {
                 const pingStatus = statusConfig[dep.status] ?? statusConfig.unknown;
                 const pageStatus = statusConfig[dep.status_page_status] ?? statusConfig.unknown;
-                const delta = (dep.uptime_percentage ?? 100) - dep.sla_promised;
+                const uptime = uptimeByPeriod[dep.id] ?? dep.uptime_percentage ?? 100;
+                const delta = uptime - dep.sla_promised;
                 const slaBreach = delta < 0;
                 const incidents = dep.incidents || [];
                 const recentIncidents = incidents.slice(0, 3);
@@ -237,7 +260,7 @@ export default function SaasStatusPage() {
                     </TableCell>
                     <TableCell className="text-right font-mono text-sm">{dep.sla_promised}%</TableCell>
                     <TableCell className={`text-right font-mono text-sm ${slaBreach ? 'text-destructive font-semibold' : ''}`}>
-                      {dep.uptime_percentage ?? 100}%
+                      {uptime}%
                     </TableCell>
                     <TableCell className="text-right">
                       {slaBreach ? (
