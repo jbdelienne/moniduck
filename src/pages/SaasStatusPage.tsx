@@ -9,6 +9,7 @@ import {
   SaasProviderWithSubscription,
   SaasIncident,
 } from '@/hooks/use-saas-dependencies';
+import { useSaasUptime, type SaasUptimePeriod, periodLabels } from '@/hooks/use-saas-uptime';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,10 @@ export default function SaasStatusPage() {
   const forceCheck = useForceCheckSaas();
   const { data: allProviders = [] } = useAllSaasProviders();
 
+  const [uptimePeriod, setUptimePeriod] = useState<SaasUptimePeriod>('24h');
+  const providerIds = dependencies.map(d => d.id);
+  const { data: uptimeByProvider = {} } = useSaasUptime(providerIds, uptimePeriod);
+
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SaasProviderWithSubscription | null>(null);
   const [incidentTarget, setIncidentTarget] = useState<SaasProviderWithSubscription | null>(null);
@@ -54,6 +59,7 @@ export default function SaasStatusPage() {
   const [customStatusPage, setCustomStatusPage] = useState('');
   const [customIcon, setCustomIcon] = useState('📦');
   const [customSla, setCustomSla] = useState('99.9');
+
 
   const subscribedProviderIds = new Set(dependencies.map(d => d.id));
 
@@ -151,16 +157,33 @@ export default function SaasStatusPage() {
   return (
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
-        <div>
+       <div>
           <h1 className="text-2xl font-bold text-foreground">SaaS Dependencies</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Monitor your third-party SaaS providers with HTTP pings and status page data.
           </p>
         </div>
-        <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
-          <Plus className="w-4 h-4" />
-          Add SaaS
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center rounded-lg bg-muted/50 border border-border/50 p-0.5">
+            {(['24h', '7d', '30d', '12m'] as SaasUptimePeriod[]).map((p) => (
+              <button
+                key={p}
+                onClick={() => setUptimePeriod(p)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                  uptimePeriod === p
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+          <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
+            <Plus className="w-4 h-4" />
+            Add SaaS
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -185,7 +208,7 @@ export default function SaasStatusPage() {
                 <TableHead>Status Page</TableHead>
                 <TableHead className="text-right">Resp.</TableHead>
                 <TableHead className="text-right">SLA</TableHead>
-                <TableHead className="text-right">Uptime</TableHead>
+                <TableHead className="text-right">Uptime ({uptimePeriod})</TableHead>
                 <TableHead className="text-right">Delta</TableHead>
                 <TableHead>Incidents</TableHead>
                 <TableHead>Checked</TableHead>
@@ -196,7 +219,8 @@ export default function SaasStatusPage() {
               {dependencies.map((dep) => {
                 const pingStatus = statusConfig[dep.status] ?? statusConfig.unknown;
                 const pageStatus = statusConfig[dep.status_page_status] ?? statusConfig.unknown;
-                const delta = (dep.uptime_percentage ?? 100) - dep.sla_promised;
+                const uptime = uptimeByProvider[dep.id] ?? dep.uptime_percentage ?? 100;
+                const delta = uptime - dep.sla_promised;
                 const slaBreach = delta < 0;
                 const incidents = dep.incidents || [];
                 const recentIncidents = incidents.slice(0, 3);
@@ -237,7 +261,7 @@ export default function SaasStatusPage() {
                     </TableCell>
                     <TableCell className="text-right font-mono text-sm">{dep.sla_promised}%</TableCell>
                     <TableCell className={`text-right font-mono text-sm ${slaBreach ? 'text-destructive font-semibold' : ''}`}>
-                      {dep.uptime_percentage ?? 100}%
+                      {uptime}%
                     </TableCell>
                     <TableCell className="text-right">
                       {slaBreach ? (
@@ -506,6 +530,9 @@ export default function SaasStatusPage() {
         provider={detailTarget}
         open={!!detailTarget}
         onClose={() => setDetailTarget(null)}
+        uptimePeriod={uptimePeriod}
+        onUptimePeriodChange={setUptimePeriod}
+        computedUptime={detailTarget ? uptimeByProvider[detailTarget.id] : undefined}
       />
     </div>
   );
