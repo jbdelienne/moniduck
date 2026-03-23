@@ -208,7 +208,7 @@ export default function SaasStatusPage() {
                 <TableHead>Status Page</TableHead>
                 <TableHead className="text-right">Resp.</TableHead>
                 <TableHead className="text-right">SLA</TableHead>
-                <TableHead className="text-right">Uptime</TableHead>
+                <TableHead className="text-right">Uptime ({uptimePeriod})</TableHead>
                 <TableHead className="text-right">Delta</TableHead>
                 <TableHead>Incidents</TableHead>
                 <TableHead>Checked</TableHead>
