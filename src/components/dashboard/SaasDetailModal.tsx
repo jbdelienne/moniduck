@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type Dispatch, type SetStateAction } from 'react';
+import type { SaasUptimePeriod } from '@/hooks/use-saas-uptime';
 import { SaasProviderWithSubscription, SaasIncident, useUpdateSlaOverride } from '@/hooks/use-saas-dependencies';
 import { useSaasChecks } from '@/hooks/use-saas-checks';
 import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
