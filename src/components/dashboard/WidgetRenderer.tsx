@@ -11,6 +11,7 @@ import BigNumberWidget from './widgets/BigNumberWidget';
 import StatusBadgeWidget from './widgets/StatusBadgeWidget';
 import StatusListWidget from './widgets/StatusListWidget';
 import AlertCountWidget from './widgets/AlertCountWidget';
+import CorrelationFeedWidget from './widgets/CorrelationFeedWidget';
 
 export interface WidgetConfig {
   id: string;
@@ -68,6 +69,8 @@ export default function WidgetRenderer({ widget, services, syncMetrics = [] }: W
       return <IntegrationMetricCardWidget metricKey={widget.config.metric_key ?? ''} metrics={syncMetrics} />;
     case 'drive_storage_gauge':
       return <DriveStorageGaugeWidget metrics={syncMetrics} />;
+    case 'correlation_feed':
+      return <CorrelationFeedWidget />;
     default:
       return <div className="h-full flex items-center justify-center text-sm text-muted-foreground">Unknown widget</div>;
   }
