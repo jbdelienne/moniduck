@@ -26,6 +26,7 @@ import { Plus, Trash2, RefreshCw, Loader2, ExternalLink, Search } from 'lucide-r
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import SaasDetailModal from '@/components/dashboard/SaasDetailModal';
+import { useSaasUptimeByPeriod, type SaasUptimePeriod } from '@/hooks/use-saas-uptime';
 
 const statusConfig: Record<string, { label: string; dotClass: string }> = {
   operational: { label: 'Operational', dotClass: 'status-dot-up' },
