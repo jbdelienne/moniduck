@@ -136,10 +136,32 @@ export default function SaasDetailModal({ provider, open, onClose, uptimePeriod 
             </Button>
           </div>
 
+          {/* Period selector */}
+          {onUptimePeriodChange && (
+            <div className="flex items-center gap-2 mt-5 mb-2">
+              <span className="text-xs text-muted-foreground">Period:</span>
+              <div className="flex items-center rounded-md bg-muted/50 border border-border/50 p-0.5">
+                {(['24h', '7d', '30d', '12m'] as SaasUptimePeriod[]).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => onUptimePeriodChange(p)}
+                    className={`px-2 py-1 text-[11px] font-medium rounded transition-all ${
+                      uptimePeriod === p
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Quick stats row */}
-          <div className="grid grid-cols-3 gap-3 mt-6">
+          <div className="grid grid-cols-3 gap-3 mt-3">
             <QuickStat icon={Activity} label="Response" value={avgResponse > 0 ? `${avgResponse}ms` : '—'} />
-            <QuickStat icon={Clock} label="Uptime" value={`${uptime}%`} valueColor={uptime < 99.5 ? 'text-[hsl(var(--warning))]' : undefined} />
+            <QuickStat icon={Clock} label={`Uptime (${uptimePeriod})`} value={`${uptime}%`} valueColor={uptime < 99.5 ? 'text-[hsl(var(--warning))]' : undefined} />
             <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                 <ShieldCheck className="w-3.5 h-3.5" />
