@@ -260,7 +260,7 @@ export default function SaasStatusPage() {
                     </TableCell>
                     <TableCell className="text-right font-mono text-sm">{dep.sla_promised}%</TableCell>
                     <TableCell className={`text-right font-mono text-sm ${slaBreach ? 'text-destructive font-semibold' : ''}`}>
-                      {dep.uptime_percentage ?? 100}%
+                      {uptime}%
                     </TableCell>
                     <TableCell className="text-right">
                       {slaBreach ? (
