@@ -25,9 +25,12 @@ interface SaasDetailModalProps {
   provider: SaasProviderWithSubscription | null;
   open: boolean;
   onClose: () => void;
+  uptimePeriod?: SaasUptimePeriod;
+  onUptimePeriodChange?: Dispatch<SetStateAction<SaasUptimePeriod>>;
+  computedUptime?: number;
 }
 
-export default function SaasDetailModal({ provider, open, onClose }: SaasDetailModalProps) {
+export default function SaasDetailModal({ provider, open, onClose, uptimePeriod = '24h', onUptimePeriodChange, computedUptime }: SaasDetailModalProps) {
   const { data: checks = [], isLoading: checksLoading } = useSaasChecks(provider?.id, 50);
   const updateSla = useUpdateSlaOverride();
   const [editingSla, setEditingSla] = useState(false);
