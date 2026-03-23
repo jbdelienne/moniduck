@@ -194,8 +194,6 @@ async function scrapeStatusFromHtml(statusPageUrl: string): Promise<{
     }
     const html = await res.text();
     const lower = html.toLowerCase();
-    // Debug: log first 500 chars to see what we're getting
-    console.log(`[scrapeHTML] ${statusPageUrl} → ${html.length} chars, preview: ${html.substring(0, 500)}`);
 
 
     // Detect status from common text patterns
