@@ -162,10 +162,27 @@ export default function SaasStatusPage() {
             Monitor your third-party SaaS providers with HTTP pings and status page data.
           </p>
         </div>
-        <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
-          <Plus className="w-4 h-4" />
-          Add SaaS
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center bg-muted/50 rounded-lg border border-border/50 p-0.5">
+            {(['24h', '7d', '30d', '12m'] as SaasUptimePeriod[]).map((p) => (
+              <button
+                key={p}
+                onClick={() => setUptimePeriod(p)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                  uptimePeriod === p
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+          <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
+            <Plus className="w-4 h-4" />
+            Add SaaS
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
