@@ -218,7 +218,8 @@ export default function SaasStatusPage() {
               {dependencies.map((dep) => {
                 const pingStatus = statusConfig[dep.status] ?? statusConfig.unknown;
                 const pageStatus = statusConfig[dep.status_page_status] ?? statusConfig.unknown;
-                const delta = (dep.uptime_percentage ?? 100) - dep.sla_promised;
+                const uptime = uptimeByPeriod[dep.id] ?? dep.uptime_percentage ?? 100;
+                const delta = uptime - dep.sla_promised;
                 const slaBreach = delta < 0;
                 const incidents = dep.incidents || [];
                 const recentIncidents = incidents.slice(0, 3);
