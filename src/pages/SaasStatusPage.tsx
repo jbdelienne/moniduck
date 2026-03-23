@@ -224,8 +224,6 @@ export default function SaasStatusPage() {
                 const slaBreach = delta < 0;
                 const incidents = dep.incidents || [];
                 const recentIncidents = incidents.slice(0, 3);
-                const incidents = dep.incidents || [];
-                const recentIncidents = incidents.slice(0, 3);
 
                 return (
                   <TableRow key={dep.id} className="cursor-pointer" onClick={() => setDetailTarget(dep)}>
