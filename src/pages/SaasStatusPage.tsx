@@ -9,6 +9,7 @@ import {
   SaasProviderWithSubscription,
   SaasIncident,
 } from '@/hooks/use-saas-dependencies';
+import { useSaasUptime, type SaasUptimePeriod, periodLabels } from '@/hooks/use-saas-uptime';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
