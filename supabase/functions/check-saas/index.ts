@@ -195,12 +195,16 @@ async function scrapeStatusFromHtml(statusPageUrl: string): Promise<{
     const html = await res.text();
     const lower = html.toLowerCase();
 
+
     // Detect status from common text patterns
     let status: string;
     if (
       lower.includes("all systems operational") ||
       lower.includes("all services are online") ||
-      lower.includes("everything is up")
+      lower.includes("everything is up") ||
+      lower.includes("is up and running") ||
+      lower.includes("no issues") ||
+      lower.includes("systems are go")
     ) {
       status = "operational";
     } else if (
