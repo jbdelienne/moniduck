@@ -42,6 +42,10 @@ export default function SaasStatusPage() {
   const forceCheck = useForceCheckSaas();
   const { data: allProviders = [] } = useAllSaasProviders();
 
+  const [uptimePeriod, setUptimePeriod] = useState<SaasUptimePeriod>('24h');
+  const providerIds = dependencies.map(d => d.id);
+  const { data: uptimeByProvider = {} } = useSaasUptime(providerIds, uptimePeriod);
+
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SaasProviderWithSubscription | null>(null);
   const [incidentTarget, setIncidentTarget] = useState<SaasProviderWithSubscription | null>(null);
@@ -55,6 +59,7 @@ export default function SaasStatusPage() {
   const [customStatusPage, setCustomStatusPage] = useState('');
   const [customIcon, setCustomIcon] = useState('📦');
   const [customSla, setCustomSla] = useState('99.9');
+
 
   const subscribedProviderIds = new Set(dependencies.map(d => d.id));
 
