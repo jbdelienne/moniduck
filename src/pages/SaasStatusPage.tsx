@@ -46,6 +46,10 @@ export default function SaasStatusPage() {
   const [deleteTarget, setDeleteTarget] = useState<SaasProviderWithSubscription | null>(null);
   const [incidentTarget, setIncidentTarget] = useState<SaasProviderWithSubscription | null>(null);
   const [detailTarget, setDetailTarget] = useState<SaasProviderWithSubscription | null>(null);
+  const [uptimePeriod, setUptimePeriod] = useState<SaasUptimePeriod>('24h');
+
+  const providerIds = useMemo(() => dependencies.map(d => d.id), [dependencies]);
+  const { data: uptimeByPeriod = {} } = useSaasUptimeByPeriod(providerIds, uptimePeriod);
 
   // Add modal state
   const [searchQuery, setSearchQuery] = useState('');
