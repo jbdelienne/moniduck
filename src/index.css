@@ -253,7 +253,21 @@
   }
 
   .gradient-primary {
-    @apply bg-primary;
+    @apply bg-primary text-primary-foreground;
+  }
+
+  /* Monospace data emphasis */
+  .data-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: -0.02em;
+  }
+
+  /* Terminal prompt prefix */
+  .terminal-prefix::before {
+    content: '> ';
+    color: hsl(var(--primary));
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
   }
 
   .tv-mode .service-card {
