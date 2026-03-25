@@ -339,6 +339,33 @@
   .pulse-glow-success {
     animation: pulse-glow 2s ease-in-out infinite;
   }
+
+  /* Geek cursor blink */
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  .cursor-blink::after {
+    content: '█';
+    animation: blink 1s step-end infinite;
+    color: hsl(var(--primary));
+    font-family: 'JetBrains Mono', monospace;
+    margin-left: 2px;
+    font-size: 0.8em;
+  }
+
+  /* Subtle scanline overlay for dark mode */
+  .dark .scanline-overlay {
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(0 0% 0% / 0.03) 2px,
+      hsl(0 0% 0% / 0.03) 4px
+    );
+    pointer-events: none;
+  }
 }
 
 /* Global scrollbar styling */
