@@ -408,6 +408,47 @@ export default function SettingsPage() {
               </Button>
             </div>
           </TabsContent>
+
+          {/* Integrations cloud tab */}
+          <TabsContent value="integrations" className="space-y-6">
+            <div className="bg-card border border-border rounded-xl p-6">
+              <h3 className="font-semibold text-foreground text-sm mb-4">Cloud Providers</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div className="flex items-center gap-3">
+                    <img src="/src/assets/logos/aws.svg" alt="AWS" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Amazon Web Services</p>
+                      <p className="text-xs text-muted-foreground">Auto-discovery de tes services AWS</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => window.location.href = '/settings'}>
+                    Configurer
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60">
+                  <div className="flex items-center gap-3">
+                    <img src="/src/assets/logos/gcp.svg" alt="GCP" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Google Cloud Platform</p>
+                      <p className="text-xs text-muted-foreground">Bientôt disponible</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">V2</span>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60">
+                  <div className="flex items-center gap-3">
+                    <img src="/src/assets/logos/azure.svg" alt="Azure" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Microsoft Azure</p>
+                      <p className="text-xs text-muted-foreground">Bientôt disponible</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">V2</span>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
 
