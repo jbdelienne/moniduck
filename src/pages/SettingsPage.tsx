@@ -143,6 +143,10 @@ export default function SettingsPage() {
               <CreditCard className="w-4 h-4" />
               Billing
             </TabsTrigger>
+            <TabsTrigger value="integrations" className="gap-1.5">
+              <Plug className="w-4 h-4" />
+              Intégrations cloud
+            </TabsTrigger>
           </TabsList>
 
           {/* General tab */}

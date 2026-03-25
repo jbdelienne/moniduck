@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSaasDependencies, SaasIncident } from '@/hooks/use-saas-dependencies';
-import { useSaasChecks } from '@/hooks/use-saas-checks';
+
 import { useSaasUptimeByPeriod, type SaasUptimePeriod } from '@/hooks/use-saas-uptime';
 import { useServices } from '@/hooks/use-supabase';
 import { Button } from '@/components/ui/button';
