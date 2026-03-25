@@ -130,7 +130,7 @@ export default function DashboardOverview() {
 
       {/* Quick Status Grid */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3">Statut rapide</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Statut rapide</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {/* SaaS dependencies */}
           {dependencies.map(dep => (
