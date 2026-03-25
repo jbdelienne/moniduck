@@ -184,6 +184,10 @@
     box-shadow: 0 0 8px hsl(var(--success) / 0.5);
   }
 
+  .dark .status-dot-up {
+    box-shadow: 0 0 10px hsl(var(--success) / 0.6), 0 0 20px hsl(var(--success) / 0.2);
+  }
+
   .status-dot-down {
     @apply status-dot bg-destructive;
     box-shadow: 0 0 8px hsl(var(--destructive) / 0.5);
