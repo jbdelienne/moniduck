@@ -78,17 +78,17 @@ export default function DashboardOverview() {
       </div>
 
       {/* Health Score */}
-      <div className="bg-card border border-border rounded-xl p-8 text-center">
-        <p className={`text-6xl font-bold tracking-tight ${healthColor}`}>
+      <div className="terminal-card p-8 text-center">
+        <p className={`text-6xl font-bold tracking-tight font-mono ${healthColor}`}>
           {healthScore}%
         </p>
         <p className="text-muted-foreground mt-2 text-sm">{getHealthLabel(healthScore)}</p>
-        <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
-          <span>{dependencies.length} dépendances SaaS</span>
-          <span>•</span>
-          <span>{httpServices.length} services</span>
-          <span>•</span>
-          <span>{activeIncidents.length} incident{activeIncidents.length !== 1 ? 's' : ''} actif{activeIncidents.length !== 1 ? 's' : ''}</span>
+        <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground font-mono">
+          <span className="text-primary/70">{dependencies.length}</span> dépendances
+          <span className="text-muted-foreground/30">│</span>
+          <span className="text-primary/70">{httpServices.length}</span> services
+          <span className="text-muted-foreground/30">│</span>
+          <span className={activeIncidents.length > 0 ? 'text-destructive' : 'text-primary/70'}>{activeIncidents.length}</span> incident{activeIncidents.length !== 1 ? 's' : ''}
         </div>
       </div>
 
