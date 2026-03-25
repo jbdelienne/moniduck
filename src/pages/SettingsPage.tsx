@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from 'next-themes';
-import { Moon, Sun, Users, Settings, Mail, Trash2, Shield, Crown, Loader2, Key, CreditCard } from 'lucide-react';
+import { Moon, Sun, Users, Settings, Mail, Trash2, Shield, Crown, Loader2, Key, CreditCard, Plug } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
