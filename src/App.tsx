@@ -19,6 +19,8 @@ import Alerts from "@/pages/Alerts";
 import ReportsPage from "@/pages/ReportsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import OnboardingPage from "@/pages/OnboardingPage";
+import CloudResourcesPage from "@/pages/CloudResourcesPage";
+import CloudProvidersPage from "@/pages/CloudProvidersPage";
 import NotFound from "@/pages/NotFound";
 import Waitlist from "@/pages/Waitlist";
 import PublicReport from "@/pages/PublicReport";
