@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { LayoutDashboard, Server, Plug, Bell, Settings, FileText, Cloud, Globe, ChevronLeft, ChevronRight, CloudCog } from "lucide-react";
+import { LayoutDashboard, Layers, Server, AlertTriangle, Bell, FileText, Settings, ChevronLeft, ChevronRight } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useTranslation } from "react-i18next";
 import { useLangPrefix } from "@/hooks/use-lang-prefix";
@@ -24,30 +24,30 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
     return () => clearTimeout(timer);
   }, [collapsed]);
 
-  const monitoringItems = [
-    { title: "Dashboard", url: `${lp}/dashboard`, icon: LayoutDashboard },
-    { title: "Services", url: `${lp}/services`, icon: Server },
-    { title: "Cloud", url: `${lp}/cloud-resources`, icon: Cloud },
-    { title: "Providers", url: `${lp}/cloud-providers`, icon: CloudCog },
-    { title: "SaaS", url: `${lp}/saas-status`, icon: Globe },
+  const mainItems = [
+    { title: "Vue d'ensemble", url: `${lp}/dashboard`, icon: LayoutDashboard },
+    { title: "Ma Stack", url: `${lp}/stack`, icon: Layers, highlight: true },
+    { title: "Mes Services", url: `${lp}/services`, icon: Server },
+    { title: "Incidents", url: `${lp}/incidents`, icon: AlertTriangle },
+    { title: "Alertes", url: `${lp}/alerts`, icon: Bell, badge: unreadCount },
+    { title: "Rapports", url: `${lp}/reports`, icon: FileText },
   ];
 
-  const manageItems = [
-    { title: "Integrations", url: `${lp}/integrations`, icon: Plug },
-    { title: "Alerts", url: `${lp}/alerts`, icon: Bell, badge: unreadCount },
-    { title: "Reports", url: `${lp}/reports`, icon: FileText },
-    { title: "Settings", url: `${lp}/settings`, icon: Settings },
+  const bottomItems = [
+    { title: "Paramètres", url: `${lp}/settings`, icon: Settings },
   ];
 
-  const renderNavItem = (item: typeof monitoringItems[0] & { badge?: number }) => (
+  const renderNavItem = (item: typeof mainItems[0] & { badge?: number; highlight?: boolean }) => (
     <NavLink
       key={item.url}
       to={item.url}
       end={item.url === `${lp}/dashboard`}
-      className="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors text-[13px] font-medium relative"
+      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors text-[13px] font-medium relative ${
+        item.highlight ? 'text-foreground' : ''
+      }`}
       activeClassName="bg-accent text-foreground font-semibold"
     >
-      <item.icon className="w-4 h-4 flex-shrink-0" />
+      <item.icon className={`w-4 h-4 flex-shrink-0 ${item.highlight ? 'text-primary' : ''}`} />
       {!collapsed && <span>{item.title}</span>}
       {'badge' in item && item.badge !== undefined && item.badge > 0 && (
         <span className={`absolute ${collapsed ? 'top-1 right-1' : 'right-3'} min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1`}>
@@ -79,26 +79,14 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-3 overflow-y-auto">
-        {/* Monitoring group */}
-        {!collapsed && (
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground/60 px-3 mb-1.5 font-medium">
-            Monitoring
-          </p>
-        )}
         <div className="space-y-0.5">
-          {monitoringItems.map(renderNavItem)}
+          {mainItems.map(renderNavItem)}
         </div>
 
         <Separator className="my-3 bg-sidebar-border" />
 
-        {/* Manage group */}
-        {!collapsed && (
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground/60 px-3 mb-1.5 font-medium">
-            Manage
-          </p>
-        )}
         <div className="space-y-0.5">
-          {manageItems.map(renderNavItem)}
+          {bottomItems.map(renderNavItem)}
         </div>
       </nav>
 
