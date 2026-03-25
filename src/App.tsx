@@ -19,6 +19,8 @@ import Alerts from "@/pages/Alerts";
 import ReportsPage from "@/pages/ReportsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import OnboardingPage from "@/pages/OnboardingPage";
+import CloudResourcesPage from "@/pages/CloudResourcesPage";
+import CloudProvidersPage from "@/pages/CloudProvidersPage";
 import NotFound from "@/pages/NotFound";
 import Waitlist from "@/pages/Waitlist";
 import PublicReport from "@/pages/PublicReport";
@@ -56,6 +58,8 @@ const AppRoutes = () => (
       <Route path="/incidents" element={<IncidentsPage />} />
       <Route path="/alerts" element={<Alerts />} />
       <Route path="/reports" element={<ReportsPage />} />
+      <Route path="/cloud" element={<CloudResourcesPage />} />
+      <Route path="/cloud-providers" element={<CloudProvidersPage />} />
       <Route path="/settings" element={<SettingsPage />} />
     </Route>
     <Route path="*" element={<NotFound />} />
