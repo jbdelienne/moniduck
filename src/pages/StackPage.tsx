@@ -106,10 +106,8 @@ export default function StackPage() {
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Ma Stack SaaS</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Monitore tes dépendances SaaS externes et leur impact sur tes services.
-          </p>
+          <h1 className="text-2xl font-bold text-foreground font-display">Ma Stack SaaS</h1>
+          <p className="text-xs text-muted-foreground mt-0.5 font-mono">$ stack --list --watch<span className="cursor-blink"></span></p>
         </div>
         <div className="flex items-center gap-3">
           <SearchBar value={search} onChange={setSearch} placeholder="Rechercher..." />
