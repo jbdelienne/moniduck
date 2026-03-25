@@ -143,8 +143,14 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Dot-grid background */
+  .dark body {
+    background-image: radial-gradient(circle, hsl(var(--grid-color)) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 
   /* Custom scrollbar */
