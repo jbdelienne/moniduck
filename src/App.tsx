@@ -58,6 +58,8 @@ const AppRoutes = () => (
       <Route path="/incidents" element={<IncidentsPage />} />
       <Route path="/alerts" element={<Alerts />} />
       <Route path="/reports" element={<ReportsPage />} />
+      <Route path="/cloud" element={<CloudResourcesPage />} />
+      <Route path="/cloud-providers" element={<CloudProvidersPage />} />
       <Route path="/settings" element={<SettingsPage />} />
     </Route>
     <Route path="*" element={<NotFound />} />

@@ -31,6 +31,8 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
     { title: "Incidents", url: `${lp}/incidents`, icon: AlertTriangle },
     { title: "Alertes", url: `${lp}/alerts`, icon: Bell, badge: unreadCount },
     { title: "Rapports", url: `${lp}/reports`, icon: FileText },
+    { title: "Cloud", url: `${lp}/cloud`, icon: Cloud },
+    { title: "Cloud Providers", url: `${lp}/cloud-providers`, icon: Globe },
   ];
 
   const bottomItems = [
