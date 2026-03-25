@@ -94,7 +94,7 @@ export default function DashboardOverview() {
 
       {/* Active Incidents */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3">Incidents actifs</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Incidents actifs</h2>
         {activeIncidents.length === 0 ? (
           <div className="bg-card border border-border rounded-xl p-6 text-center">
             <CheckCircle className="w-8 h-8 text-success mx-auto mb-2" />
