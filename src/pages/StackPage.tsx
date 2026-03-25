@@ -150,7 +150,7 @@ export default function StackPage() {
               <div
                 key={dep.id}
                 onClick={() => navigate(`/stack/${dep.name.toLowerCase().replace(/\s+/g, '-')}`)}
-                className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-all cursor-pointer group"
+                className="terminal-card p-5 hover:border-primary/30 transition-all cursor-pointer group"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
