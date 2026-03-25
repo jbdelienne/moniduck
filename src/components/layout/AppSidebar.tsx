@@ -72,8 +72,8 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
             spinning ? 'animate-[spin_0.4s_ease-in-out]' : ''
           } ${collapsed ? 'w-9 h-9' : 'w-20 h-20'}`}
         />
-        <span className={`text-lg font-semibold text-foreground transition-all duration-300 tracking-tight ${collapsed ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
-          moniduck
+        <span className={`text-lg font-semibold text-primary transition-all duration-300 tracking-tight font-mono ${collapsed ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+          moniduck<span className="animate-pulse text-primary/60">_</span>
         </span>
       </div>
 

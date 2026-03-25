@@ -210,7 +210,7 @@ export default function StackPage() {
                 {/* Response time and last check */}
                 <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
                   {(dep.avg_response_time ?? 0) > 0 && (
-                    <span className="font-mono">{dep.avg_response_time}ms</span>
+                    <span className="font-mono text-primary/70">{dep.avg_response_time}ms</span>
                   )}
                   {dep.last_check && (
                     <span>Vérifié {formatDistanceToNow(new Date(dep.last_check), { addSuffix: true }).replace('less than a minute ago', 'à l\'instant')}</span>

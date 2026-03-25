@@ -109,8 +109,8 @@ export default function ServicesPage() {
     <div className="animate-fade-in">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">HTTP Services</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{t('services.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-foreground font-display">HTTP Services</h1>
+            <p className="text-xs text-muted-foreground mt-0.5 font-mono">$ services --ping --all<span className="cursor-blink"></span></p>
           </div>
           <div className="flex items-center gap-3">
             <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou URL…" />
