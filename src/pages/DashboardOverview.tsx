@@ -137,7 +137,7 @@ export default function DashboardOverview() {
             <button
               key={dep.id}
               onClick={() => navigate(`/stack/${dep.name.toLowerCase().replace(/\s+/g, '-')}`)}
-              className="bg-card border border-border rounded-xl p-4 text-left hover:border-primary/30 transition-colors"
+              className="terminal-card p-4 text-left hover:border-primary/30 transition-colors"
             >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{dep.icon}</span>
@@ -145,7 +145,7 @@ export default function DashboardOverview() {
               </div>
               <div className="flex items-center gap-1.5">
                 <div className={`w-2 h-2 rounded-full ${statusDotClass[dep.status] || statusDotClass.unknown}`} />
-                <span className="text-xs text-muted-foreground">{statusLabel[dep.status] || 'Inconnu'}</span>
+                <span className="text-xs text-muted-foreground font-mono">{statusLabel[dep.status] || 'Inconnu'}</span>
               </div>
             </button>
           ))}
