@@ -206,6 +206,27 @@
       0 4px 16px -4px hsl(0 0% 0% / 0.2);
   }
 
+  .dark .glass-card {
+    box-shadow:
+      0 0 0 1px hsl(var(--terminal-glow) / 0.05),
+      0 4px 20px -4px hsl(0 0% 0% / 0.4);
+  }
+
+  /* Terminal card accent */
+  .terminal-card {
+    @apply bg-card border border-border rounded-xl relative overflow-hidden;
+  }
+
+  .dark .terminal-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--terminal-glow) / 0.4), transparent);
+  }
+
   /* Hover lift */
   .hover-lift {
     @apply transition-all duration-200;
