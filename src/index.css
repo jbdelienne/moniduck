@@ -247,6 +247,11 @@
     box-shadow: 0 8px 24px -8px hsl(0 0% 0% / 0.2);
   }
 
+  .dark .service-card:hover {
+    border-color: hsl(var(--terminal-glow) / 0.2);
+    box-shadow: 0 0 20px -8px hsl(var(--terminal-glow) / 0.1);
+  }
+
   .gradient-primary {
     @apply bg-primary;
   }
