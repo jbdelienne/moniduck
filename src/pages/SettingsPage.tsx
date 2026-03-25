@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from 'next-themes';
-import { Moon, Sun, Users, Settings, Mail, Trash2, Shield, Crown, Loader2, Key, CreditCard } from 'lucide-react';
+import { Moon, Sun, Users, Settings, Mail, Trash2, Shield, Crown, Loader2, Key, CreditCard, Plug } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
@@ -142,6 +142,10 @@ export default function SettingsPage() {
             <TabsTrigger value="billing" className="gap-1.5">
               <CreditCard className="w-4 h-4" />
               Billing
+            </TabsTrigger>
+            <TabsTrigger value="integrations" className="gap-1.5">
+              <Plug className="w-4 h-4" />
+              Intégrations cloud
             </TabsTrigger>
           </TabsList>
 
@@ -402,6 +406,47 @@ export default function SettingsPage() {
               <Button variant="outline" disabled>
                 Coming soon
               </Button>
+            </div>
+          </TabsContent>
+
+          {/* Integrations cloud tab */}
+          <TabsContent value="integrations" className="space-y-6">
+            <div className="bg-card border border-border rounded-xl p-6">
+              <h3 className="font-semibold text-foreground text-sm mb-4">Cloud Providers</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+                  <div className="flex items-center gap-3">
+                    <img src="/src/assets/logos/aws.svg" alt="AWS" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Amazon Web Services</p>
+                      <p className="text-xs text-muted-foreground">Auto-discovery de tes services AWS</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => window.location.href = '/settings'}>
+                    Configurer
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60">
+                  <div className="flex items-center gap-3">
+                    <img src="/src/assets/logos/gcp.svg" alt="GCP" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Google Cloud Platform</p>
+                      <p className="text-xs text-muted-foreground">Bientôt disponible</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">V2</span>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60">
+                  <div className="flex items-center gap-3">
+                    <img src="/src/assets/logos/azure.svg" alt="Azure" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Microsoft Azure</p>
+                      <p className="text-xs text-muted-foreground">Bientôt disponible</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">V2</span>
+                </div>
+              </div>
             </div>
           </TabsContent>
         </Tabs>

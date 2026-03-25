@@ -9,21 +9,19 @@ import '@/i18n';
 import AppLayout from "@/components/layout/AppLayout";
 
 import Auth from "@/pages/Auth";
-import Dashboard from "@/pages/Dashboard";
+import DashboardOverview from "@/pages/DashboardOverview";
+import StackPage from "@/pages/StackPage";
+import StackDetailPage from "@/pages/StackDetailPage";
 import ServicesPage from "@/pages/ServicesPage";
-import CloudResourcesPage from "@/pages/CloudResourcesPage";
-import Integrations from "@/pages/Integrations";
-import IntegrationDetail from "@/pages/IntegrationDetail";
+import ServiceDetailPage from "@/pages/ServiceDetailPage";
+import IncidentsPage from "@/pages/IncidentsPage";
 import Alerts from "@/pages/Alerts";
+import ReportsPage from "@/pages/ReportsPage";
 import SettingsPage from "@/pages/SettingsPage";
+import OnboardingPage from "@/pages/OnboardingPage";
 import NotFound from "@/pages/NotFound";
 import Waitlist from "@/pages/Waitlist";
-import ReportsPage from "@/pages/ReportsPage";
-import AwsCostDashboard from "@/pages/AwsCostDashboard";
-import AwsIntegrationDetail from "@/pages/AwsIntegrationDetail";
 import PublicReport from "@/pages/PublicReport";
-import SaasStatusPage from "@/pages/SaasStatusPage";
-import CloudProvidersPage from "@/pages/CloudProvidersPage";
 
 const queryClient = new QueryClient();
 
@@ -46,16 +44,16 @@ const AppRoutes = () => (
     <Route path="/" element={<Waitlist />} />
     <Route path="/auth" element={<Auth />} />
     <Route path="/reports/shared/:shareToken" element={<PublicReport />} />
+    <Route path="/onboarding" element={
+      <ProtectedRoute><OnboardingPage /></ProtectedRoute>
+    } />
     <Route element={<ProtectedLayout />}>
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard" element={<DashboardOverview />} />
+      <Route path="/stack" element={<StackPage />} />
+      <Route path="/stack/:slug" element={<StackDetailPage />} />
       <Route path="/services" element={<ServicesPage />} />
-      <Route path="/cloud-resources" element={<CloudResourcesPage />} />
-      <Route path="/saas-status" element={<SaasStatusPage />} />
-      <Route path="/cloud-providers" element={<CloudProvidersPage />} />
-      <Route path="/integrations" element={<Integrations />} />
-      <Route path="/integrations/aws" element={<AwsIntegrationDetail />} />
-      <Route path="/integrations/aws/costs" element={<AwsCostDashboard />} />
-      <Route path="/integrations/:type" element={<IntegrationDetail />} />
+      <Route path="/services/:id" element={<ServiceDetailPage />} />
+      <Route path="/incidents" element={<IncidentsPage />} />
       <Route path="/alerts" element={<Alerts />} />
       <Route path="/reports" element={<ReportsPage />} />
       <Route path="/settings" element={<SettingsPage />} />
