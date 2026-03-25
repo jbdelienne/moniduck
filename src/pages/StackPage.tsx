@@ -106,10 +106,8 @@ export default function StackPage() {
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Ma Stack SaaS</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Monitore tes dépendances SaaS externes et leur impact sur tes services.
-          </p>
+          <h1 className="text-2xl font-bold text-foreground font-display">Ma Stack SaaS</h1>
+          <p className="text-xs text-muted-foreground mt-0.5 font-mono">$ stack --list --watch<span className="cursor-blink"></span></p>
         </div>
         <div className="flex items-center gap-3">
           <SearchBar value={search} onChange={setSearch} placeholder="Rechercher..." />
@@ -152,7 +150,7 @@ export default function StackPage() {
               <div
                 key={dep.id}
                 onClick={() => navigate(`/stack/${dep.name.toLowerCase().replace(/\s+/g, '-')}`)}
-                className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-all cursor-pointer group"
+                className="terminal-card p-5 hover:border-primary/30 transition-all cursor-pointer group"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -212,7 +210,7 @@ export default function StackPage() {
                 {/* Response time and last check */}
                 <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
                   {(dep.avg_response_time ?? 0) > 0 && (
-                    <span className="font-mono">{dep.avg_response_time}ms</span>
+                    <span className="font-mono text-primary/70">{dep.avg_response_time}ms</span>
                   )}
                   {dep.last_check && (
                     <span>Vérifié {formatDistanceToNow(new Date(dep.last_check), { addSuffix: true }).replace('less than a minute ago', 'à l\'instant')}</span>

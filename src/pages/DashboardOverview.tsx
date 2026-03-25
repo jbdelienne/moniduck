@@ -73,28 +73,28 @@ export default function DashboardOverview() {
   return (
     <div className="animate-fade-in space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Vue d'ensemble</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Santé globale de ta stack</p>
+        <h1 className="text-2xl font-bold text-foreground font-display">Vue d'ensemble</h1>
+        <p className="text-sm text-muted-foreground mt-0.5 font-mono text-xs">$ status --global<span className="cursor-blink"></span></p>
       </div>
 
       {/* Health Score */}
-      <div className="bg-card border border-border rounded-xl p-8 text-center">
-        <p className={`text-6xl font-bold tracking-tight ${healthColor}`}>
+      <div className="terminal-card p-8 text-center">
+        <p className={`text-6xl font-bold tracking-tight font-mono ${healthColor}`}>
           {healthScore}%
         </p>
         <p className="text-muted-foreground mt-2 text-sm">{getHealthLabel(healthScore)}</p>
-        <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
-          <span>{dependencies.length} dépendances SaaS</span>
-          <span>•</span>
-          <span>{httpServices.length} services</span>
-          <span>•</span>
-          <span>{activeIncidents.length} incident{activeIncidents.length !== 1 ? 's' : ''} actif{activeIncidents.length !== 1 ? 's' : ''}</span>
+        <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground font-mono">
+          <span className="text-primary/70">{dependencies.length}</span> dépendances
+          <span className="text-muted-foreground/30">│</span>
+          <span className="text-primary/70">{httpServices.length}</span> services
+          <span className="text-muted-foreground/30">│</span>
+          <span className={activeIncidents.length > 0 ? 'text-destructive' : 'text-primary/70'}>{activeIncidents.length}</span> incident{activeIncidents.length !== 1 ? 's' : ''}
         </div>
       </div>
 
       {/* Active Incidents */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3">Incidents actifs</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Incidents actifs</h2>
         {activeIncidents.length === 0 ? (
           <div className="bg-card border border-border rounded-xl p-6 text-center">
             <CheckCircle className="w-8 h-8 text-success mx-auto mb-2" />
@@ -130,14 +130,14 @@ export default function DashboardOverview() {
 
       {/* Quick Status Grid */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3">Statut rapide</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Statut rapide</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {/* SaaS dependencies */}
           {dependencies.map(dep => (
             <button
               key={dep.id}
               onClick={() => navigate(`/stack/${dep.name.toLowerCase().replace(/\s+/g, '-')}`)}
-              className="bg-card border border-border rounded-xl p-4 text-left hover:border-primary/30 transition-colors"
+              className="terminal-card p-4 text-left hover:border-primary/30 transition-colors"
             >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{dep.icon}</span>
@@ -145,7 +145,7 @@ export default function DashboardOverview() {
               </div>
               <div className="flex items-center gap-1.5">
                 <div className={`w-2 h-2 rounded-full ${statusDotClass[dep.status] || statusDotClass.unknown}`} />
-                <span className="text-xs text-muted-foreground">{statusLabel[dep.status] || 'Inconnu'}</span>
+                <span className="text-xs text-muted-foreground font-mono">{statusLabel[dep.status] || 'Inconnu'}</span>
               </div>
             </button>
           ))}
@@ -155,7 +155,7 @@ export default function DashboardOverview() {
             <button
               key={svc.id}
               onClick={() => navigate(`/services/${svc.id}`)}
-              className="bg-card border border-border rounded-xl p-4 text-left hover:border-primary/30 transition-colors"
+              className="terminal-card p-4 text-left hover:border-primary/30 transition-colors"
             >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{svc.icon}</span>
@@ -163,7 +163,7 @@ export default function DashboardOverview() {
               </div>
               <div className="flex items-center gap-1.5">
                 <div className={`w-2 h-2 rounded-full ${statusDotClass[svc.status] || statusDotClass.unknown}`} />
-                <span className="text-xs text-muted-foreground">{statusLabel[svc.status] || 'Inconnu'}</span>
+                <span className="text-xs text-muted-foreground font-mono">{statusLabel[svc.status] || 'Inconnu'}</span>
               </div>
             </button>
           ))}

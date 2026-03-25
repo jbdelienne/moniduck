@@ -28,7 +28,7 @@ export default function TopBar({ onToggleSidebar, sidebarCollapsed }: TopBarProp
   const unreadCount = alerts.filter((a) => !a.is_dismissed).length;
 
   return (
-    <header className="h-14 border-b border-border/50 bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 sticky top-0 z-20">
+    <header className="h-14 border-b border-border/50 bg-background/60 backdrop-blur-md flex items-center justify-between px-4 sticky top-0 z-20">
       <div className="flex items-center gap-3">
         <button onClick={onToggleSidebar} className="text-muted-foreground hover:text-foreground transition-colors lg:hidden">
           <Menu className="w-4 h-4" />
