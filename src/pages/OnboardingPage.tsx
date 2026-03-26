@@ -11,10 +11,10 @@ import { toast } from 'sonner';
 import duckLogo from '@/assets/moniduck-logo.png';
 
 const STEPS = [
-  { title: 'Ta stack SaaS', description: 'Quels outils SaaS utilises-tu ?' },
-  { title: 'Tes services', description: 'Ajoute tes propres endpoints HTTP' },
-  { title: 'Dépendances', description: 'Associe tes services à tes dépendances' },
-  { title: 'Alertes', description: 'Configure tes notifications' },
+  { title: 'Your SaaS Stack', description: 'Which SaaS tools do you use?' },
+  { title: 'Your Services', description: 'Add your own HTTP endpoints' },
+  { title: 'Dependencies', description: 'Map your services to their dependencies' },
+  { title: 'Alerts', description: 'Configure your notifications' },
 ];
 
 interface NewService {
