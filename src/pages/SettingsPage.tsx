@@ -461,7 +461,7 @@ export default function SettingsPage() {
                           <p className="text-sm font-semibold text-foreground">Amazon Web Services</p>
                           {awsConnected && (
                             <span className="flex items-center gap-1 text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded-full">
-                              <CheckCircle className="w-3 h-3" /> Connecté
+                              <CheckCircle className="w-3 h-3" /> Connected
                             </span>
                           )}
                         </div>
