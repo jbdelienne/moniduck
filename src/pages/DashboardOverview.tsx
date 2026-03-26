@@ -1,9 +1,10 @@
 import { useServices } from '@/hooks/use-supabase';
-import { useSaasDependencies, SaasProviderWithSubscription } from '@/hooks/use-saas-dependencies';
+import { useSaasDependencies, SaasProviderWithSubscription, SaasIncident } from '@/hooks/use-saas-dependencies';
 import { useAlerts } from '@/hooks/use-supabase';
-import { Loader2, CheckCircle, AlertTriangle, XCircle, Minus } from 'lucide-react';
+import { Loader2, CheckCircle, AlertTriangle, XCircle, Minus, Clock, Wifi } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
 
 function getHealthScore(services: any[], dependencies: SaasProviderWithSubscription[]): number {
   const serviceScores = services
@@ -53,6 +54,62 @@ export default function DashboardOverview() {
   const { data: dependencies = [], isLoading: depsLoading } = useSaasDependencies();
   const { data: alerts = [] } = useAlerts();
   const navigate = useNavigate();
+
+  // Build unified recent incidents list
+  const recentIncidents = useMemo(() => {
+    const items: Array<{
+      id: string;
+      source: 'saas' | 'service';
+      icon: string;
+      name: string;
+      title: string;
+      date: string;
+      severity: string;
+      status: string;
+      ping?: number | null;
+      navigateTo: string;
+    }> = [];
+
+    // SaaS incidents from dependencies
+    for (const dep of dependencies) {
+      const incidents: SaasIncident[] = dep.incidents || [];
+      for (const inc of incidents) {
+        items.push({
+          id: `saas-${dep.id}-${inc.date}`,
+          source: 'saas',
+          icon: dep.icon,
+          name: dep.name,
+          title: inc.title,
+          date: inc.date,
+          severity: inc.severity,
+          status: dep.status,
+          ping: dep.avg_response_time,
+          navigateTo: `/stack/${dep.name.toLowerCase().replace(/\s+/g, '-')}`,
+        });
+      }
+    }
+
+    // Service-level incidents from alerts
+    for (const alert of alerts.filter(a => !a.is_dismissed)) {
+      const svc = services.find(s => s.id === alert.service_id);
+      items.push({
+        id: alert.id,
+        source: 'service',
+        icon: svc?.icon || '🌐',
+        name: svc?.name || alert.integration_type || 'Service',
+        title: alert.title,
+        date: alert.created_at,
+        severity: alert.severity,
+        status: alert.resolved_at ? 'resolved' : 'active',
+        ping: svc?.avg_response_time,
+        navigateTo: svc ? `/services/${svc.id}` : '/incidents',
+      });
+    }
+
+    // Sort by date descending
+    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return items.slice(0, 10);
+  }, [dependencies, alerts, services]);
 
   const isLoading = servicesLoading || depsLoading;
 
@@ -131,55 +188,64 @@ export default function DashboardOverview() {
         )}
       </div>
 
-      {/* Quick Status Grid */}
+      {/* Incidents récents */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Statut rapide</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {/* SaaS dependencies */}
-          {dependencies.map(dep => (
-            <button
-              key={dep.id}
-              onClick={() => navigate(`/stack/${dep.name.toLowerCase().replace(/\s+/g, '-')}`)}
-              className="terminal-card p-4 text-left hover:border-primary/30 transition-colors"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg">{dep.icon}</span>
-                <span className="text-sm font-medium text-foreground truncate">{dep.name}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className={`w-2 h-2 rounded-full ${statusDotClass[dep.status] || statusDotClass.unknown}`} />
-                <span className="text-xs text-muted-foreground font-mono">{statusLabel[dep.status] || 'Inconnu'}</span>
-              </div>
-            </button>
-          ))}
-
-          {/* HTTP Services */}
-          {httpServices.map(svc => (
-            <button
-              key={svc.id}
-              onClick={() => navigate(`/services/${svc.id}`)}
-              className="terminal-card p-4 text-left hover:border-primary/30 transition-colors"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg">{svc.icon}</span>
-                <span className="text-sm font-medium text-foreground truncate">{svc.name}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className={`w-2 h-2 rounded-full ${statusDotClass[svc.status] || statusDotClass.unknown}`} />
-                <span className="text-xs text-muted-foreground font-mono">{statusLabel[svc.status] || 'Inconnu'}</span>
-              </div>
-            </button>
-          ))}
-
-          {dependencies.length === 0 && httpServices.length === 0 && (
-            <div className="col-span-full bg-card border border-border rounded-xl p-6 text-center">
-              <p className="text-sm text-muted-foreground">Aucun service monitoré.</p>
-              <button onClick={() => navigate('/stack')} className="text-sm text-primary hover:underline mt-1">
-                Ajouter des dépendances →
+        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Incidents récents</h2>
+        {recentIncidents.length === 0 ? (
+          <div className="bg-card border border-border rounded-xl p-6 text-center">
+            <CheckCircle className="w-8 h-8 text-success mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">Aucun incident récent — tout roule 🎉</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {recentIncidents.map(inc => (
+              <button
+                key={inc.id}
+                onClick={() => navigate(inc.navigateTo)}
+                className="w-full terminal-card p-4 text-left hover:border-primary/30 transition-colors flex items-center gap-3"
+              >
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                  inc.severity === 'critical' ? 'bg-destructive/10' :
+                  inc.severity === 'major' ? 'bg-warning/10' : 'bg-muted'
+                }`}>
+                  <span className="text-lg">{inc.icon}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-foreground truncate">{inc.name}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${
+                      inc.source === 'saas' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent-foreground'
+                    }`}>
+                      {inc.source === 'saas' ? 'SaaS' : 'Service'}
+                    </span>
+                    {inc.status === 'resolved' && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-success/10 text-success font-mono">Résolu</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">{inc.title}</p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  {inc.ping != null && inc.ping > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground font-mono">
+                      <Wifi className="w-3 h-3" />
+                      <span>{inc.ping}ms</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground font-mono">
+                    <Clock className="w-3 h-3" />
+                    <span>{formatDistanceToNow(new Date(inc.date), { addSuffix: true })}</span>
+                  </div>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                    inc.severity === 'critical' ? 'bg-destructive/10 text-destructive' :
+                    inc.severity === 'major' ? 'bg-warning/10 text-warning' : 'bg-muted text-muted-foreground'
+                  }`}>
+                    {inc.severity}
+                  </span>
+                </div>
               </button>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
