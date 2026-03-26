@@ -202,10 +202,10 @@ export default function OnboardingPage() {
           {step === 2 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Cette étape sera disponible prochainement. Tu pourras associer tes services à leurs dépendances SaaS pour détecter les corrélations.
+                This feature is coming soon. You'll be able to map your services to their SaaS dependencies to detect correlations.
               </p>
               <div className="bg-muted/50 rounded-lg p-4 text-center">
-                <p className="text-sm text-muted-foreground">🚧 Fonctionnalité en développement</p>
+                <p className="text-sm text-muted-foreground">🚧 Feature under development</p>
               </div>
             </div>
           )}
