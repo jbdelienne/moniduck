@@ -465,7 +465,7 @@ export default function SettingsPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">EC2 · S3 · Lambda · RDS · Coûts</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">EC2 · S3 · Lambda · RDS · Costs</p>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         {awsConnected ? (

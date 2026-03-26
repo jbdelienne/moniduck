@@ -465,7 +465,7 @@ export default function CloudResourcesPage() {
                 {filteredResources.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">
-                      Aucune ressource trouvée
+                      No resources found
                     </TableCell>
                   </TableRow>
                 ) : filteredResources.map((r) => {

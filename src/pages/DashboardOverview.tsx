@@ -219,7 +219,7 @@ export default function DashboardOverview() {
                       {inc.source === 'saas' ? 'SaaS' : 'Service'}
                     </span>
                     {inc.status === 'resolved' && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-success/10 text-success font-mono">Résolu</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-success/10 text-success font-mono">Resolved</span>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground truncate mt-0.5">{inc.title}</p>

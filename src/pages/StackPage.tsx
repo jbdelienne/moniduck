@@ -283,9 +283,9 @@ export default function StackPage() {
       <AlertDialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Retirer {deleteTarget?.name} ?</AlertDialogTitle>
+            <AlertDialogTitle>Remove {deleteTarget?.name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              Cette dépendance ne sera plus monitorée dans ton workspace.
+              This dependency will no longer be monitored in your workspace.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

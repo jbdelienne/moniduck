@@ -234,9 +234,9 @@ export default function OnboardingPage() {
                 <Label className="text-sm">Mode d'alerte</Label>
                 <div className="flex gap-2">
                   {([
-                    { key: 'immediate' as const, label: 'Immédiat' },
-                    { key: 'daily' as const, label: 'Digest quotidien' },
-                    { key: 'weekly' as const, label: 'Digest hebdo' },
+                    { key: 'immediate' as const, label: 'Immediate' },
+                    { key: 'daily' as const, label: 'Daily Digest' },
+                    { key: 'weekly' as const, label: 'Weekly Digest' },
                   ]).map(mode => (
                     <button
                       key={mode.key}
