@@ -219,6 +219,25 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
     return { service, uptime, avgResponse, total, incidents };
   });
 
+  // ── Enrich service metrics with real DB incidents ──
+  const enrichedServiceMetrics = serviceMetrics.map((m) => {
+    const realIncidents = dbIncidents
+      .filter((inc: any) => inc.service_id === m.service.id)
+      .map((inc: any) => ({
+        start: inc.started_at,
+        end: inc.resolved_at || new Date().toISOString(),
+        duration: inc.duration_minutes || Math.round((new Date(inc.resolved_at || new Date()).getTime() - new Date(inc.started_at).getTime()) / 60000),
+        cause: inc.error_message || (inc.status_code ? `HTTP ${inc.status_code}` : 'Service unavailable'),
+        statusCode: inc.status_code || null,
+        resolvedAt: inc.resolved_at || null,
+        isFromDb: true,
+      }));
+
+    // Use DB incidents if available, otherwise fall back to check-derived incidents
+    const finalIncidents = realIncidents.length > 0 ? realIncidents : m.incidents.map(inc => ({ ...inc, statusCode: null, resolvedAt: inc.end, isFromDb: false }));
+    return { ...m, incidents: finalIncidents };
+  });
+
   // ── Compute per-SaaS provider metrics ──
   const saasMetrics = saasProviders.map((provider) => {
     const pChecks = saasChecks.filter((c: any) => c.saas_provider_id === provider.id);
@@ -229,7 +248,25 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
       ? Math.round(pChecks.reduce((sum: number, c: any) => sum + c.response_time, 0) / total)
       : null;
 
-    const incidents: { start: string; end: string; duration: number; cause: string }[] = [];
+    // Use incidents from provider.incidents JSON field
+    const providerIncidents = Array.isArray(provider.incidents) ? (provider.incidents as any[]) : [];
+    const parsedProviderIncidents = providerIncidents
+      .filter((inc: any) => {
+        const incDate = new Date(inc.started_at || inc.start || inc.date);
+        return incDate >= new Date(periodStart) && incDate <= new Date(periodEnd);
+      })
+      .map((inc: any) => ({
+        start: inc.started_at || inc.start || inc.date,
+        end: inc.resolved_at || inc.end || inc.date,
+        duration: inc.duration_minutes || inc.duration || 0,
+        cause: inc.description || inc.cause || inc.title || 'Provider incident',
+        statusCode: inc.status_code || null,
+        resolvedAt: inc.resolved_at || inc.end || null,
+        isFromDb: true,
+      }));
+
+    // Fall back to check-derived incidents if no stored incidents
+    const checkDerivedIncidents: { start: string; end: string; duration: number; cause: string; statusCode: string | null; resolvedAt: string | null; isFromDb: boolean }[] = [];
     let currentInc: { start: string; end: string; cause: string } | null = null;
     for (const check of pChecks) {
       if (check.status === 'down') {
@@ -238,14 +275,16 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
         if (check.error_message) currentInc.cause = check.error_message;
       } else if (currentInc) {
         const dur = Math.round((new Date(currentInc.end).getTime() - new Date(currentInc.start).getTime()) / 60000);
-        incidents.push({ ...currentInc, duration: Math.max(dur, 1) });
+        checkDerivedIncidents.push({ ...currentInc, duration: Math.max(dur, 1), statusCode: null, resolvedAt: currentInc.end, isFromDb: false });
         currentInc = null;
       }
     }
     if (currentInc) {
       const dur = Math.round((new Date(currentInc.end).getTime() - new Date(currentInc.start).getTime()) / 60000);
-      incidents.push({ ...currentInc, duration: Math.max(dur, 1) });
+      checkDerivedIncidents.push({ ...currentInc, duration: Math.max(dur, 1), statusCode: null, resolvedAt: currentInc.end, isFromDb: false });
     }
+
+    const finalIncidents = parsedProviderIncidents.length > 0 ? parsedProviderIncidents : checkDerivedIncidents;
 
     const slaPromised = provider.sla_promised_default ?? 99.9;
     return { provider, uptime, avgResponse, total, incidents, slaPromised };
