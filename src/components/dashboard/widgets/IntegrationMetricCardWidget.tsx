@@ -47,11 +47,11 @@ export default function IntegrationMetricCardWidget({ metricKey, metrics }: Prop
             </div>
             <Progress value={Math.min(objectPct, 100)} className="h-2" />
           </div>
-          <p className="text-sm font-semibold text-foreground">{storageGb} GB utilisés</p>
+          <p className="text-sm font-semibold text-foreground">{storageGb} GB used</p>
         </div>
         {meta.created_time && (
           <p className="text-[10px] text-muted-foreground mt-1">
-            Créé le {new Date(meta.created_time).toLocaleDateString()}
+            Created {new Date(meta.created_time).toLocaleDateString()}
           </p>
         )}
       </div>

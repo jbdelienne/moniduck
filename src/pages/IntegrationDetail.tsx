@@ -366,7 +366,7 @@ export default function IntegrationDetail() {
 
                               {meta.created_time && (
                                 <p className="text-[10px] text-muted-foreground">
-                                  Créé le {new Date(meta.created_time).toLocaleDateString('fr-FR')}
+                                  Created {new Date(meta.created_time).toLocaleDateString()}
                                 </p>
                               )}
                             </div>

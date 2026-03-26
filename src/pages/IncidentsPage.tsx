@@ -156,7 +156,7 @@ export default function IncidentsPage() {
                         {formatDistanceToNow(new Date(incident.created_at), { addSuffix: true })}
                       </span>
                       {incident.duration > 0 && (
-                        <span>Durée : {formatDuration(incident.duration)}</span>
+                        <span>Duration: {formatDuration(incident.duration)}</span>
                       )}
                     </div>
                   </div>

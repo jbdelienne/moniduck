@@ -185,10 +185,10 @@ export default function StackPage() {
                       variant="outline"
                       size="icon"
                       className="h-7 w-7"
-                      title="Vérifier maintenant"
+                      title="Check now"
                       onClick={() => {
                         forceCheck.mutate(dep.id, {
-                          onSuccess: () => toast.success('Check lancé'),
+                          onSuccess: () => toast.success('Check triggered'),
                           onError: (err) => toast.error(err.message),
                         });
                       }}

@@ -133,9 +133,9 @@ export default function ServiceDetailPage() {
 
       {/* Dependencies */}
       <div className="bg-card border border-border rounded-xl p-6">
-        <h2 className="text-sm font-semibold text-foreground mb-3">Dépendances SaaS liées</h2>
+        <h2 className="text-sm font-semibold text-foreground mb-3">Linked SaaS Dependencies</h2>
         {dependencies.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Aucune dépendance configurée. Ajoute des dépendances dans Ma Stack.</p>
+          <p className="text-sm text-muted-foreground">No dependencies configured. Add dependencies in My Stack.</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {dependencies.map(dep => (
