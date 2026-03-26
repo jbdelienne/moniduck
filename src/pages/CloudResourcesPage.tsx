@@ -376,10 +376,21 @@ export default function CloudResourcesPage() {
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Cloud Resources</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Ressources importées depuis vos cloud providers</p>
+          <h1 className="text-2xl font-bold text-foreground font-display">Cloud Resources</h1>
+          <p className="text-sm text-muted-foreground mt-0.5 font-mono text-xs">$ cloud ls --all<span className="cursor-blink"></span></p>
         </div>
-        <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => navigate('/settings?tab=integrations')}
+          >
+            <Settings className="w-3.5 h-3.5" />
+            Intégrations
+          </Button>
+          <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
+        </div>
       </div>
 
       {isLoading ? (

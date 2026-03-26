@@ -435,43 +435,160 @@ export default function SettingsPage() {
 
           {/* Integrations cloud tab */}
           <TabsContent value="integrations" className="space-y-6">
-            <div className="bg-card border border-border rounded-xl p-6">
-              <h3 className="font-semibold text-foreground text-sm mb-4">Cloud Providers</h3>
+            {/* Cloud Providers */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h3 className="font-semibold text-foreground text-sm font-display">Cloud Providers</h3>
+                  <p className="text-xs text-muted-foreground">Auto-discovery et monitoring de ton infrastructure cloud</p>
+                </div>
+              </div>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
-                  <div className="flex items-center gap-3">
-                    <img src="/src/assets/logos/aws.svg" alt="AWS" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Amazon Web Services</p>
-                      <p className="text-xs text-muted-foreground">Auto-discovery de tes services AWS</p>
+                {/* AWS */}
+                {(() => {
+                  const awsConnected = !!awsCred;
+                  const awsIntegration = getIntegration('aws');
+                  return (
+                    <div className={`terminal-card p-5 flex items-center gap-4 transition-all ${awsConnected && awsIntegration ? 'cursor-pointer hover:border-primary/30' : ''}`}
+                      onClick={() => awsConnected && awsIntegration && navigate('/integrations/aws')}
+                    >
+                      <img src={awsLogo} alt="AWS" className="w-10 h-10 object-contain shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold text-foreground">Amazon Web Services</p>
+                          {awsConnected && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded-full">
+                              <CheckCircle className="w-3 h-3" /> Connecté
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">EC2 · S3 · Lambda · RDS · Coûts</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {awsConnected ? (
+                          <>
+                            <Button variant="ghost" size="sm" className="gap-1 text-xs h-8"
+                              onClick={(e) => { e.stopPropagation(); syncAws.mutate(awsCred!.id); }}
+                              disabled={syncAws.isPending}
+                            >
+                              {syncAws.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                              Sync
+                            </Button>
+                            <Button variant="ghost" size="sm" className="gap-1 text-xs h-8 text-muted-foreground"
+                              onClick={(e) => { e.stopPropagation(); setAwsModalOpen(true); }}
+                            >
+                              <Settings className="w-3 h-3" /> Config
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                              onClick={(e) => { e.stopPropagation(); disconnectAws.mutate(awsCred!.id); }}
+                              disabled={disconnectAws.isPending}
+                            >
+                              {disconnectAws.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Unlink className="w-3 h-3" />}
+                            </Button>
+                            {awsIntegration && <ChevronRight className="w-4 h-4 text-muted-foreground ml-1" />}
+                          </>
+                        ) : (
+                          <Button variant="outline" size="sm" className="gap-1.5 h-8" onClick={() => setAwsModalOpen(true)}>
+                            <ExternalLink className="w-3.5 h-3.5" /> Connecter
+                          </Button>
+                        )}
+                      </div>
                     </div>
+                  );
+                })()}
+
+                {/* GCP */}
+                <div className="terminal-card p-5 flex items-center gap-4 opacity-50">
+                  <img src={gcpLogo} alt="GCP" className="w-10 h-10 object-contain shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">Google Cloud Platform</p>
+                      <Badge variant="outline" className="text-[10px] font-bold">Coming soon</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">Compute · Storage · Functions · Coûts</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => window.location.href = '/settings'}>
-                    Configurer
-                  </Button>
                 </div>
-                <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60">
-                  <div className="flex items-center gap-3">
-                    <img src="/src/assets/logos/gcp.svg" alt="GCP" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Google Cloud Platform</p>
-                      <p className="text-xs text-muted-foreground">Bientôt disponible</p>
+
+                {/* Azure */}
+                <div className="terminal-card p-5 flex items-center gap-4 opacity-50">
+                  <img src={azureLogo} alt="Azure" className="w-10 h-10 object-contain shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">Microsoft Azure</p>
+                      <Badge variant="outline" className="text-[10px] font-bold">Coming soon</Badge>
                     </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">VMs · Storage · Functions · Coûts</p>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">V2</span>
-                </div>
-                <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60">
-                  <div className="flex items-center gap-3">
-                    <img src="/src/assets/logos/azure.svg" alt="Azure" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Microsoft Azure</p>
-                      <p className="text-xs text-muted-foreground">Bientôt disponible</p>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">V2</span>
                 </div>
               </div>
             </div>
+
+            {/* Collaboration Suites */}
+            <div>
+              <div className="mb-3">
+                <h3 className="font-semibold text-foreground text-sm font-display">Collaboration Suites</h3>
+                <p className="text-xs text-muted-foreground">Licences, stockage & sécurité de tes outils de productivité</p>
+              </div>
+              <div className="space-y-3">
+                {(['google', 'microsoft'] as const).map((type) => {
+                  const integration = getIntegration(type);
+                  const connected = !!integration;
+                  const logo = type === 'google' ? googleLogo : microsoftLogo;
+                  const name = type === 'google' ? 'Google Workspace' : 'Microsoft 365';
+                  const tags = type === 'google' ? 'Storage · Licences · Utilisateurs · Sécurité' : 'Licences · OneDrive · MFA · Utilisateurs';
+
+                  return (
+                    <div key={type}
+                      className={`terminal-card p-5 flex items-center gap-4 transition-all ${connected ? 'cursor-pointer hover:border-primary/30' : ''}`}
+                      onClick={() => connected && navigate(`/integrations/${type}`)}
+                    >
+                      <img src={logo} alt={name} className="w-10 h-10 object-contain shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold text-foreground">{name}</p>
+                          {connected && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded-full">
+                              <CheckCircle className="w-3 h-3" /> Connecté
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">{tags}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {connected ? (
+                          <>
+                            <Button variant="ghost" size="sm" className="gap-1 text-xs h-8"
+                              onClick={(e) => { e.stopPropagation(); syncIntegration.mutate(integration.id); }}
+                              disabled={syncIntegration.isPending}
+                            >
+                              {syncIntegration.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                              Sync
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                              onClick={(e) => { e.stopPropagation(); disconnectIntegration.mutate(integration.id); }}
+                              disabled={disconnectIntegration.isPending}
+                            >
+                              {disconnectIntegration.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Unlink className="w-3 h-3" />}
+                            </Button>
+                            <ChevronRight className="w-4 h-4 text-muted-foreground ml-1" />
+                          </>
+                        ) : (
+                          <Button variant="outline" size="sm" className="gap-1.5 h-8"
+                            onClick={() => startOAuth.mutate(type)}
+                            disabled={startOAuth.isPending}
+                          >
+                            {startOAuth.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ExternalLink className="w-3.5 h-3.5" />}
+                            Connecter
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <AwsConnectModal open={awsModalOpen} onOpenChange={setAwsModalOpen} />
           </TabsContent>
         </Tabs>
       </div>
