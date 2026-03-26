@@ -28,10 +28,10 @@ import SearchBar from '@/components/SearchBar';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const statusConfig: Record<string, { label: string; dotClass: string; badgeClass: string }> = {
-  operational: { label: 'Opérationnel', dotClass: 'bg-success', badgeClass: 'bg-success/10 text-success border-success/20' },
-  degraded: { label: 'Dégradé', dotClass: 'bg-warning', badgeClass: 'bg-warning/10 text-warning border-warning/20' },
-  outage: { label: 'Panne', dotClass: 'bg-destructive', badgeClass: 'bg-destructive/10 text-destructive border-destructive/20' },
-  unknown: { label: 'Inconnu', dotClass: 'bg-muted-foreground', badgeClass: 'bg-muted text-muted-foreground border-border' },
+  operational: { label: 'Operational', dotClass: 'bg-success', badgeClass: 'bg-success/10 text-success border-success/20' },
+  degraded: { label: 'Degraded', dotClass: 'bg-warning', badgeClass: 'bg-warning/10 text-warning border-warning/20' },
+  outage: { label: 'Outage', dotClass: 'bg-destructive', badgeClass: 'bg-destructive/10 text-destructive border-destructive/20' },
+  unknown: { label: 'Unknown', dotClass: 'bg-muted-foreground', badgeClass: 'bg-muted text-muted-foreground border-border' },
 };
 
 export default function StackPage() {
