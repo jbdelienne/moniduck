@@ -162,7 +162,7 @@ export default function OnboardingPage() {
                 })}
               </div>
               <p className="text-xs text-muted-foreground text-center">
-                {selectedSaas.length} sélectionné{selectedSaas.length > 1 ? 's' : ''} — minimum 1 requis
+                {selectedSaas.length} selected — minimum 1 required
               </p>
             </div>
           )}
