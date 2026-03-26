@@ -273,7 +273,7 @@ export default function OnboardingPage() {
               disabled={!canProceed()}
               className="gap-2 gradient-primary text-primary-foreground hover:opacity-90"
             >
-              Suivant <ArrowRight className="w-4 h-4" />
+              Next <ArrowRight className="w-4 h-4" />
             </Button>
           ) : (
             <Button
