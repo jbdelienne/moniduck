@@ -7,8 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from 'next-themes';
-import { Moon, Sun, Users, Settings, Mail, Trash2, Shield, Crown, Loader2, Key, CreditCard, Plug } from 'lucide-react';
+import { Moon, Sun, Users, Settings, Mail, Trash2, Shield, Crown, Loader2, Key, CreditCard, Plug, CheckCircle, ExternalLink, RefreshCw, Unlink, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useIntegrations } from '@/hooks/use-supabase';
+import { useStartOAuth, useSyncIntegration, useSyncAwsCredentials, useAwsCredentials, useDisconnectIntegration, useDisconnectAws } from '@/hooks/use-integrations';
+import { useNavigate } from 'react-router-dom';
+import AwsConnectModal from '@/components/integrations/AwsConnectModal';
+import { Badge } from '@/components/ui/badge';
+import awsLogo from '@/assets/logos/aws.svg';
+import gcpLogo from '@/assets/logos/gcp.svg';
+import azureLogo from '@/assets/logos/azure.svg';
+import googleLogo from '@/assets/logos/google.png';
+import microsoftLogo from '@/assets/logos/microsoft.svg';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   useWorkspace,
