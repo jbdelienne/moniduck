@@ -124,12 +124,12 @@ export default function StackPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="text-lg font-medium text-foreground mb-1">Aucune dépendance monitorée</p>
+          <p className="text-lg font-medium text-foreground mb-1">No dependencies monitored</p>
           <p className="text-sm text-muted-foreground mb-6 max-w-md">
-            Commence par ajouter les outils SaaS dont ta stack dépend.
+            Start by adding the SaaS tools your stack depends on.
           </p>
           <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
-            <Plus className="w-4 h-4" /> Ajouter une dépendance
+            <Plus className="w-4 h-4" /> Add a dependency
           </Button>
         </div>
       ) : (
