@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useServices } from '@/hooks/use-supabase';
 import { Loader2, Cloud, ChevronDown, AlertTriangle, ShieldAlert, CheckCircle2, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import SearchBar from '@/components/SearchBar';
 import { formatDistanceToNow } from 'date-fns';
 import {
