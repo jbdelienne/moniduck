@@ -271,6 +271,48 @@ export type Database = {
           },
         ]
       }
+      cloud_region_status: {
+        Row: {
+          affected_services: string[] | null
+          id: string
+          incident_description: string | null
+          incident_title: string | null
+          last_checked_at: string
+          last_incident_at: string | null
+          provider: string
+          region_code: string
+          status: string
+          updated_at: string
+          uptime_30d: number | null
+        }
+        Insert: {
+          affected_services?: string[] | null
+          id?: string
+          incident_description?: string | null
+          incident_title?: string | null
+          last_checked_at?: string
+          last_incident_at?: string | null
+          provider: string
+          region_code: string
+          status?: string
+          updated_at?: string
+          uptime_30d?: number | null
+        }
+        Update: {
+          affected_services?: string[] | null
+          id?: string
+          incident_description?: string | null
+          incident_title?: string | null
+          last_checked_at?: string
+          last_incident_at?: string | null
+          provider?: string
+          region_code?: string
+          status?: string
+          updated_at?: string
+          uptime_30d?: number | null
+        }
+        Relationships: []
+      }
       cost_by_resource: {
         Row: {
           account_id: string
