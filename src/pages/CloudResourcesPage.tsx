@@ -388,7 +388,7 @@ export default function CloudResourcesPage() {
             onClick={() => navigate('/settings?tab=integrations')}
           >
             <Settings className="w-3.5 h-3.5" />
-            Intégrations
+            Integrations
           </Button>
           <SearchBar value={search} onChange={setSearch} placeholder="Search by name or ID…" />
         </div>
