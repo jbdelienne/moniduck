@@ -98,7 +98,7 @@ export default function StackPage() {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     await deleteDep.mutateAsync(deleteTarget.subscription_id);
-    toast.success(`${deleteTarget.name} supprimé`);
+    toast.success(`${deleteTarget.name} removed`);
     setDeleteTarget(null);
   };
 
