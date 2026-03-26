@@ -204,7 +204,7 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
   const saasMetrics = saasProviders.map((provider) => {
     const pChecks = saasChecks.filter((c: any) => c.saas_provider_id === provider.id);
     const total = pChecks.length;
-    const up = pChecks.filter((c: any) => c.status === 'up').length;
+    const up = pChecks.filter((c: any) => c.status === 'operational' || c.status === 'up').length;
     const uptime = total > 0 ? Math.round((up / total) * 10000) / 100 : null;
     const avgResponse = total > 0
       ? Math.round(pChecks.reduce((sum: number, c: any) => sum + c.response_time, 0) / total)
