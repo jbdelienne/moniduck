@@ -103,7 +103,7 @@ export default function StackDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Uptime Chart */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-foreground mb-4">Uptime — 6 derniers mois</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-4">Uptime — Last 6 months</h2>
           <div className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={months}>
