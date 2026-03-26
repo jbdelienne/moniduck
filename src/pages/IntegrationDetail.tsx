@@ -170,7 +170,7 @@ export default function IntegrationDetail() {
         queryClient.invalidateQueries({ queryKey: ['sync-data'] });
       }
     } catch (e: any) {
-      toast.error(`Erreur: ${e.message}`);
+      toast.error(`Error: ${e.message}`);
       setSyncingDriveIds(prev => { const s = new Set(prev); s.delete(driveId); return s; });
     }
   };
