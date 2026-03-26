@@ -541,8 +541,22 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
                       <p className="text-xs text-muted-foreground">{format(new Date(inc.start), 'PPp', { locale: dateLocale })}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground max-w-[200px] truncate">{inc.cause}</span>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <span className="text-xs text-muted-foreground max-w-[200px] truncate block">{inc.cause}</span>
+                      {inc.statusCode && (
+                        <span className="text-[10px] text-muted-foreground">HTTP {inc.statusCode}</span>
+                      )}
+                    </div>
+                    {inc.resolvedAt ? (
+                      <Badge variant="outline" className="text-xs whitespace-nowrap border-success/30 text-success">
+                        Resolved
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive" className="text-xs whitespace-nowrap animate-pulse">
+                        Ongoing
+                      </Badge>
+                    )}
                     <Badge variant="destructive" className="text-xs whitespace-nowrap">
                       <Clock className="w-3 h-3 mr-1" />{formatDuration(inc.duration)}
                     </Badge>
