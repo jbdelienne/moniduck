@@ -58,7 +58,7 @@ interface ServiceMetric {
   icon: string;
   uptime: number | null;
   avgResponse: number | null;
-  incidents: { start: string; end: string; duration: number; cause: string }[];
+  incidents: { start: string; end: string; duration: number; cause: string; statusCode?: string | null; resolvedAt?: string | null }[];
 }
 
 interface SlaRow {
@@ -68,6 +68,15 @@ interface SlaRow {
   delta: number | null;
 }
 
+interface IncidentEntry {
+  serviceName: string;
+  start: string;
+  duration: number;
+  cause: string;
+  statusCode?: string | null;
+  resolvedAt?: string | null;
+}
+
 interface ReportPDFProps {
   periodLabel: string;
   createdAt: string;
@@ -75,7 +84,7 @@ interface ReportPDFProps {
   totalIncidents: number;
   servicesCount: number;
   serviceMetrics: ServiceMetric[];
-  allIncidents: { serviceName: string; start: string; duration: number; cause: string }[];
+  allIncidents: IncidentEntry[];
   slaRows?: SlaRow[];
   includeSla?: boolean;
   reportType?: string;
