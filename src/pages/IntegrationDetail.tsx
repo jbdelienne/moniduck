@@ -161,7 +161,7 @@ export default function IntegrationDetail() {
 
       const count = data.objectCount ?? 0;
       if (data.status === 'continuing') {
-        toast.info(`"${driveName}" en cours de sync (${count.toLocaleString('fr-FR')} objets comptés)...`);
+        toast.info(`"${driveName}" syncing (${count.toLocaleString()} objects counted)...`);
         // Poll until done
         pollDriveSync(driveId, driveName);
       } else {
