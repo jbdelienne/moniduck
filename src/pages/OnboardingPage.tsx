@@ -264,7 +264,7 @@ export default function OnboardingPage() {
             className="gap-2 text-muted-foreground"
           >
             <ArrowLeft className="w-4 h-4" />
-            {step === 0 ? 'Passer' : 'Retour'}
+            {step === 0 ? 'Skip' : 'Back'}
           </Button>
 
           {step < STEPS.length - 1 ? (
