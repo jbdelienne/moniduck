@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- TODO: Set the document title to the name of your application -->
     <title>moniduck</title>
-    <meta name="description" content="Visibility on your stack.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
     <meta name="author" content="Lovable" />
 
     <!-- TODO: Update og:title to match your application name -->
@@ -27,8 +30,16 @@
   <meta name="twitter:description" content="Visibility on your stack.">
 </head>
 
-  <body>
-    <div id="root"></div>
+  <body style="margin:0;background:#1A1A2E;">
+    <div id="root">
+      <div id="initial-loader" style="display:flex;align-items:center;justify-content:center;height:100vh;background:#1A1A2E;">
+        <div style="text-align:center;">
+          <div style="width:40px;height:40px;border:3px solid rgba(79,59,120,0.3);border-top-color:#927FBF;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;"></div>
+          <p style="color:#927FBF;font-family:monospace;font-size:13px;margin-top:16px;opacity:.7;">loading moniduck…</p>
+        </div>
+      </div>
+    </div>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
