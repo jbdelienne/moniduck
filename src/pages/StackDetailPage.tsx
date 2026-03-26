@@ -86,10 +86,10 @@ export default function StackDetailPage() {
             </span>
           </div>
           <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
-            <span>SLA promis : {dep.sla_promised}%</span>
+            <span>Promised SLA: {dep.sla_promised}%</span>
             <span>—</span>
             <span>
-              Réel : <span className={slaBreach ? 'text-destructive font-medium' : 'text-success font-medium'}>{uptime.toFixed(2)}% {slaBreach ? `(−${Math.abs(delta).toFixed(2)}%)` : `(+${delta.toFixed(2)}%)`}</span>
+              Actual: <span className={slaBreach ? 'text-destructive font-medium' : 'text-success font-medium'}>{uptime.toFixed(2)}% {slaBreach ? `(−${Math.abs(delta).toFixed(2)}%)` : `(+${delta.toFixed(2)}%)`}</span>
             </span>
             {dep.status_page_url && (
               <a href={dep.status_page_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground underline inline-flex items-center gap-1 hover:text-foreground transition-colors">
