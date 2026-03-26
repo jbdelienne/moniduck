@@ -11,7 +11,7 @@ import { Moon, Sun, Users, Settings, Mail, Trash2, Shield, Crown, Loader2, Key, 
 import { useTranslation } from 'react-i18next';
 import { useIntegrations } from '@/hooks/use-supabase';
 import { useStartOAuth, useSyncIntegration, useSyncAwsCredentials, useAwsCredentials, useDisconnectIntegration, useDisconnectAws } from '@/hooks/use-integrations';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AwsConnectModal from '@/components/integrations/AwsConnectModal';
 import { Badge } from '@/components/ui/badge';
 import awsLogo from '@/assets/logos/aws.svg';
