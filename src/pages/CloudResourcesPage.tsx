@@ -437,10 +437,10 @@ export default function CloudResourcesPage() {
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead>Nom</TableHead>
+                  <TableHead>Name</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead>État</TableHead>
-                  <TableHead>Détails</TableHead>
+                  <TableHead>State</TableHead>
+                  <TableHead>Details</TableHead>
                   <TableHead>Synced</TableHead>
                   <TableHead className="text-right">
                     <DropdownMenu>
