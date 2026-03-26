@@ -80,6 +80,7 @@ interface CloudResource {
 export default function CloudResourcesPage() {
   const { data: services = [], isLoading } = useServices();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [costPeriod, setCostPeriod] = useState<CostPeriod>('month');
   const [search, setSearch] = useState('');
   const [activeTag, setActiveTag] = useState<string>('all');
