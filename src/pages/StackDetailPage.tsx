@@ -49,9 +49,9 @@ export default function StackDetailPage() {
     return (
       <div className="animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/stack')} className="gap-2 mb-4">
-          <ArrowLeft className="w-4 h-4" /> Retour
+          <ArrowLeft className="w-4 h-4" /> Back
         </Button>
-        <p className="text-muted-foreground">Dépendance non trouvée.</p>
+        <p className="text-muted-foreground">Dependency not found.</p>
       </div>
     );
   }
