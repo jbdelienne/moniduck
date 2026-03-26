@@ -446,7 +446,7 @@ export default function CloudResourcesPage() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="inline-flex items-center gap-1 hover:text-foreground transition-colors font-medium text-xs">
-                          Coût est. ({costPeriodLabels[costPeriod]})
+                          Est. Cost ({costPeriodLabels[costPeriod]})
                           <ChevronDown className="w-3.5 h-3.5" />
                         </button>
                       </DropdownMenuTrigger>
