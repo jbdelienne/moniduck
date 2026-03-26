@@ -588,7 +588,7 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <AwsConnectModal open={awsModalOpen} onOpenChange={setAwsModalOpen} />
+            <AwsConnectModal open={awsModalOpen} onClose={() => setAwsModalOpen(false)} />
           </TabsContent>
         </Tabs>
       </div>
