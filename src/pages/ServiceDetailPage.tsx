@@ -62,9 +62,9 @@ export default function ServiceDetailPage() {
     return (
       <div className="animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/services')} className="gap-2 mb-4">
-          <ArrowLeft className="w-4 h-4" /> Retour
+          <ArrowLeft className="w-4 h-4" /> Back
         </Button>
-        <p className="text-muted-foreground">Service non trouvé.</p>
+        <p className="text-muted-foreground">Service not found.</p>
       </div>
     );
   }
