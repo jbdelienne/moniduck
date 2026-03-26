@@ -7,8 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from 'next-themes';
-import { Moon, Sun, Users, Settings, Mail, Trash2, Shield, Crown, Loader2, Key, CreditCard, Plug } from 'lucide-react';
+import { Moon, Sun, Users, Settings, Mail, Trash2, Shield, Crown, Loader2, Key, CreditCard, Plug, CheckCircle, ExternalLink, RefreshCw, Unlink, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useIntegrations } from '@/hooks/use-supabase';
+import { useStartOAuth, useSyncIntegration, useSyncAwsCredentials, useAwsCredentials, useDisconnectIntegration, useDisconnectAws } from '@/hooks/use-integrations';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import AwsConnectModal from '@/components/integrations/AwsConnectModal';
+import { Badge } from '@/components/ui/badge';
+import awsLogo from '@/assets/logos/aws.svg';
+import gcpLogo from '@/assets/logos/gcp.svg';
+import azureLogo from '@/assets/logos/azure.svg';
+import googleLogo from '@/assets/logos/google.png';
+import microsoftLogo from '@/assets/logos/microsoft.svg';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   useWorkspace,
@@ -33,6 +43,7 @@ export default function SettingsPage() {
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { data: workspace } = useWorkspace();
   const { data: members = [], isLoading: membersLoading } = useWorkspaceMembers();
   const { data: invitations = [] } = useWorkspaceInvitations();
@@ -42,6 +53,19 @@ export default function SettingsPage() {
   const removeMember = useRemoveMember();
   const updateName = useUpdateWorkspaceName();
   const isAdmin = useIsWorkspaceAdmin();
+
+  // Integrations
+  const { data: integrations = [] } = useIntegrations();
+  const startOAuth = useStartOAuth();
+  const syncIntegration = useSyncIntegration();
+  const syncAws = useSyncAwsCredentials();
+  const { data: awsCred } = useAwsCredentials();
+  const disconnectIntegration = useDisconnectIntegration();
+  const disconnectAws = useDisconnectAws();
+  const [awsModalOpen, setAwsModalOpen] = useState(false);
+
+  const getIntegration = (type: string) =>
+    integrations.find((i) => i.integration_type === type && i.is_connected);
 
   const [wsName, setWsName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
@@ -119,12 +143,15 @@ export default function SettingsPage() {
     }
   };
 
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') || 'general';
+
   return (
     <>
       <h1 className="text-2xl font-bold text-foreground mb-6">{t('settings.title')}</h1>
       <div className="max-w-2xl mx-auto w-full animate-fade-in">
 
-        <Tabs defaultValue="general">
+        <Tabs defaultValue={defaultTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="general" className="gap-1.5">
               <Settings className="w-4 h-4" />
@@ -411,43 +438,160 @@ export default function SettingsPage() {
 
           {/* Integrations cloud tab */}
           <TabsContent value="integrations" className="space-y-6">
-            <div className="bg-card border border-border rounded-xl p-6">
-              <h3 className="font-semibold text-foreground text-sm mb-4">Cloud Providers</h3>
+            {/* Cloud Providers */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h3 className="font-semibold text-foreground text-sm font-display">Cloud Providers</h3>
+                  <p className="text-xs text-muted-foreground">Auto-discovery et monitoring de ton infrastructure cloud</p>
+                </div>
+              </div>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 rounded-lg border border-border">
-                  <div className="flex items-center gap-3">
-                    <img src="/src/assets/logos/aws.svg" alt="AWS" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Amazon Web Services</p>
-                      <p className="text-xs text-muted-foreground">Auto-discovery de tes services AWS</p>
+                {/* AWS */}
+                {(() => {
+                  const awsConnected = !!awsCred;
+                  const awsIntegration = getIntegration('aws');
+                  return (
+                    <div className={`terminal-card p-5 flex items-center gap-4 transition-all ${awsConnected && awsIntegration ? 'cursor-pointer hover:border-primary/30' : ''}`}
+                      onClick={() => awsConnected && awsIntegration && navigate('/integrations/aws')}
+                    >
+                      <img src={awsLogo} alt="AWS" className="w-10 h-10 object-contain shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold text-foreground">Amazon Web Services</p>
+                          {awsConnected && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded-full">
+                              <CheckCircle className="w-3 h-3" /> Connecté
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">EC2 · S3 · Lambda · RDS · Coûts</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {awsConnected ? (
+                          <>
+                            <Button variant="ghost" size="sm" className="gap-1 text-xs h-8"
+                              onClick={(e) => { e.stopPropagation(); syncAws.mutate(awsCred!.id); }}
+                              disabled={syncAws.isPending}
+                            >
+                              {syncAws.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                              Sync
+                            </Button>
+                            <Button variant="ghost" size="sm" className="gap-1 text-xs h-8 text-muted-foreground"
+                              onClick={(e) => { e.stopPropagation(); setAwsModalOpen(true); }}
+                            >
+                              <Settings className="w-3 h-3" /> Config
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                              onClick={(e) => { e.stopPropagation(); disconnectAws.mutate(awsCred!.id); }}
+                              disabled={disconnectAws.isPending}
+                            >
+                              {disconnectAws.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Unlink className="w-3 h-3" />}
+                            </Button>
+                            {awsIntegration && <ChevronRight className="w-4 h-4 text-muted-foreground ml-1" />}
+                          </>
+                        ) : (
+                          <Button variant="outline" size="sm" className="gap-1.5 h-8" onClick={() => setAwsModalOpen(true)}>
+                            <ExternalLink className="w-3.5 h-3.5" /> Connecter
+                          </Button>
+                        )}
+                      </div>
                     </div>
+                  );
+                })()}
+
+                {/* GCP */}
+                <div className="terminal-card p-5 flex items-center gap-4 opacity-50">
+                  <img src={gcpLogo} alt="GCP" className="w-10 h-10 object-contain shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">Google Cloud Platform</p>
+                      <Badge variant="outline" className="text-[10px] font-bold">Coming soon</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">Compute · Storage · Functions · Coûts</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => window.location.href = '/settings'}>
-                    Configurer
-                  </Button>
                 </div>
-                <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60">
-                  <div className="flex items-center gap-3">
-                    <img src="/src/assets/logos/gcp.svg" alt="GCP" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Google Cloud Platform</p>
-                      <p className="text-xs text-muted-foreground">Bientôt disponible</p>
+
+                {/* Azure */}
+                <div className="terminal-card p-5 flex items-center gap-4 opacity-50">
+                  <img src={azureLogo} alt="Azure" className="w-10 h-10 object-contain shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">Microsoft Azure</p>
+                      <Badge variant="outline" className="text-[10px] font-bold">Coming soon</Badge>
                     </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">VMs · Storage · Functions · Coûts</p>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">V2</span>
-                </div>
-                <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60">
-                  <div className="flex items-center gap-3">
-                    <img src="/src/assets/logos/azure.svg" alt="Azure" className="w-8 h-8" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Microsoft Azure</p>
-                      <p className="text-xs text-muted-foreground">Bientôt disponible</p>
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">V2</span>
                 </div>
               </div>
             </div>
+
+            {/* Collaboration Suites */}
+            <div>
+              <div className="mb-3">
+                <h3 className="font-semibold text-foreground text-sm font-display">Collaboration Suites</h3>
+                <p className="text-xs text-muted-foreground">Licences, stockage & sécurité de tes outils de productivité</p>
+              </div>
+              <div className="space-y-3">
+                {(['google', 'microsoft'] as const).map((type) => {
+                  const integration = getIntegration(type);
+                  const connected = !!integration;
+                  const logo = type === 'google' ? googleLogo : microsoftLogo;
+                  const name = type === 'google' ? 'Google Workspace' : 'Microsoft 365';
+                  const tags = type === 'google' ? 'Storage · Licences · Utilisateurs · Sécurité' : 'Licences · OneDrive · MFA · Utilisateurs';
+
+                  return (
+                    <div key={type}
+                      className={`terminal-card p-5 flex items-center gap-4 transition-all ${connected ? 'cursor-pointer hover:border-primary/30' : ''}`}
+                      onClick={() => connected && navigate(`/integrations/${type}`)}
+                    >
+                      <img src={logo} alt={name} className="w-10 h-10 object-contain shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-semibold text-foreground">{name}</p>
+                          {connected && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded-full">
+                              <CheckCircle className="w-3 h-3" /> Connecté
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">{tags}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {connected ? (
+                          <>
+                            <Button variant="ghost" size="sm" className="gap-1 text-xs h-8"
+                              onClick={(e) => { e.stopPropagation(); syncIntegration.mutate(integration.id); }}
+                              disabled={syncIntegration.isPending}
+                            >
+                              {syncIntegration.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                              Sync
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                              onClick={(e) => { e.stopPropagation(); disconnectIntegration.mutate(integration.id); }}
+                              disabled={disconnectIntegration.isPending}
+                            >
+                              {disconnectIntegration.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Unlink className="w-3 h-3" />}
+                            </Button>
+                            <ChevronRight className="w-4 h-4 text-muted-foreground ml-1" />
+                          </>
+                        ) : (
+                          <Button variant="outline" size="sm" className="gap-1.5 h-8"
+                            onClick={() => startOAuth.mutate(type)}
+                            disabled={startOAuth.isPending}
+                          >
+                            {startOAuth.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ExternalLink className="w-3.5 h-3.5" />}
+                            Connecter
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <AwsConnectModal open={awsModalOpen} onClose={() => setAwsModalOpen(false)} />
           </TabsContent>
         </Tabs>
       </div>

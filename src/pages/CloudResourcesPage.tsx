@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useServices } from '@/hooks/use-supabase';
-import { Loader2, Cloud, ChevronDown, AlertTriangle, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Loader2, Cloud, ChevronDown, AlertTriangle, ShieldAlert, CheckCircle2, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import SearchBar from '@/components/SearchBar';
 import { formatDistanceToNow } from 'date-fns';
 import {
@@ -79,6 +81,7 @@ interface CloudResource {
 export default function CloudResourcesPage() {
   const { data: services = [], isLoading } = useServices();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [costPeriod, setCostPeriod] = useState<CostPeriod>('month');
   const [search, setSearch] = useState('');
   const [activeTag, setActiveTag] = useState<string>('all');
@@ -374,10 +377,21 @@ export default function CloudResourcesPage() {
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Cloud Resources</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Ressources importées depuis vos cloud providers</p>
+          <h1 className="text-2xl font-bold text-foreground font-display">Cloud Resources</h1>
+          <p className="text-sm text-muted-foreground mt-0.5 font-mono text-xs">$ cloud ls --all<span className="cursor-blink"></span></p>
         </div>
-        <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => navigate('/settings?tab=integrations')}
+          >
+            <Settings className="w-3.5 h-3.5" />
+            Intégrations
+          </Button>
+          <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
+        </div>
       </div>
 
       {isLoading ? (
