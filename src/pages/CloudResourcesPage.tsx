@@ -401,8 +401,8 @@ export default function CloudResourcesPage() {
       ) : cloudResources.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Cloud className="w-12 h-12 text-muted-foreground/40 mb-4" />
-          <p className="text-muted-foreground mb-2">Aucune ressource cloud importée</p>
-          <p className="text-xs text-muted-foreground/70">Connectez un cloud provider depuis l'onglet Intégrations pour voir vos ressources ici.</p>
+          <p className="text-muted-foreground mb-2">No cloud resources imported</p>
+          <p className="text-xs text-muted-foreground/70">Connect a cloud provider from the Integrations tab to see your resources here.</p>
         </div>
       ) : (
         <>
