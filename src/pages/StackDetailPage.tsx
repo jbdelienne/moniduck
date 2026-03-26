@@ -20,10 +20,10 @@ const statusBadgeClass: Record<string, string> = {
 };
 
 const statusLabel: Record<string, string> = {
-  operational: 'Opérationnel',
-  degraded: 'Dégradé',
-  outage: 'Panne',
-  unknown: 'Inconnu',
+  operational: 'Operational',
+  degraded: 'Degraded',
+  outage: 'Outage',
+  unknown: 'Unknown',
 };
 
 export default function StackDetailPage() {
