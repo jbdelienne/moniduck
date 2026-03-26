@@ -226,7 +226,7 @@ export default function StackPage() {
       <Dialog open={addModalOpen} onOpenChange={(v) => { if (!v) { setAddModalOpen(false); setSelectedSaas([]); setCatalogSearch(''); } }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Ajouter des dépendances SaaS</DialogTitle>
+            <DialogTitle>Add SaaS Dependencies</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-3">
