@@ -1,4 +1,4 @@
-import { useServices, useIncidents } from '@/hooks/use-supabase';
+import { useServices } from '@/hooks/use-supabase';
 import { useSaasDependencies, SaasProviderWithSubscription, SaasIncident } from '@/hooks/use-saas-dependencies';
 import { useAlerts } from '@/hooks/use-supabase';
 import { Loader2, CheckCircle, AlertTriangle, XCircle, Minus, Clock, Wifi } from 'lucide-react';
