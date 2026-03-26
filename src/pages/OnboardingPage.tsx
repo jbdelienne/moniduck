@@ -192,9 +192,9 @@ export default function OnboardingPage() {
                 </div>
               ))}
               <Button variant="outline" size="sm" onClick={addServiceRow} className="gap-1.5">
-                <Plus className="w-3.5 h-3.5" /> Ajouter un service
+                <Plus className="w-3.5 h-3.5" /> Add a service
               </Button>
-              <p className="text-xs text-muted-foreground">Tu pourras passer cette étape et ajouter des services plus tard.</p>
+              <p className="text-xs text-muted-foreground">You can skip this step and add services later.</p>
             </div>
           )}
 
