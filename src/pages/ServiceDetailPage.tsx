@@ -11,10 +11,10 @@ import {
 import { format } from 'date-fns';
 
 const statusLabel: Record<string, string> = {
-  up: 'Opérationnel',
-  degraded: 'Dégradé',
-  down: 'Panne',
-  unknown: 'Inconnu',
+  up: 'Operational',
+  degraded: 'Degraded',
+  down: 'Down',
+  unknown: 'Unknown',
 };
 
 const statusDot: Record<string, string> = {
