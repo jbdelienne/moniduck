@@ -378,7 +378,7 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
     } finally {
       setExporting(false);
     }
-  }, [serviceMetrics, saasMetrics, allIncidents, report, globalUptime, totalIncidents, metrics.length, slaRows, isSaasReport]);
+  }, [enrichedServiceMetrics, saasMetrics, allIncidents, report, globalUptime, totalIncidents, metrics.length, slaRows, isSaasReport]);
 
   const handleShareLink = useCallback(() => {
     if (!report.shareToken) { toast.error('No share token available'); return; }
