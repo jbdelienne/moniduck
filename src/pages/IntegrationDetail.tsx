@@ -153,7 +153,7 @@ export default function IntegrationDetail() {
       const data = await response.json();
 
       if (data.error || data.status === 'access_denied') {
-        toast.warning(`"${driveName}" : accès refusé (vous n'êtes pas membre de ce drive)`);
+        toast.warning(`"${driveName}": access denied (you are not a member of this drive)`);
         setSyncingDriveIds(prev => { const s = new Set(prev); s.delete(driveId); return s; });
         queryClient.invalidateQueries({ queryKey: ['sync-data'] });
         return;
