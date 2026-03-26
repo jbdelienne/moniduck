@@ -498,7 +498,7 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
                       </TableCell>
                     </TableRow>
                   );
-                }) : serviceMetrics.map(({ service, uptime, avgResponse, incidents }) => (
+                }) : enrichedServiceMetrics.map(({ service, uptime, avgResponse, incidents }) => (
                   <TableRow key={service.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
