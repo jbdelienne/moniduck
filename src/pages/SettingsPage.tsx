@@ -143,12 +143,15 @@ export default function SettingsPage() {
     }
   };
 
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') || 'general';
+
   return (
     <>
       <h1 className="text-2xl font-bold text-foreground mb-6">{t('settings.title')}</h1>
       <div className="max-w-2xl mx-auto w-full animate-fade-in">
 
-        <Tabs defaultValue="general">
+        <Tabs defaultValue={defaultTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="general" className="gap-1.5">
               <Settings className="w-4 h-4" />
