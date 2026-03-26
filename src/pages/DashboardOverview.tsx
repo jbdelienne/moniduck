@@ -144,7 +144,7 @@ export default function DashboardOverview() {
         </p>
         <p className="text-muted-foreground mt-2 text-sm">{getHealthLabel(healthScore)}</p>
         <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground font-mono">
-          <span className="text-primary/70">{dependencies.length}</span> dépendances
+          <span className="text-primary/70">{dependencies.length}</span> dependencies
           <span className="text-muted-foreground/30">│</span>
           <span className="text-primary/70">{httpServices.length}</span> services
           <span className="text-muted-foreground/30">│</span>
