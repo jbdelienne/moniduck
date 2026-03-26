@@ -6,10 +6,13 @@ import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
 function getHealthScore(services: any[], dependencies: SaasProviderWithSubscription[]): number {
-  const allItems = [
-    ...services.map(s => s.status === 'up' ? 1 : s.status === 'degraded' ? 0.5 : 0),
-    ...dependencies.map(d => d.status === 'operational' ? 1 : d.status === 'degraded' ? 0.5 : 0),
-  ];
+  const serviceScores = services
+    .filter(s => s.status !== 'unknown')
+    .map(s => s.status === 'up' ? 1 : s.status === 'degraded' ? 0.5 : 0);
+  const depScores = dependencies
+    .filter(d => d.status !== 'unknown')
+    .map(d => d.status === 'operational' ? 1 : d.status === 'degraded' ? 0.5 : 0);
+  const allItems = [...serviceScores, ...depScores];
   if (allItems.length === 0) return 100;
   return Math.round((allItems.reduce((a, b) => a + b, 0) / allItems.length) * 100);
 }
