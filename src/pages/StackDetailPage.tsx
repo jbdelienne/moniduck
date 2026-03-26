@@ -82,7 +82,7 @@ export default function StackDetailPage() {
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-foreground">{dep.name}</h1>
             <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${status}`}>
-              {statusLabel[dep.status] || 'Inconnu'}
+              {statusLabel[dep.status] || 'Unknown'}
             </span>
           </div>
           <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
