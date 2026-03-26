@@ -43,6 +43,7 @@ export default function SettingsPage() {
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { data: workspace } = useWorkspace();
   const { data: members = [], isLoading: membersLoading } = useWorkspaceMembers();
   const { data: invitations = [] } = useWorkspaceInvitations();
@@ -52,6 +53,19 @@ export default function SettingsPage() {
   const removeMember = useRemoveMember();
   const updateName = useUpdateWorkspaceName();
   const isAdmin = useIsWorkspaceAdmin();
+
+  // Integrations
+  const { data: integrations = [] } = useIntegrations();
+  const startOAuth = useStartOAuth();
+  const syncIntegration = useSyncIntegration();
+  const syncAws = useSyncAwsCredentials();
+  const { data: awsCred } = useAwsCredentials();
+  const disconnectIntegration = useDisconnectIntegration();
+  const disconnectAws = useDisconnectAws();
+  const [awsModalOpen, setAwsModalOpen] = useState(false);
+
+  const getIntegration = (type: string) =>
+    integrations.find((i) => i.integration_type === type && i.is_connected);
 
   const [wsName, setWsName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
