@@ -62,7 +62,7 @@ export default function IncidentsPage() {
     <div className="animate-fade-in">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Incidents</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Timeline unifiée des incidents SaaS et services</p>
+        <p className="text-sm text-muted-foreground mt-0.5">Unified timeline of SaaS and service incidents</p>
       </div>
 
       {/* Filters */}
