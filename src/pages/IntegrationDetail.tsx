@@ -57,14 +57,14 @@ const METRIC_LABELS: Record<string, string> = {
 };
 
 const SECTION_LABELS: Record<string, string> = {
-  users: 'Utilisateurs',
-  storage: 'Stockage',
+  users: 'Users',
+  storage: 'Storage',
   drive: 'Google Drive',
-  licenses: 'Licences',
-  security: 'Sécurité',
+  licenses: 'Licenses',
+  security: 'Security',
   channels: 'Channels',
   team: 'Workspace',
-  shared_drive: 'Drives partagés',
+  shared_drive: 'Shared Drives',
 };
 
 const PROVIDER_NAMES: Record<string, string> = {
