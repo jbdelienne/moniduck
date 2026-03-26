@@ -58,7 +58,7 @@ interface ServiceMetric {
   icon: string;
   uptime: number | null;
   avgResponse: number | null;
-  incidents: { start: string; end: string; duration: number; cause: string }[];
+  incidents: { start: string; end: string; duration: number; cause: string; statusCode?: string | null; resolvedAt?: string | null }[];
 }
 
 interface SlaRow {
@@ -68,6 +68,15 @@ interface SlaRow {
   delta: number | null;
 }
 
+interface IncidentEntry {
+  serviceName: string;
+  start: string;
+  duration: number;
+  cause: string;
+  statusCode?: string | null;
+  resolvedAt?: string | null;
+}
+
 interface ReportPDFProps {
   periodLabel: string;
   createdAt: string;
@@ -75,7 +84,7 @@ interface ReportPDFProps {
   totalIncidents: number;
   servicesCount: number;
   serviceMetrics: ServiceMetric[];
-  allIncidents: { serviceName: string; start: string; duration: number; cause: string }[];
+  allIncidents: IncidentEntry[];
   slaRows?: SlaRow[];
   includeSla?: boolean;
   reportType?: string;
@@ -165,8 +174,13 @@ export default function ReportPDF({
                 <Text style={s.incidentDate}>{format(new Date(inc.start), 'PPp')}</Text>
               </View>
               <View style={s.incidentRight}>
-                <Text style={s.incidentCause}>{inc.cause}</Text>
-                <Text style={s.incidentDuration}>{fmtDuration(inc.duration)}</Text>
+                <Text style={s.incidentCause}>{inc.cause}{inc.statusCode ? ` (HTTP ${inc.statusCode})` : ''}</Text>
+                <View style={{ flexDirection: 'row', gap: 6, justifyContent: 'flex-end', marginTop: 2 }}>
+                  <Text style={s.incidentDuration}>{fmtDuration(inc.duration)}</Text>
+                  <Text style={{ fontSize: 8, fontWeight: 600, color: inc.resolvedAt ? '#16a34a' : '#dc2626' }}>
+                    {inc.resolvedAt ? 'Resolved' : 'Ongoing'}
+                  </Text>
+                </View>
               </View>
             </View>
           ))
