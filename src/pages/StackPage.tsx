@@ -272,7 +272,7 @@ export default function StackPage() {
                 className="w-full gap-2 gradient-primary text-primary-foreground hover:opacity-90"
               >
                 {addDep.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                Monitorer la sélection ({selectedSaas.length})
+                Monitor selection ({selectedSaas.length})
               </Button>
             )}
           </div>
