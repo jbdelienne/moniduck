@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useServices } from '@/hooks/use-supabase';
-import { Loader2, Cloud, ChevronDown, AlertTriangle, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Loader2, Cloud, ChevronDown, AlertTriangle, ShieldAlert, CheckCircle2, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import SearchBar from '@/components/SearchBar';
 import { formatDistanceToNow } from 'date-fns';
 import {
