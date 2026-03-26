@@ -83,9 +83,9 @@ export default function CloudProvidersPage() {
     try {
       const { data, error } = await supabase.functions.invoke('check-cloud-regions');
       if (error) throw error;
-      toast.success(`Statuts mis à jour (${data?.upserted || 0} régions)`);
+      toast.success(`Statuses updated (${data?.upserted || 0} regions)`);
     } catch (e: any) {
-      toast.error(`Erreur: ${e.message}`);
+      toast.error(`Error: ${e.message}`);
     } finally {
       setRefreshing(false);
     }
