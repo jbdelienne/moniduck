@@ -106,14 +106,14 @@ export default function StackPage() {
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground font-display">Ma Stack SaaS</h1>
+          <h1 className="text-2xl font-bold text-foreground font-display">My SaaS Stack</h1>
           <p className="text-xs text-muted-foreground mt-0.5 font-mono">$ stack --list --watch<span className="cursor-blink"></span></p>
         </div>
         <div className="flex items-center gap-3">
-          <SearchBar value={search} onChange={setSearch} placeholder="Rechercher..." />
+          <SearchBar value={search} onChange={setSearch} placeholder="Search..." />
           <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
             <Plus className="w-4 h-4" />
-            Ajouter une dépendance
+            Add dependency
           </Button>
         </div>
       </div>
