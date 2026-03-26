@@ -262,7 +262,7 @@ export default function StackPage() {
             </div>
 
             {filteredKnown.length === 0 && (
-              <p className="text-sm text-muted-foreground py-4 text-center">Aucun résultat</p>
+              <p className="text-sm text-muted-foreground py-4 text-center">No results</p>
             )}
 
             {selectedSaas.length > 0 && (
