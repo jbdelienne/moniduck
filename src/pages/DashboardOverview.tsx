@@ -54,6 +54,62 @@ export default function DashboardOverview() {
   const { data: alerts = [] } = useAlerts();
   const navigate = useNavigate();
 
+  // Build unified recent incidents list
+  const recentIncidents = useMemo(() => {
+    const items: Array<{
+      id: string;
+      source: 'saas' | 'service';
+      icon: string;
+      name: string;
+      title: string;
+      date: string;
+      severity: string;
+      status: string;
+      ping?: number | null;
+      navigateTo: string;
+    }> = [];
+
+    // SaaS incidents from dependencies
+    for (const dep of dependencies) {
+      const incidents: SaasIncident[] = dep.incidents || [];
+      for (const inc of incidents) {
+        items.push({
+          id: `saas-${dep.id}-${inc.date}`,
+          source: 'saas',
+          icon: dep.icon,
+          name: dep.name,
+          title: inc.title,
+          date: inc.date,
+          severity: inc.severity,
+          status: dep.status,
+          ping: dep.avg_response_time,
+          navigateTo: `/stack/${dep.name.toLowerCase().replace(/\s+/g, '-')}`,
+        });
+      }
+    }
+
+    // Service-level incidents from alerts
+    for (const alert of alerts.filter(a => !a.is_dismissed)) {
+      const svc = services.find(s => s.id === alert.service_id);
+      items.push({
+        id: alert.id,
+        source: 'service',
+        icon: svc?.icon || '🌐',
+        name: svc?.name || alert.integration_type || 'Service',
+        title: alert.title,
+        date: alert.created_at,
+        severity: alert.severity,
+        status: alert.resolved_at ? 'resolved' : 'active',
+        ping: svc?.avg_response_time,
+        navigateTo: svc ? `/services/${svc.id}` : '/incidents',
+      });
+    }
+
+    // Sort by date descending
+    items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return items.slice(0, 10);
+  }, [dependencies, alerts, services]);
+
   const isLoading = servicesLoading || depsLoading;
 
   // Only HTTP services (not cloud-imported)
