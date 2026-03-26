@@ -167,7 +167,7 @@ export default function StackPage() {
                         <span>{dep.sla_promised}% promis</span>
                         <span>—</span>
                         <span className={slaBreach ? 'text-destructive font-medium' : 'text-success'}>
-                          {uptime}% réel
+                          {uptime}% actual
                         </span>
                         {slaBreach && (
                           <Badge variant="destructive" className="text-[10px] font-mono">
