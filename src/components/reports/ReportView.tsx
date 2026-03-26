@@ -287,11 +287,11 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
     const finalIncidents = parsedProviderIncidents.length > 0 ? parsedProviderIncidents : checkDerivedIncidents;
 
     const slaPromised = provider.sla_promised_default ?? 99.9;
-    return { provider, uptime, avgResponse, total, incidents, slaPromised };
+    return { provider, uptime, avgResponse, total, incidents: finalIncidents, slaPromised };
   });
 
   // ── Global stats ──
-  const metrics = isSaasReport ? saasMetrics : serviceMetrics;
+  const metrics = isSaasReport ? saasMetrics : enrichedServiceMetrics;
   const validUptimes = metrics.filter((m) => m.uptime !== null);
   const globalUptime = validUptimes.length > 0
     ? Math.round(validUptimes.reduce((s, m) => s + (m.uptime ?? 0), 0) / validUptimes.length * 100) / 100
