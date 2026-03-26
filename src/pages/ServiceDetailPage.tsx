@@ -125,7 +125,7 @@ export default function ServiceDetailPage() {
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-              Pas de données pour cette période
+              No data for this period
             </div>
           )}
         </div>
