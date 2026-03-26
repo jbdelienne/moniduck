@@ -52,10 +52,10 @@ export default function IncidentsPage() {
   }, [incidents, filter]);
 
   const tabs: { key: FilterTab; label: string }[] = [
-    { key: 'all', label: 'Tous' },
+    { key: 'all', label: 'All' },
     { key: 'saas', label: 'SaaS' },
-    { key: 'services', label: 'Mes services' },
-    { key: 'correlated', label: 'Corrélés' },
+    { key: 'services', label: 'Services' },
+    { key: 'correlated', label: 'Correlated' },
   ];
 
   return (
