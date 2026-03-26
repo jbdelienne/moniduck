@@ -4,6 +4,7 @@ import { useAlerts } from '@/hooks/use-supabase';
 import { Loader2, CheckCircle, AlertTriangle, XCircle, Minus, Clock, Wifi } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
 
 function getHealthScore(services: any[], dependencies: SaasProviderWithSubscription[]): number {
   const serviceScores = services
