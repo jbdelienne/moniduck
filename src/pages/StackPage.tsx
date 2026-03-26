@@ -199,7 +199,7 @@ export default function StackPage() {
                       variant="outline"
                       size="icon"
                       className="h-7 w-7 text-destructive hover:bg-destructive/10"
-                      title="Supprimer"
+                      title="Delete"
                       onClick={() => setDeleteTarget(dep)}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
