@@ -81,7 +81,7 @@ export default function OnboardingPage() {
         } catch (e) { /* skip errors */ }
       }
 
-      toast.success('MoniDuck est prêt ! 🎉');
+      toast.success('MoniDuck is ready! 🎉');
       navigate('/dashboard');
     } catch (e: any) {
       toast.error(e.message);
