@@ -122,7 +122,7 @@ export default function StackDetailPage() {
 
         {/* SLA Breakdown */}
         <div className="bg-card border border-border rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-foreground mb-4">SLA mensuel</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-4">Monthly SLA</h2>
           <div className="space-y-2">
             {months.map(m => (
               <div key={m.month} className="flex items-center justify-between text-sm">
