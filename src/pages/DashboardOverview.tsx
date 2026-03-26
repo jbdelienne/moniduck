@@ -41,12 +41,12 @@ const statusDotClass: Record<string, string> = {
 };
 
 const statusLabel: Record<string, string> = {
-  up: 'Opérationnel',
-  operational: 'Opérationnel',
-  degraded: 'Dégradé',
-  down: 'Panne',
-  outage: 'Panne',
-  unknown: 'Inconnu',
+  up: 'Operational',
+  operational: 'Operational',
+  degraded: 'Degraded',
+  down: 'Down',
+  outage: 'Outage',
+  unknown: 'Unknown',
 };
 
 export default function DashboardOverview() {
