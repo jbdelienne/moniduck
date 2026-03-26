@@ -133,7 +133,7 @@ export default function IncidentsPage() {
                       )}
                       {incident.isResolved && (
                         <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-success/10 text-success">
-                          Résolu
+                          Resolved
                         </span>
                       )}
                       {incident.hasCorrelation && (
