@@ -89,8 +89,8 @@ export default function IncidentsPage() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-16">
           <CheckCircle className="w-12 h-12 mx-auto mb-3 text-success" />
-          <p className="font-medium text-foreground">Aucun incident</p>
-          <p className="text-sm text-muted-foreground mt-1">Tout fonctionne normalement</p>
+          <p className="font-medium text-foreground">No incidents</p>
+          <p className="text-sm text-muted-foreground mt-1">Everything is running smoothly</p>
         </div>
       ) : (
         <div className="space-y-3">
