@@ -138,6 +138,25 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
     enabled: saasProviderIds.length > 0 && isSaasReport,
   });
 
+  // ── Real incidents from incidents table (services) ──
+  const { data: dbIncidents = [] } = useQuery({
+    queryKey: ['report-view-incidents', workspaceId, periodStart, periodEnd, report.serviceIds],
+    queryFn: async () => {
+      let query = supabase
+        .from('incidents')
+        .select('*')
+        .eq('workspace_id', workspaceId!)
+        .gte('started_at', periodStart)
+        .lte('started_at', periodEnd)
+        .order('started_at', { ascending: false });
+      if (report.serviceIds.length > 0) query = query.in('service_id', report.serviceIds);
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!workspaceId && !isSaasReport,
+  });
+
   // ── SLA data for services reports ──
   const { data: integrations = [] } = useQuery({
     queryKey: ['report-view-integrations', workspaceId],
