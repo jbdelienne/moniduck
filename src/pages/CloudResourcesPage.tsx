@@ -390,7 +390,7 @@ export default function CloudResourcesPage() {
             <Settings className="w-3.5 h-3.5" />
             Intégrations
           </Button>
-          <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
+          <SearchBar value={search} onChange={setSearch} placeholder="Search by name or ID…" />
         </div>
       </div>
 

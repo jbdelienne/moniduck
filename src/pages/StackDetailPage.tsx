@@ -138,11 +138,11 @@ export default function StackDetailPage() {
 
       {/* Incidents Timeline */}
       <div className="mt-6">
-        <h2 className="text-sm font-semibold text-foreground mb-4">Historique des incidents</h2>
+        <h2 className="text-sm font-semibold text-foreground mb-4">Incident History</h2>
         {incidents.length === 0 ? (
           <div className="bg-card border border-border rounded-xl p-6 text-center">
             <CheckCircle className="w-6 h-6 text-success mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Aucun incident enregistré</p>
+            <p className="text-sm text-muted-foreground">No incidents recorded</p>
           </div>
         ) : (
           <div className="space-y-2">

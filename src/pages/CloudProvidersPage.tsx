@@ -115,7 +115,7 @@ export default function CloudProvidersPage() {
             className="gap-2"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            Rafraîchir
+            Refresh
           </Button>
         </div>
 

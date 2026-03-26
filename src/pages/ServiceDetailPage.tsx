@@ -83,7 +83,7 @@ export default function ServiceDetailPage() {
             <h1 className="text-2xl font-bold text-foreground">{service.name}</h1>
             <div className="flex items-center gap-1.5">
               <div className={`w-2 h-2 rounded-full ${statusDot[service.status] || statusDot.unknown}`} />
-              <span className="text-sm text-muted-foreground">{statusLabel[service.status] || 'Inconnu'}</span>
+              <span className="text-sm text-muted-foreground">{statusLabel[service.status] || 'Unknown'}</span>
             </div>
           </div>
           <a href={service.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-0.5">

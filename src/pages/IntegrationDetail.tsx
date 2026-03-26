@@ -358,9 +358,9 @@ export default function IntegrationDetail() {
 
                               {/* Storage as "X Go / Y To" */}
                               <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">Stockage</span>
+                                <span className="text-xs text-muted-foreground">Storage</span>
                                 <span className="text-sm font-semibold text-foreground">
-                                  {isDone ? `${storageGb} Go` : '—'} / {totalQuotaTb}
+                                  {isDone ? `${storageGb} GB` : '—'} / {totalQuotaTb}
                                 </span>
                               </div>
 

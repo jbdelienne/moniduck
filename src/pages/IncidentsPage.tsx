@@ -138,7 +138,7 @@ export default function IncidentsPage() {
                       )}
                       {incident.hasCorrelation && (
                         <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-info/10 text-info">
-                          Corrélation détectée
+                          Correlation detected
                         </span>
                       )}
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${

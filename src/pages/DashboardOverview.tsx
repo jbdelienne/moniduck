@@ -188,13 +188,13 @@ export default function DashboardOverview() {
         )}
       </div>
 
-      {/* Incidents récents */}
+      {/* Recent Incidents */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Incidents récents</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Recent Incidents</h2>
         {recentIncidents.length === 0 ? (
           <div className="bg-card border border-border rounded-xl p-6 text-center">
             <CheckCircle className="w-8 h-8 text-success mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Aucun incident récent — tout roule 🎉</p>
+            <p className="text-sm text-muted-foreground">No recent incidents — all clear 🎉</p>
           </div>
         ) : (
           <div className="space-y-2">

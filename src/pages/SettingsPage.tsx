@@ -172,7 +172,7 @@ export default function SettingsPage() {
             </TabsTrigger>
             <TabsTrigger value="integrations" className="gap-1.5">
               <Plug className="w-4 h-4" />
-              Intégrations cloud
+              Cloud Integrations
             </TabsTrigger>
           </TabsList>
 
