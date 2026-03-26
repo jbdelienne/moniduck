@@ -25,10 +25,10 @@ function getHealthColor(score: number) {
 }
 
 function getHealthLabel(score: number) {
-  if (score >= 95) return 'Ta stack est en bonne santé';
-  if (score >= 80) return 'Quelques dégradations détectées';
-  if (score >= 50) return 'Attention, plusieurs services impactés';
-  return 'Situation critique';
+  if (score >= 95) return 'Your stack is healthy';
+  if (score >= 80) return 'Some degradations detected';
+  if (score >= 50) return 'Warning — multiple services impacted';
+  return 'Critical situation';
 }
 
 const statusDotClass: Record<string, string> = {
