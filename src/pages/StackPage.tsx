@@ -89,7 +89,7 @@ export default function StackPage() {
         toast.error(`${saas.name}: ${e.message}`);
       }
     }
-    toast.success(`${selectedSaas.length} dépendance${selectedSaas.length > 1 ? 's' : ''} ajoutée${selectedSaas.length > 1 ? 's' : ''}`);
+    toast.success(`${selectedSaas.length} dependenc${selectedSaas.length > 1 ? 'ies' : 'y'} added`);
     setSelectedSaas([]);
     setCatalogSearch('');
     setAddModalOpen(false);
