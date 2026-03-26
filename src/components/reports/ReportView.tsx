@@ -335,7 +335,7 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
   const handleExportPDF = useCallback(async () => {
     setExporting(true);
     try {
-      const pdfServiceMetrics = (isSaasReport ? saasMetrics : serviceMetrics).map((m) => ({
+      const pdfServiceMetrics = (isSaasReport ? saasMetrics : enrichedServiceMetrics).map((m) => ({
         name: 'service' in m ? (m as any).service.name : (m as any).provider.name,
         icon: 'service' in m ? (m as any).service.icon : (m as any).provider.icon,
         uptime: m.uptime,
@@ -344,6 +344,7 @@ export default function ReportView({ report, onBack, contentRef }: ReportViewPro
       }));
       const pdfAllIncidents = allIncidents.map((inc) => ({
         serviceName: inc.serviceName, start: inc.start, duration: inc.duration, cause: inc.cause,
+        statusCode: inc.statusCode || null, resolvedAt: inc.resolvedAt || null,
       }));
       const blob = await pdf(
         <ReportPDF
