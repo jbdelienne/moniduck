@@ -92,7 +92,7 @@ export default function StackDetailPage() {
               Réel : <span className={slaBreach ? 'text-destructive font-medium' : 'text-success font-medium'}>{uptime.toFixed(2)}% {slaBreach ? `(−${Math.abs(delta).toFixed(2)}%)` : `(+${delta.toFixed(2)}%)`}</span>
             </span>
             {dep.status_page_url && (
-              <a href={dep.status_page_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
+              <a href={dep.status_page_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground underline inline-flex items-center gap-1 hover:text-foreground transition-colors">
                 Status page <ExternalLink className="w-3 h-3" />
               </a>
             )}
