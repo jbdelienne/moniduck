@@ -29,42 +29,42 @@ const METRIC_ICONS: Record<string, typeof Users> = {
 };
 
 const METRIC_LABELS: Record<string, string> = {
-  total_users: 'Utilisateurs totaux',
-  active_users: 'Utilisateurs actifs',
-  suspended_users: 'Utilisateurs suspendus',
-  disabled_users: 'Utilisateurs désactivés',
-  inactive_users_30d: 'Inactifs (30j+)',
-  deactivated_users: 'Utilisateurs désactivés',
-  total_members: 'Membres totaux',
-  drive_total_gb: 'Stockage Drive total',
-  drive_used_gb: 'Stockage Drive utilisé',
-  onedrive_used_gb: 'Stockage OneDrive utilisé',
-  total_licenses: 'Licences totales',
-  used_licenses: 'Licences utilisées',
-  active_licenses: 'Licences actives',
-  remaining_licenses: 'Licences restantes',
-  mfa_enabled: 'MFA activé',
-  mfa_total_users: 'Utilisateurs MFA total',
-  mfa_disabled_percent: 'MFA désactivé (%)',
-  total_channels: 'Channels totaux',
-  archived_channels: 'Channels archivés',
-  low_activity_channels: 'Channels peu actifs',
-  team_name: 'Nom du workspace',
-  drive_quota_total_gb: 'Quota Drive total',
-  drive_quota_used_gb: 'Quota Drive utilisé',
-  drive_trash_gb: 'Drive corbeille',
-  drive_shared_drives_count: 'Drives partagés',
+  total_users: 'Total Users',
+  active_users: 'Active Users',
+  suspended_users: 'Suspended Users',
+  disabled_users: 'Disabled Users',
+  inactive_users_30d: 'Inactive (30d+)',
+  deactivated_users: 'Deactivated Users',
+  total_members: 'Total Members',
+  drive_total_gb: 'Total Drive Storage',
+  drive_used_gb: 'Used Drive Storage',
+  onedrive_used_gb: 'OneDrive Used Storage',
+  total_licenses: 'Total Licenses',
+  used_licenses: 'Used Licenses',
+  active_licenses: 'Active Licenses',
+  remaining_licenses: 'Remaining Licenses',
+  mfa_enabled: 'MFA Enabled',
+  mfa_total_users: 'MFA Total Users',
+  mfa_disabled_percent: 'MFA Disabled (%)',
+  total_channels: 'Total Channels',
+  archived_channels: 'Archived Channels',
+  low_activity_channels: 'Low Activity Channels',
+  team_name: 'Workspace Name',
+  drive_quota_total_gb: 'Total Drive Quota',
+  drive_quota_used_gb: 'Used Drive Quota',
+  drive_trash_gb: 'Drive Trash',
+  drive_shared_drives_count: 'Shared Drives',
 };
 
 const SECTION_LABELS: Record<string, string> = {
-  users: 'Utilisateurs',
-  storage: 'Stockage',
+  users: 'Users',
+  storage: 'Storage',
   drive: 'Google Drive',
-  licenses: 'Licences',
-  security: 'Sécurité',
+  licenses: 'Licenses',
+  security: 'Security',
   channels: 'Channels',
   team: 'Workspace',
-  shared_drive: 'Drives partagés',
+  shared_drive: 'Shared Drives',
 };
 
 const PROVIDER_NAMES: Record<string, string> = {
@@ -153,7 +153,7 @@ export default function IntegrationDetail() {
       const data = await response.json();
 
       if (data.error || data.status === 'access_denied') {
-        toast.warning(`"${driveName}" : accès refusé (vous n'êtes pas membre de ce drive)`);
+        toast.warning(`"${driveName}": access denied (you are not a member of this drive)`);
         setSyncingDriveIds(prev => { const s = new Set(prev); s.delete(driveId); return s; });
         queryClient.invalidateQueries({ queryKey: ['sync-data'] });
         return;
@@ -161,7 +161,7 @@ export default function IntegrationDetail() {
 
       const count = data.objectCount ?? 0;
       if (data.status === 'continuing') {
-        toast.info(`"${driveName}" en cours de sync (${count.toLocaleString('fr-FR')} objets comptés)...`);
+        toast.info(`"${driveName}" syncing (${count.toLocaleString()} objects counted)...`);
         // Poll until done
         pollDriveSync(driveId, driveName);
       } else {
@@ -170,7 +170,7 @@ export default function IntegrationDetail() {
         queryClient.invalidateQueries({ queryKey: ['sync-data'] });
       }
     } catch (e: any) {
-      toast.error(`Erreur: ${e.message}`);
+      toast.error(`Error: ${e.message}`);
       setSyncingDriveIds(prev => { const s = new Set(prev); s.delete(driveId); return s; });
     }
   };
@@ -358,15 +358,15 @@ export default function IntegrationDetail() {
 
                               {/* Storage as "X Go / Y To" */}
                               <div className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">Stockage</span>
+                                <span className="text-xs text-muted-foreground">Storage</span>
                                 <span className="text-sm font-semibold text-foreground">
-                                  {isDone ? `${storageGb} Go` : '—'} / {totalQuotaTb}
+                                  {isDone ? `${storageGb} GB` : '—'} / {totalQuotaTb}
                                 </span>
                               </div>
 
                               {meta.created_time && (
                                 <p className="text-[10px] text-muted-foreground">
-                                  Créé le {new Date(meta.created_time).toLocaleDateString('fr-FR')}
+                                  Created {new Date(meta.created_time).toLocaleDateString()}
                                 </p>
                               )}
                             </div>

@@ -28,10 +28,10 @@ import SearchBar from '@/components/SearchBar';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const statusConfig: Record<string, { label: string; dotClass: string; badgeClass: string }> = {
-  operational: { label: 'Opérationnel', dotClass: 'bg-success', badgeClass: 'bg-success/10 text-success border-success/20' },
-  degraded: { label: 'Dégradé', dotClass: 'bg-warning', badgeClass: 'bg-warning/10 text-warning border-warning/20' },
-  outage: { label: 'Panne', dotClass: 'bg-destructive', badgeClass: 'bg-destructive/10 text-destructive border-destructive/20' },
-  unknown: { label: 'Inconnu', dotClass: 'bg-muted-foreground', badgeClass: 'bg-muted text-muted-foreground border-border' },
+  operational: { label: 'Operational', dotClass: 'bg-success', badgeClass: 'bg-success/10 text-success border-success/20' },
+  degraded: { label: 'Degraded', dotClass: 'bg-warning', badgeClass: 'bg-warning/10 text-warning border-warning/20' },
+  outage: { label: 'Outage', dotClass: 'bg-destructive', badgeClass: 'bg-destructive/10 text-destructive border-destructive/20' },
+  unknown: { label: 'Unknown', dotClass: 'bg-muted-foreground', badgeClass: 'bg-muted text-muted-foreground border-border' },
 };
 
 export default function StackPage() {
@@ -89,7 +89,7 @@ export default function StackPage() {
         toast.error(`${saas.name}: ${e.message}`);
       }
     }
-    toast.success(`${selectedSaas.length} dépendance${selectedSaas.length > 1 ? 's' : ''} ajoutée${selectedSaas.length > 1 ? 's' : ''}`);
+    toast.success(`${selectedSaas.length} dependenc${selectedSaas.length > 1 ? 'ies' : 'y'} added`);
     setSelectedSaas([]);
     setCatalogSearch('');
     setAddModalOpen(false);
@@ -98,7 +98,7 @@ export default function StackPage() {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     await deleteDep.mutateAsync(deleteTarget.subscription_id);
-    toast.success(`${deleteTarget.name} supprimé`);
+    toast.success(`${deleteTarget.name} removed`);
     setDeleteTarget(null);
   };
 
@@ -106,14 +106,14 @@ export default function StackPage() {
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground font-display">Ma Stack SaaS</h1>
+          <h1 className="text-2xl font-bold text-foreground font-display">My SaaS Stack</h1>
           <p className="text-xs text-muted-foreground mt-0.5 font-mono">$ stack --list --watch<span className="cursor-blink"></span></p>
         </div>
         <div className="flex items-center gap-3">
-          <SearchBar value={search} onChange={setSearch} placeholder="Rechercher..." />
+          <SearchBar value={search} onChange={setSearch} placeholder="Search..." />
           <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
             <Plus className="w-4 h-4" />
-            Ajouter une dépendance
+            Add dependency
           </Button>
         </div>
       </div>
@@ -124,12 +124,12 @@ export default function StackPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="text-lg font-medium text-foreground mb-1">Aucune dépendance monitorée</p>
+          <p className="text-lg font-medium text-foreground mb-1">No dependencies monitored</p>
           <p className="text-sm text-muted-foreground mb-6 max-w-md">
-            Commence par ajouter les outils SaaS dont ta stack dépend.
+            Start by adding the SaaS tools your stack depends on.
           </p>
           <Button onClick={() => setAddModalOpen(true)} className="gap-2 gradient-primary text-primary-foreground hover:opacity-90">
-            <Plus className="w-4 h-4" /> Ajouter une dépendance
+            <Plus className="w-4 h-4" /> Add a dependency
           </Button>
         </div>
       ) : (
@@ -167,7 +167,7 @@ export default function StackPage() {
                         <span>{dep.sla_promised}% promis</span>
                         <span>—</span>
                         <span className={slaBreach ? 'text-destructive font-medium' : 'text-success'}>
-                          {uptime}% réel
+                          {uptime}% actual
                         </span>
                         {slaBreach && (
                           <Badge variant="destructive" className="text-[10px] font-mono">
@@ -185,10 +185,10 @@ export default function StackPage() {
                       variant="outline"
                       size="icon"
                       className="h-7 w-7"
-                      title="Vérifier maintenant"
+                      title="Check now"
                       onClick={() => {
                         forceCheck.mutate(dep.id, {
-                          onSuccess: () => toast.success('Check lancé'),
+                          onSuccess: () => toast.success('Check triggered'),
                           onError: (err) => toast.error(err.message),
                         });
                       }}
@@ -199,7 +199,7 @@ export default function StackPage() {
                       variant="outline"
                       size="icon"
                       className="h-7 w-7 text-destructive hover:bg-destructive/10"
-                      title="Supprimer"
+                      title="Delete"
                       onClick={() => setDeleteTarget(dep)}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -213,7 +213,7 @@ export default function StackPage() {
                     <span className="font-mono text-primary/70">{dep.avg_response_time}ms</span>
                   )}
                   {dep.last_check && (
-                    <span>Vérifié {formatDistanceToNow(new Date(dep.last_check), { addSuffix: true }).replace('less than a minute ago', 'à l\'instant')}</span>
+                    <span>Checked {formatDistanceToNow(new Date(dep.last_check), { addSuffix: true })}</span>
                   )}
                 </div>
               </div>
@@ -226,14 +226,14 @@ export default function StackPage() {
       <Dialog open={addModalOpen} onOpenChange={(v) => { if (!v) { setAddModalOpen(false); setSelectedSaas([]); setCatalogSearch(''); } }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Ajouter des dépendances SaaS</DialogTitle>
+            <DialogTitle>Add SaaS Dependencies</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Rechercher un outil..."
+                placeholder="Search a tool..."
                 value={catalogSearch}
                 onChange={(e) => setCatalogSearch(e.target.value)}
                 className="pl-9"
@@ -262,7 +262,7 @@ export default function StackPage() {
             </div>
 
             {filteredKnown.length === 0 && (
-              <p className="text-sm text-muted-foreground py-4 text-center">Aucun résultat</p>
+              <p className="text-sm text-muted-foreground py-4 text-center">No results</p>
             )}
 
             {selectedSaas.length > 0 && (
@@ -272,7 +272,7 @@ export default function StackPage() {
                 className="w-full gap-2 gradient-primary text-primary-foreground hover:opacity-90"
               >
                 {addDep.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                Monitorer la sélection ({selectedSaas.length})
+                Monitor selection ({selectedSaas.length})
               </Button>
             )}
           </div>
@@ -283,9 +283,9 @@ export default function StackPage() {
       <AlertDialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Retirer {deleteTarget?.name} ?</AlertDialogTitle>
+            <AlertDialogTitle>Remove {deleteTarget?.name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              Cette dépendance ne sera plus monitorée dans ton workspace.
+              This dependency will no longer be monitored in your workspace.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

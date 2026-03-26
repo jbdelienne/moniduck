@@ -172,7 +172,7 @@ export default function SettingsPage() {
             </TabsTrigger>
             <TabsTrigger value="integrations" className="gap-1.5">
               <Plug className="w-4 h-4" />
-              Intégrations cloud
+              Cloud Integrations
             </TabsTrigger>
           </TabsList>
 
@@ -461,11 +461,11 @@ export default function SettingsPage() {
                           <p className="text-sm font-semibold text-foreground">Amazon Web Services</p>
                           {awsConnected && (
                             <span className="flex items-center gap-1 text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded-full">
-                              <CheckCircle className="w-3 h-3" /> Connecté
+                              <CheckCircle className="w-3 h-3" /> Connected
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">EC2 · S3 · Lambda · RDS · Coûts</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">EC2 · S3 · Lambda · RDS · Costs</p>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         {awsConnected ? (

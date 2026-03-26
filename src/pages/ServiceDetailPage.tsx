@@ -11,10 +11,10 @@ import {
 import { format } from 'date-fns';
 
 const statusLabel: Record<string, string> = {
-  up: 'Opérationnel',
-  degraded: 'Dégradé',
-  down: 'Panne',
-  unknown: 'Inconnu',
+  up: 'Operational',
+  degraded: 'Degraded',
+  down: 'Down',
+  unknown: 'Unknown',
 };
 
 const statusDot: Record<string, string> = {
@@ -62,9 +62,9 @@ export default function ServiceDetailPage() {
     return (
       <div className="animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/services')} className="gap-2 mb-4">
-          <ArrowLeft className="w-4 h-4" /> Retour
+          <ArrowLeft className="w-4 h-4" /> Back
         </Button>
-        <p className="text-muted-foreground">Service non trouvé.</p>
+        <p className="text-muted-foreground">Service not found.</p>
       </div>
     );
   }
@@ -83,7 +83,7 @@ export default function ServiceDetailPage() {
             <h1 className="text-2xl font-bold text-foreground">{service.name}</h1>
             <div className="flex items-center gap-1.5">
               <div className={`w-2 h-2 rounded-full ${statusDot[service.status] || statusDot.unknown}`} />
-              <span className="text-sm text-muted-foreground">{statusLabel[service.status] || 'Inconnu'}</span>
+              <span className="text-sm text-muted-foreground">{statusLabel[service.status] || 'Unknown'}</span>
             </div>
           </div>
           <a href={service.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline inline-flex items-center gap-1 mt-0.5">
@@ -125,7 +125,7 @@ export default function ServiceDetailPage() {
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-              Pas de données pour cette période
+              No data for this period
             </div>
           )}
         </div>
@@ -133,9 +133,9 @@ export default function ServiceDetailPage() {
 
       {/* Dependencies */}
       <div className="bg-card border border-border rounded-xl p-6">
-        <h2 className="text-sm font-semibold text-foreground mb-3">Dépendances SaaS liées</h2>
+        <h2 className="text-sm font-semibold text-foreground mb-3">Linked SaaS Dependencies</h2>
         {dependencies.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Aucune dépendance configurée. Ajoute des dépendances dans Ma Stack.</p>
+          <p className="text-sm text-muted-foreground">No dependencies configured. Add dependencies in My Stack.</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {dependencies.map(dep => (

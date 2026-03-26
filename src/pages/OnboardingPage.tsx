@@ -11,10 +11,10 @@ import { toast } from 'sonner';
 import duckLogo from '@/assets/moniduck-logo.png';
 
 const STEPS = [
-  { title: 'Ta stack SaaS', description: 'Quels outils SaaS utilises-tu ?' },
-  { title: 'Tes services', description: 'Ajoute tes propres endpoints HTTP' },
-  { title: 'Dépendances', description: 'Associe tes services à tes dépendances' },
-  { title: 'Alertes', description: 'Configure tes notifications' },
+  { title: 'Your SaaS Stack', description: 'Which SaaS tools do you use?' },
+  { title: 'Your Services', description: 'Add your own HTTP endpoints' },
+  { title: 'Dependencies', description: 'Map your services to their dependencies' },
+  { title: 'Alerts', description: 'Configure your notifications' },
 ];
 
 interface NewService {
@@ -81,7 +81,7 @@ export default function OnboardingPage() {
         } catch (e) { /* skip errors */ }
       }
 
-      toast.success('MoniDuck est prêt ! 🎉');
+      toast.success('MoniDuck is ready! 🎉');
       navigate('/dashboard');
     } catch (e: any) {
       toast.error(e.message);
@@ -162,7 +162,7 @@ export default function OnboardingPage() {
                 })}
               </div>
               <p className="text-xs text-muted-foreground text-center">
-                {selectedSaas.length} sélectionné{selectedSaas.length > 1 ? 's' : ''} — minimum 1 requis
+                {selectedSaas.length} selected — minimum 1 required
               </p>
             </div>
           )}
@@ -192,9 +192,9 @@ export default function OnboardingPage() {
                 </div>
               ))}
               <Button variant="outline" size="sm" onClick={addServiceRow} className="gap-1.5">
-                <Plus className="w-3.5 h-3.5" /> Ajouter un service
+                <Plus className="w-3.5 h-3.5" /> Add a service
               </Button>
-              <p className="text-xs text-muted-foreground">Tu pourras passer cette étape et ajouter des services plus tard.</p>
+              <p className="text-xs text-muted-foreground">You can skip this step and add services later.</p>
             </div>
           )}
 
@@ -202,10 +202,10 @@ export default function OnboardingPage() {
           {step === 2 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Cette étape sera disponible prochainement. Tu pourras associer tes services à leurs dépendances SaaS pour détecter les corrélations.
+                This feature is coming soon. You'll be able to map your services to their SaaS dependencies to detect correlations.
               </p>
               <div className="bg-muted/50 rounded-lg p-4 text-center">
-                <p className="text-sm text-muted-foreground">🚧 Fonctionnalité en développement</p>
+                <p className="text-sm text-muted-foreground">🚧 Feature under development</p>
               </div>
             </div>
           )}
@@ -234,9 +234,9 @@ export default function OnboardingPage() {
                 <Label className="text-sm">Mode d'alerte</Label>
                 <div className="flex gap-2">
                   {([
-                    { key: 'immediate' as const, label: 'Immédiat' },
-                    { key: 'daily' as const, label: 'Digest quotidien' },
-                    { key: 'weekly' as const, label: 'Digest hebdo' },
+                    { key: 'immediate' as const, label: 'Immediate' },
+                    { key: 'daily' as const, label: 'Daily Digest' },
+                    { key: 'weekly' as const, label: 'Weekly Digest' },
                   ]).map(mode => (
                     <button
                       key={mode.key}
@@ -264,7 +264,7 @@ export default function OnboardingPage() {
             className="gap-2 text-muted-foreground"
           >
             <ArrowLeft className="w-4 h-4" />
-            {step === 0 ? 'Passer' : 'Retour'}
+            {step === 0 ? 'Skip' : 'Back'}
           </Button>
 
           {step < STEPS.length - 1 ? (
@@ -273,7 +273,7 @@ export default function OnboardingPage() {
               disabled={!canProceed()}
               className="gap-2 gradient-primary text-primary-foreground hover:opacity-90"
             >
-              Suivant <ArrowRight className="w-4 h-4" />
+              Next <ArrowRight className="w-4 h-4" />
             </Button>
           ) : (
             <Button
@@ -282,7 +282,7 @@ export default function OnboardingPage() {
               className="gap-2 gradient-primary text-primary-foreground hover:opacity-90"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />}
-              Lancer MoniDuck
+              Launch MoniDuck
             </Button>
           )}
         </div>

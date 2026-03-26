@@ -25,10 +25,10 @@ function getHealthColor(score: number) {
 }
 
 function getHealthLabel(score: number) {
-  if (score >= 95) return 'Ta stack est en bonne santé';
-  if (score >= 80) return 'Quelques dégradations détectées';
-  if (score >= 50) return 'Attention, plusieurs services impactés';
-  return 'Situation critique';
+  if (score >= 95) return 'Your stack is healthy';
+  if (score >= 80) return 'Some degradations detected';
+  if (score >= 50) return 'Warning — multiple services impacted';
+  return 'Critical situation';
 }
 
 const statusDotClass: Record<string, string> = {
@@ -41,12 +41,12 @@ const statusDotClass: Record<string, string> = {
 };
 
 const statusLabel: Record<string, string> = {
-  up: 'Opérationnel',
-  operational: 'Opérationnel',
-  degraded: 'Dégradé',
-  down: 'Panne',
-  outage: 'Panne',
-  unknown: 'Inconnu',
+  up: 'Operational',
+  operational: 'Operational',
+  degraded: 'Degraded',
+  down: 'Down',
+  outage: 'Outage',
+  unknown: 'Unknown',
 };
 
 export default function DashboardOverview() {
@@ -133,7 +133,7 @@ export default function DashboardOverview() {
   return (
     <div className="animate-fade-in space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground font-display">Vue d'ensemble</h1>
+        <h1 className="text-2xl font-bold text-foreground font-display">Overview</h1>
         <p className="text-sm text-muted-foreground mt-0.5 font-mono text-xs">$ status --global<span className="cursor-blink"></span></p>
       </div>
 
@@ -144,7 +144,7 @@ export default function DashboardOverview() {
         </p>
         <p className="text-muted-foreground mt-2 text-sm">{getHealthLabel(healthScore)}</p>
         <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground font-mono">
-          <span className="text-primary/70">{dependencies.length}</span> dépendances
+          <span className="text-primary/70">{dependencies.length}</span> dependencies
           <span className="text-muted-foreground/30">│</span>
           <span className="text-primary/70">{httpServices.length}</span> services
           <span className="text-muted-foreground/30">│</span>
@@ -154,11 +154,11 @@ export default function DashboardOverview() {
 
       {/* Active Incidents */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Incidents actifs</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Active Incidents</h2>
         {activeIncidents.length === 0 ? (
           <div className="bg-card border border-border rounded-xl p-6 text-center">
             <CheckCircle className="w-8 h-8 text-success mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Tout est opérationnel — aucun incident en cours</p>
+            <p className="text-sm text-muted-foreground">All systems operational — no active incidents</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -188,13 +188,13 @@ export default function DashboardOverview() {
         )}
       </div>
 
-      {/* Incidents récents */}
+      {/* Recent Incidents */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Incidents récents</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3 font-display">Recent Incidents</h2>
         {recentIncidents.length === 0 ? (
           <div className="bg-card border border-border rounded-xl p-6 text-center">
             <CheckCircle className="w-8 h-8 text-success mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Aucun incident récent — tout roule 🎉</p>
+            <p className="text-sm text-muted-foreground">No recent incidents — all clear 🎉</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -219,7 +219,7 @@ export default function DashboardOverview() {
                       {inc.source === 'saas' ? 'SaaS' : 'Service'}
                     </span>
                     {inc.status === 'resolved' && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-success/10 text-success font-mono">Résolu</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-success/10 text-success font-mono">Resolved</span>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground truncate mt-0.5">{inc.title}</p>

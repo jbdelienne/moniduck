@@ -10,10 +10,10 @@ const METRIC_ICONS: Record<string, typeof HardDrive> = {
 };
 
 const METRIC_LABELS: Record<string, string> = {
-  drive_quota_total_gb: 'Quota total',
-  drive_quota_used_gb: 'Quota utilisé',
-  drive_trash_gb: 'Corbeille',
-  drive_shared_drives_count: 'Drives partagés',
+  drive_quota_total_gb: 'Total Quota',
+  drive_quota_used_gb: 'Used Quota',
+  drive_trash_gb: 'Trash',
+  drive_shared_drives_count: 'Shared Drives',
 };
 
 interface Props {
@@ -47,11 +47,11 @@ export default function IntegrationMetricCardWidget({ metricKey, metrics }: Prop
             </div>
             <Progress value={Math.min(objectPct, 100)} className="h-2" />
           </div>
-          <p className="text-sm font-semibold text-foreground">{storageGb} GB utilisés</p>
+          <p className="text-sm font-semibold text-foreground">{storageGb} GB used</p>
         </div>
         {meta.created_time && (
           <p className="text-[10px] text-muted-foreground mt-1">
-            Créé le {new Date(meta.created_time).toLocaleDateString()}
+            Created {new Date(meta.created_time).toLocaleDateString()}
           </p>
         )}
       </div>

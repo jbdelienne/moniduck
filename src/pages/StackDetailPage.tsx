@@ -20,10 +20,10 @@ const statusBadgeClass: Record<string, string> = {
 };
 
 const statusLabel: Record<string, string> = {
-  operational: 'Opérationnel',
-  degraded: 'Dégradé',
-  outage: 'Panne',
-  unknown: 'Inconnu',
+  operational: 'Operational',
+  degraded: 'Degraded',
+  outage: 'Outage',
+  unknown: 'Unknown',
 };
 
 export default function StackDetailPage() {
@@ -49,9 +49,9 @@ export default function StackDetailPage() {
     return (
       <div className="animate-fade-in">
         <Button variant="ghost" onClick={() => navigate('/stack')} className="gap-2 mb-4">
-          <ArrowLeft className="w-4 h-4" /> Retour
+          <ArrowLeft className="w-4 h-4" /> Back
         </Button>
-        <p className="text-muted-foreground">Dépendance non trouvée.</p>
+        <p className="text-muted-foreground">Dependency not found.</p>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export default function StackDetailPage() {
   return (
     <div className="animate-fade-in">
       <Button variant="ghost" onClick={() => navigate('/stack')} className="gap-2 mb-4 text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="w-4 h-4" /> Ma Stack
+        <ArrowLeft className="w-4 h-4" /> My Stack
       </Button>
 
       {/* Header */}
@@ -82,14 +82,14 @@ export default function StackDetailPage() {
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-foreground">{dep.name}</h1>
             <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium border ${status}`}>
-              {statusLabel[dep.status] || 'Inconnu'}
+              {statusLabel[dep.status] || 'Unknown'}
             </span>
           </div>
           <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
-            <span>SLA promis : {dep.sla_promised}%</span>
+            <span>Promised SLA: {dep.sla_promised}%</span>
             <span>—</span>
             <span>
-              Réel : <span className={slaBreach ? 'text-destructive font-medium' : 'text-success font-medium'}>{uptime.toFixed(2)}% {slaBreach ? `(−${Math.abs(delta).toFixed(2)}%)` : `(+${delta.toFixed(2)}%)`}</span>
+              Actual: <span className={slaBreach ? 'text-destructive font-medium' : 'text-success font-medium'}>{uptime.toFixed(2)}% {slaBreach ? `(−${Math.abs(delta).toFixed(2)}%)` : `(+${delta.toFixed(2)}%)`}</span>
             </span>
             {dep.status_page_url && (
               <a href={dep.status_page_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground underline inline-flex items-center gap-1 hover:text-foreground transition-colors">
@@ -103,7 +103,7 @@ export default function StackDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Uptime Chart */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-foreground mb-4">Uptime — 6 derniers mois</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-4">Uptime — Last 6 months</h2>
           <div className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={months}>
@@ -122,7 +122,7 @@ export default function StackDetailPage() {
 
         {/* SLA Breakdown */}
         <div className="bg-card border border-border rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-foreground mb-4">SLA mensuel</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-4">Monthly SLA</h2>
           <div className="space-y-2">
             {months.map(m => (
               <div key={m.month} className="flex items-center justify-between text-sm">
@@ -138,11 +138,11 @@ export default function StackDetailPage() {
 
       {/* Incidents Timeline */}
       <div className="mt-6">
-        <h2 className="text-sm font-semibold text-foreground mb-4">Historique des incidents</h2>
+        <h2 className="text-sm font-semibold text-foreground mb-4">Incident History</h2>
         {incidents.length === 0 ? (
           <div className="bg-card border border-border rounded-xl p-6 text-center">
             <CheckCircle className="w-6 h-6 text-success mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">Aucun incident enregistré</p>
+            <p className="text-sm text-muted-foreground">No incidents recorded</p>
           </div>
         ) : (
           <div className="space-y-2">

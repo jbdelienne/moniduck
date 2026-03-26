@@ -52,17 +52,17 @@ export default function IncidentsPage() {
   }, [incidents, filter]);
 
   const tabs: { key: FilterTab; label: string }[] = [
-    { key: 'all', label: 'Tous' },
+    { key: 'all', label: 'All' },
     { key: 'saas', label: 'SaaS' },
-    { key: 'services', label: 'Mes services' },
-    { key: 'correlated', label: 'Corrélés' },
+    { key: 'services', label: 'Services' },
+    { key: 'correlated', label: 'Correlated' },
   ];
 
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Incidents</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Timeline unifiée des incidents SaaS et services</p>
+        <p className="text-sm text-muted-foreground mt-0.5">Unified timeline of SaaS and service incidents</p>
       </div>
 
       {/* Filters */}
@@ -89,8 +89,8 @@ export default function IncidentsPage() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-16">
           <CheckCircle className="w-12 h-12 mx-auto mb-3 text-success" />
-          <p className="font-medium text-foreground">Aucun incident</p>
-          <p className="text-sm text-muted-foreground mt-1">Tout fonctionne normalement</p>
+          <p className="font-medium text-foreground">No incidents</p>
+          <p className="text-sm text-muted-foreground mt-1">Everything is running smoothly</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -133,12 +133,12 @@ export default function IncidentsPage() {
                       )}
                       {incident.isResolved && (
                         <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-success/10 text-success">
-                          Résolu
+                          Resolved
                         </span>
                       )}
                       {incident.hasCorrelation && (
                         <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-info/10 text-info">
-                          Corrélation détectée
+                          Correlation detected
                         </span>
                       )}
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
@@ -156,7 +156,7 @@ export default function IncidentsPage() {
                         {formatDistanceToNow(new Date(incident.created_at), { addSuffix: true })}
                       </span>
                       {incident.duration > 0 && (
-                        <span>Durée : {formatDuration(incident.duration)}</span>
+                        <span>Duration: {formatDuration(incident.duration)}</span>
                       )}
                     </div>
                   </div>

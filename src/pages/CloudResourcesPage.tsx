@@ -388,9 +388,9 @@ export default function CloudResourcesPage() {
             onClick={() => navigate('/settings?tab=integrations')}
           >
             <Settings className="w-3.5 h-3.5" />
-            Intégrations
+            Integrations
           </Button>
-          <SearchBar value={search} onChange={setSearch} placeholder="Rechercher par nom ou ID…" />
+          <SearchBar value={search} onChange={setSearch} placeholder="Search by name or ID…" />
         </div>
       </div>
 
@@ -401,8 +401,8 @@ export default function CloudResourcesPage() {
       ) : cloudResources.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Cloud className="w-12 h-12 text-muted-foreground/40 mb-4" />
-          <p className="text-muted-foreground mb-2">Aucune ressource cloud importée</p>
-          <p className="text-xs text-muted-foreground/70">Connectez un cloud provider depuis l'onglet Intégrations pour voir vos ressources ici.</p>
+          <p className="text-muted-foreground mb-2">No cloud resources imported</p>
+          <p className="text-xs text-muted-foreground/70">Connect a cloud provider from the Integrations tab to see your resources here.</p>
         </div>
       ) : (
         <>
@@ -437,16 +437,16 @@ export default function CloudResourcesPage() {
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead>Nom</TableHead>
+                  <TableHead>Name</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead>État</TableHead>
-                  <TableHead>Détails</TableHead>
+                  <TableHead>State</TableHead>
+                  <TableHead>Details</TableHead>
                   <TableHead>Synced</TableHead>
                   <TableHead className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="inline-flex items-center gap-1 hover:text-foreground transition-colors font-medium text-xs">
-                          Coût est. ({costPeriodLabels[costPeriod]})
+                          Est. Cost ({costPeriodLabels[costPeriod]})
                           <ChevronDown className="w-3.5 h-3.5" />
                         </button>
                       </DropdownMenuTrigger>
@@ -465,7 +465,7 @@ export default function CloudResourcesPage() {
                 {filteredResources.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">
-                      Aucune ressource trouvée
+                      No resources found
                     </TableCell>
                   </TableRow>
                 ) : filteredResources.map((r) => {

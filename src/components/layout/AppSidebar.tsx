@@ -25,18 +25,18 @@ export default function AppSidebar({ collapsed, onToggle }: { collapsed: boolean
   }, [collapsed]);
 
   const mainItems = [
-    { title: "Vue d'ensemble", url: `${lp}/dashboard`, icon: LayoutDashboard },
-    { title: "Ma Stack", url: `${lp}/stack`, icon: Layers, highlight: true },
-    { title: "Mes Services", url: `${lp}/services`, icon: Server },
+    { title: "Overview", url: `${lp}/dashboard`, icon: LayoutDashboard },
+    { title: "My Stack", url: `${lp}/stack`, icon: Layers, highlight: true },
+    { title: "Services", url: `${lp}/services`, icon: Server },
     { title: "Incidents", url: `${lp}/incidents`, icon: AlertTriangle },
-    { title: "Alertes", url: `${lp}/alerts`, icon: Bell, badge: unreadCount },
-    { title: "Rapports", url: `${lp}/reports`, icon: FileText },
+    { title: "Alerts", url: `${lp}/alerts`, icon: Bell, badge: unreadCount },
+    { title: "Reports", url: `${lp}/reports`, icon: FileText },
     { title: "Cloud", url: `${lp}/cloud`, icon: Cloud },
     { title: "Cloud Providers", url: `${lp}/cloud-providers`, icon: Globe },
   ];
 
   const bottomItems = [
-    { title: "Paramètres", url: `${lp}/settings`, icon: Settings },
+    { title: "Settings", url: `${lp}/settings`, icon: Settings },
   ];
 
   const renderNavItem = (item: typeof mainItems[0] & { badge?: number; highlight?: boolean }) => (
