@@ -45,6 +45,7 @@ export default function Dashboard() {
   const [newName, setNewName] = useState('');
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { id: routeDashboardId } = useParams<{ id: string }>();
 
   useEffect(() => {
     if (searchParams.get('create') === 'true') {
@@ -52,6 +53,16 @@ export default function Dashboard() {
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, setSearchParams]);
+
+  // Sync route param :id → selectedDashboardId
+  useEffect(() => {
+    if (routeDashboardId && dashboards.length > 0) {
+      const found = dashboards.find(d => d.id === routeDashboardId);
+      if (found) {
+        setSelectedDashboardId(routeDashboardId);
+      }
+    }
+  }, [routeDashboardId, dashboards]);
 
   const selectedDashboard = dashboards.find((d) => d.id === selectedDashboardId);
 
