@@ -58,14 +58,41 @@ def api_request(method, path, body=None):
 def create_journal():
     today = datetime.now().strftime("%Y-%m-%d")
     name = f"Journal — {today}"
+
+    ids = load_ids()
+    if ids.get("journal", {}).get(today):
+        print(f"   Journal déjà existant pour {today} : {ids['journal'][today]}")
+        return ids["journal"][today]
+
     result = api_request("POST", f"/spaces/{SPACE_ID}/objects", {
         "name": name,
         "type_key": "page",
         "template_id": TPL_JOURNAL
     })
     obj = result.get("object", {})
+    journal_id = obj.get("id")
     print(f"✅ Journal créé : {name}")
-    print(f"   ID : {obj.get('id', '?')}")
+    print(f"   ID : {journal_id}")
+
+    ids.setdefault("journal", {})[today] = journal_id
+    ids_file = os.path.join(os.path.dirname(__file__), 'anytype-ids.json')
+    with open(ids_file, 'w') as f:
+        json.dump(ids, f, indent=2, ensure_ascii=False)
+
+    return journal_id
+
+def update_journal(content):
+    today = datetime.now().strftime("%Y-%m-%d")
+    ids = load_ids()
+    journal_id = ids.get("journal", {}).get(today)
+    if not journal_id:
+        print(f"❌ Aucun journal pour {today}. Lance d'abord : python3 scripts/anytype.py journal")
+        sys.exit(1)
+    api_request("PATCH", f"/spaces/{SPACE_ID}/objects/{journal_id}", {
+        "markdown": content.replace('\\n', '\n')
+    })
+    print(f"✅ Journal mis à jour : Journal — {today}")
+    print(f"   ID : {journal_id}")
 
 TPL_FEATURE = "bafyreihr2www5vvf4roa5efleihyw6v52f5sqtlxwnfrtkhumgr3kmmj5i"
 
@@ -114,7 +141,13 @@ def main():
     command = args[0]
 
     if command == "journal":
-        create_journal()
+        if len(args) >= 2 and args[1] == "update":
+            if len(args) < 3:
+                print("Usage: python3 scripts/anytype.py journal update 'Contenu'")
+                sys.exit(1)
+            update_journal(args[2])
+        else:
+            create_journal()
 
     elif command == "feature":
         if len(args) < 4 or args[1] != "update":

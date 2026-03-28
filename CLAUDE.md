@@ -51,6 +51,14 @@ chore(zone): maintenance / config
 
 ## 🔴 FIN DE CHAQUE SESSION — OBLIGATOIRE
 
+### Avant de documenter — Lire tous les commits de la session
+Avant d'écrire le journal ou les features, toujours relire :
+1. `git log --oneline` pour lister tous les commits de la session
+2. `git show <hash>` ou `git diff <hash>^!` sur chaque commit pour comprendre exactement ce que Lovable ET Claude Code ont fait
+3. Lire les fichiers modifiés dans leur état final (`src/pages/...`, etc.)
+
+**Claude Code est seul responsable de la documentation.** Il doit refléter fidèlement les contributions des deux outils, pas seulement ce qu'il a lui-même produit.
+
 ### Étape 1 — Créer le journal du jour
 ```
 python3 scripts/anytype.py journal
