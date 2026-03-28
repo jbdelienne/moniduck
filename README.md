@@ -1,4 +1,4 @@
-# MoniDuck 🦆
+# moniduck 🦆
 
 Monitoring app for modern tech stacks. End-to-end visibility for engineering teams using hybrid infrastructures.
 
