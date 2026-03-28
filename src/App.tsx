@@ -24,6 +24,7 @@ import CloudProvidersPage from "@/pages/CloudProvidersPage";
 import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/NotFound";
 import Waitlist from "@/pages/Waitlist";
+import LandingPage from "@/pages/LandingPage";
 import PublicReport from "@/pages/PublicReport";
 
 const queryClient = new QueryClient();
@@ -44,7 +45,8 @@ function ProtectedLayout() {
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<Waitlist />} />
+    <Route path="/" element={<LandingPage />} />
+    <Route path="/waitlist" element={<Waitlist />} />
     <Route path="/auth" element={<Auth />} />
     <Route path="/reports/shared/:shareToken" element={<PublicReport />} />
     <Route path="/onboarding" element={
