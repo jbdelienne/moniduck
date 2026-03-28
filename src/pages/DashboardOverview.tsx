@@ -1,8 +1,16 @@
 import { useServices } from '@/hooks/use-supabase';
 import { useSaasDependencies, SaasProviderWithSubscription, SaasIncident } from '@/hooks/use-saas-dependencies';
 import { useAlerts } from '@/hooks/use-supabase';
-import { Loader2, CheckCircle, AlertTriangle, XCircle, Minus, Clock, Wifi, Plus } from 'lucide-react';
+import { Loader2, CheckCircle, AlertTriangle, XCircle, Minus, Clock, Wifi, Plus, ChevronDown, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useDashboards } from '@/hooks/use-dashboards';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
@@ -54,6 +62,7 @@ export default function DashboardOverview() {
   const { data: services = [], isLoading: servicesLoading } = useServices();
   const { data: dependencies = [], isLoading: depsLoading } = useSaasDependencies();
   const { data: alerts = [] } = useAlerts();
+  const { data: dashboards = [] } = useDashboards();
   const navigate = useNavigate();
 
   // Build unified recent incidents list
@@ -138,10 +147,35 @@ export default function DashboardOverview() {
           <h1 className="text-2xl font-bold text-foreground font-display">Overview</h1>
           <p className="text-sm text-muted-foreground mt-0.5 font-mono text-xs">$ status --global<span className="cursor-blink"></span></p>
         </div>
-        <Button size="sm" onClick={() => navigate('/views?create=true')} className="gap-1.5">
-          <Plus className="w-4 h-4" />
-          Create a new view
-        </Button>
+        <div className="flex items-center gap-2">
+          {dashboards.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5">
+                  <LayoutDashboard className="w-4 h-4" />
+                  My views
+                  <ChevronDown className="w-3 h-3 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[200px]">
+                {dashboards.map(d => (
+                  <DropdownMenuItem key={d.id} onClick={() => navigate(`/views/${d.id}`)}>
+                    <LayoutDashboard className="w-4 h-4 mr-2 text-muted-foreground" />
+                    {d.name}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/views')}>
+                  View all
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          <Button size="sm" onClick={() => navigate('/views?create=true')} className="gap-1.5">
+            <Plus className="w-4 h-4" />
+            Create a new view
+          </Button>
+        </div>
       </div>
 
       {/* Health Score */}
