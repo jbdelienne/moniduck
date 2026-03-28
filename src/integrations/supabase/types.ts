@@ -545,59 +545,6 @@ export type Database = {
           },
         ]
       }
-      dependency_status: {
-        Row: {
-          created_at: string
-          id: string
-          incidents: Json
-          last_check: string | null
-          provider: string
-          sla_actual: number
-          sla_promised: number
-          status: string
-          status_page_url: string | null
-          updated_at: string
-          user_id: string
-          workspace_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          incidents?: Json
-          last_check?: string | null
-          provider: string
-          sla_actual?: number
-          sla_promised?: number
-          status?: string
-          status_page_url?: string | null
-          updated_at?: string
-          user_id: string
-          workspace_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          incidents?: Json
-          last_check?: string | null
-          provider?: string
-          sla_actual?: number
-          sla_promised?: number
-          status?: string
-          status_page_url?: string | null
-          updated_at?: string
-          user_id?: string
-          workspace_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "dependency_status_workspace_id_fkey"
-            columns: ["workspace_id"]
-            isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       incidents: {
         Row: {
           alert_sent_at: string | null
@@ -874,6 +821,7 @@ export type Database = {
         Row: {
           added_by: string
           avg_response_time: number | null
+          consecutive_ping_failures: number
           created_at: string
           icon: string
           id: string
@@ -881,16 +829,20 @@ export type Database = {
           is_public: boolean
           last_check: string | null
           name: string
+          ping_status: string
           sla_promised_default: number
           status: string
           status_page_status: string | null
           status_page_url: string | null
+          uptime_from_ping: number
+          uptime_from_statuspage: number
           uptime_percentage: number | null
           url: string
         }
         Insert: {
           added_by: string
           avg_response_time?: number | null
+          consecutive_ping_failures?: number
           created_at?: string
           icon?: string
           id?: string
@@ -898,16 +850,20 @@ export type Database = {
           is_public?: boolean
           last_check?: string | null
           name: string
+          ping_status?: string
           sla_promised_default?: number
           status?: string
           status_page_status?: string | null
           status_page_url?: string | null
+          uptime_from_ping?: number
+          uptime_from_statuspage?: number
           uptime_percentage?: number | null
           url: string
         }
         Update: {
           added_by?: string
           avg_response_time?: number | null
+          consecutive_ping_failures?: number
           created_at?: string
           icon?: string
           id?: string
@@ -915,10 +871,13 @@ export type Database = {
           is_public?: boolean
           last_check?: string | null
           name?: string
+          ping_status?: string
           sla_promised_default?: number
           status?: string
           status_page_status?: string | null
           status_page_url?: string | null
+          uptime_from_ping?: number
+          uptime_from_statuspage?: number
           uptime_percentage?: number | null
           url?: string
         }
