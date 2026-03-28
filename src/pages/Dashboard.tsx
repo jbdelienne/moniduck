@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import moniduckLogo from '@/assets/moniduck-logo.png';
 // layout provided by route
 import { useServices, Service } from '@/hooks/use-supabase';
