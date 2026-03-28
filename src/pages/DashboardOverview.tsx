@@ -133,9 +133,15 @@ export default function DashboardOverview() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground font-display">Overview</h1>
-        <p className="text-sm text-muted-foreground mt-0.5 font-mono text-xs">$ status --global<span className="cursor-blink"></span></p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground font-display">Overview</h1>
+          <p className="text-sm text-muted-foreground mt-0.5 font-mono text-xs">$ status --global<span className="cursor-blink"></span></p>
+        </div>
+        <Button size="sm" onClick={() => navigate('/dashboard')} className="gap-1.5">
+          <Plus className="w-4 h-4" />
+          Create a new view
+        </Button>
       </div>
 
       {/* Health Score */}
