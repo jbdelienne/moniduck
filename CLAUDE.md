@@ -49,6 +49,26 @@ fix(zone): correction de bug
 refactor(zone): restructuration
 chore(zone): maintenance / config
 
+## 🔴 FIN DE CHAQUE SESSION — OBLIGATOIRE
+
+### Étape 1 — Créer le journal du jour
+```
+python3 scripts/anytype.py journal
+```
+
+### Étape 2 — Remplir le journal
+```
+python3 scripts/anytype.py journal update "## Qui a travaillé\n- [x] Claude Code\n- [ ] Lovable\n## Résumé de la session\n[2-3 phrases]\n---\n## Ce qui a été fait\n### Claude Code\n- ...\n### Lovable\n- ...\n## Fichiers modifiés\n- ...\n## Décisions prises aujourd'hui\n- ...\n## Problèmes rencontrés\n- ...\n## Ce qui est prévu pour la prochaine session\n- ...\n---\n## Commits du jour\n[résultat de : git log --oneline -10]"
+```
+
+### Étape 3 — Mettre à jour les features impactées
+Pour chaque feature touchée pendant la session :
+```
+python3 scripts/anytype.py feature update "Nom" "## Statut\n✅ Terminé\n## Description\n[2-3 phrases non-tech]\n---\n## Ce qui est fait\n- ...\n## Ce qui reste à faire\n- ...\n## Bugs connus\n- ...\n---\n## Détail technique\n### Fichiers clés\n| Fichier | Rôle |\n|:--------|:-----|\n| ... | ... |\n### Hooks utilisés\n| Hook | Ce qu'il fait |\n|:-----|:--------------|\n| ... | ... |\n### Tables Supabase impliquées\n| Table | Rôle |\n|:------|:-----|\n| ... | ... |\n### Edge cases gérés\n- ...\n### Edge cases non gérés (dette)\n- ...\n---\n## Décisions prises\n| Date | Décision | Pourquoi |\n|:-----|:---------|:---------|\n| ... | ... | ... |\n## Dernière mise à jour\nJJ/MM/AAAA — par Claude Code"
+```
+
+Features disponibles : Dashboard, HTTP Services Monitoring, Cloud Resources, Cloud Regions, Stack SaaS, Intégrations, Reports, Alertes, Incidents, Overview / Health Score, Settings & Team, Onboarding, Landing page, Waitlist
+
 ## Règles Anytype
 
 ### Ce que tu peux faire
@@ -62,7 +82,7 @@ chore(zone): maintenance / config
 
 ### Règles Journal de bord
 - Une entrée par session, jamais modifiée après création
-- Format du titre : YYYY-MM-DD (ex: 2026-03-28)
+- Format du titre : Journal — YYYY-MM-DD
 - Toujours remplir la section "Commits du jour" avec les commits de la session
 
 ### Règles Feature
