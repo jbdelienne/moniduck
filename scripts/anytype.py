@@ -94,6 +94,45 @@ def update_journal(content):
 
 TPL_FEATURE = "bafyreihr2www5vvf4roa5efleihyw6v52f5sqtlxwnfrtkhumgr3kmmj5i"
 
+PROPERTY_KEYS = {
+    "priority": "bafyreias72e7vrr6p6v46sxkfxd7sih5dkxdjhevvmqe52snrzomhexb6i",
+    "statut":   "bafyreihbcbxb2j7lhzoxnpw3ywi34pzudr6m2kdxlk7o5blcazw3vwvpya",
+}
+
+def ensure_feature_id(name):
+    """Return existing ID or create the feature and return the new ID."""
+    ids = load_ids()
+    feature_id = ids.get("features", {}).get(name) or None
+    if not feature_id:
+        result = api_request("POST", f"/spaces/{SPACE_ID}/objects", {
+            "name": name,
+            "type_key": "page",
+            "template_id": TPL_FEATURE
+        })
+        obj = result.get("object", {})
+        feature_id = obj.get("id")
+        ids.setdefault("features", {})[name] = feature_id
+        ids_file = os.path.join(os.path.dirname(__file__), 'anytype-ids.json')
+        with open(ids_file, 'w') as f:
+            json.dump(ids, f, indent=2, ensure_ascii=False)
+        print(f"✅ Feature créée : {name} (ID : {feature_id})")
+    return feature_id
+
+def set_feature_properties(name, props: dict):
+    """Set select properties (priority, statut) on a feature."""
+    feature_id = ensure_feature_id(name)
+    payload = []
+    for prop_name, value in props.items():
+        key = PROPERTY_KEYS.get(prop_name)
+        if not key:
+            print(f"⚠️  Propriété inconnue : {prop_name}")
+            continue
+        payload.append({"key": key, "select": value})
+    if payload:
+        api_request("PATCH", f"/spaces/{SPACE_ID}/objects/{feature_id}", {"properties": payload})
+        print(f"✅ Propriétés mises à jour : {name} → {props}")
+    return feature_id
+
 def update_feature(name, content):
     ids = load_ids()
     feature_id = ids.get("features", {}).get(name)
@@ -148,10 +187,29 @@ def main():
             create_journal()
 
     elif command == "feature":
-        if len(args) < 4 or args[1] != "update":
+        if len(args) >= 2 and args[1] == "props":
+            # python3 scripts/anytype.py feature props "Name" priority=high statut=done
+            if len(args) < 4:
+                print("Usage: python3 scripts/anytype.py feature props 'Nom' priority=high statut=done")
+                sys.exit(1)
+            feature_name = args[2]
+            props = {}
+            for pair in args[3:]:
+                if '=' in pair:
+                    k, v = pair.split('=', 1)
+                    props[k] = v
+            set_feature_properties(feature_name, props)
+        elif len(args) >= 2 and args[1] == "create":
+            # python3 scripts/anytype.py feature create "Name"
+            if len(args) < 3:
+                print("Usage: python3 scripts/anytype.py feature create 'Nom'")
+                sys.exit(1)
+            ensure_feature_id(args[2])
+        elif len(args) < 4 or args[1] != "update":
             print("Usage: python3 scripts/anytype.py feature update 'Nom' 'Contenu'")
             sys.exit(1)
-        update_feature(args[2], args[3])
+        else:
+            update_feature(args[2], args[3])
 
     else:
         print(f"❌ Commande inconnue : {command}")

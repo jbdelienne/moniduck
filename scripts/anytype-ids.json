@@ -1,5 +1,5 @@
 {
-  "last_journal_id": "bafyreia7cqptcxmh4uq47evb2eyuelds4umsa4nzyebxlijh2fih5nntxy",
+  "last_journal_id": "bafyreiaogyjfbfdux6kzofkjtxqqbsv5cdgjxzqlzoxyfspnlqqv3x3i6e",
   "_collections": {
     "features": "bafyreibig5nd4wsjt5xrvmx52iqumchifpb3tw75sum2527fgon77uvalm",
     "journal": "bafyreia5e3hfm3b6nplx7swledw2yqh6ofh2k4th3cwegltcnqrokktezi"
@@ -7,7 +7,7 @@
   "features": {
     "Dashboard": "bafyreihhsy2qr7ktzpxqkgtfkudx2ocbxdz26j6cv3kbr3bay27r3xtaxy",
     "HTTP Services Monitoring": "bafyreicwdfpnlxs3mvuqlvdzhnkus4q3usfydjhzteihz42z643vqpsrqa",
-    "Cloud Resources": "bafyreidedo3h4e7wjg35wq4vjxcljxmvmij5siqmzicv3wle4mxvypysmz4",
+    "Cloud Resources": "bafyreigjk73syky3dlto3y4uh24aut6cdv5tek5j26lakldwrmeivglreu",
     "Cloud Regions": "bafyreihepnm67wrcr7zahtmd4xip435eheiede74vbfy4rkguposegs3bu",
     "Stack SaaS": "bafyreiajtvcuqssg3u6k2wqipc6yl2gn6nsn5zlzhakwnly5ietu6twgy4",
     "Intégrations": "bafyreidx27f62ms3vgvkgqba7pza3shzsxtyyqyunka7xh2wmywsx5sp7q",
@@ -18,6 +18,11 @@
     "Settings & Team": "bafyreiccgup2tzcrqgawsvqmpsbmansaqy55fgl7z3ppqaycfo6shrnhim",
     "Onboarding": "bafyreicpw5v6jygriw5rykfyvaljjcmmutk3tkow4jpavay7h2s27lpp4a",
     "Landing page": "bafyreib4oj4e5c4sgdlxb7kxd6olcat46in4djrku6ibvfuashsv5l2cmu",
-    "Waitlist": "bafyreidmbyb46bjtnxgw436bu3mtptbldpksv2zanj4y4dq5wsmzydndfe"
+    "Waitlist": "bafyreidmbyb46bjtnxgw436bu3mtptbldpksv2zanj4y4dq5wsmzydndfe",
+    "SLA Reports": "bafyreieakm4ictuc75vw33obco2myodb2pzcuu2jcyidey4imfwrambh2y",
+    "Webhooks": "bafyreifc6gpydg2bt5xsd6cja72xepza2g2eomkumtcjpeeetpqjzporkm",
+    "API Access": "bafyreibs3cisq3gtnuv4uab2ipiphakv3qo3dape7725ur3yagv6kxcnaa",
+    "Audit Logs": "bafyreibolzbovke3mnmisdrvhjr6sxuaozyhapylhuzwznrpphrnfn2ipu",
+    "SSO / SAML": "bafyreia4ezgqxoznnvh5xhku37aqrdmre5flfiqqmemzkk5qdi2nvb6ulq"
   }
 }

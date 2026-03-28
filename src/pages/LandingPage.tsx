@@ -17,7 +17,7 @@ type Tier = {
   desc: string;
   popular: boolean;
   cta: string;
-  features: { text: string; ok: boolean }[];
+  features: { text: string; ok: boolean; badge?: "Soon" | "Roadmap" }[];
 };
 
 // Feature rows are identical across the 3 paid plans — same order, same label.
@@ -40,7 +40,7 @@ const tiers: Tier[] = [
       { text: "1 workspace member", ok: true },
       { text: "Cloud account", ok: false },
       { text: "Slack alerts", ok: false },
-      { text: "SLA breach reports", ok: false },
+      { text: "SLA breach reports", ok: false, badge: "Soon" },
     ],
   },
   {
@@ -59,8 +59,8 @@ const tiers: Tier[] = [
       { text: "30-day incident history", ok: true },
       { text: "5 workspace members", ok: true },
       { text: "1 cloud account (AWS/GCP/Azure)", ok: true },
-      { text: "Monthly SLA report (PDF)", ok: true },
-      { text: "Webhooks & API access", ok: false },
+      { text: "Monthly SLA report (PDF)", ok: true, badge: "Soon" },
+      { text: "Webhooks", ok: false, badge: "Soon" },
     ],
   },
   {
@@ -75,12 +75,12 @@ const tiers: Tier[] = [
       { text: "Unlimited HTTP monitors", ok: true },
       { text: "1-minute check interval", ok: true },
       { text: "Unlimited SaaS dependencies", ok: true },
-      { text: "Email + Slack + webhooks", ok: true },
+      { text: "Email + Slack + webhooks", ok: true, badge: "Soon" },
       { text: "90-day incident history", ok: true },
       { text: "15 workspace members", ok: true },
       { text: "Unlimited cloud accounts", ok: true },
-      { text: "SLA exports (PDF + CSV, on demand)", ok: true },
-      { text: "API access + priority support", ok: true },
+      { text: "SLA exports (PDF + CSV, on demand)", ok: true, badge: "Soon" },
+      { text: "API access + priority support", ok: true, badge: "Roadmap" },
     ],
   },
   {
@@ -539,7 +539,16 @@ export default function LandingPage() {
                           ? <Check className="w-2.5 h-2.5 text-success" />
                           : <X className="w-2.5 h-2.5 text-muted-foreground/25" />}
                       </span>
-                      {f.text}
+                      <span className="flex-1">{f.text}</span>
+                      {f.badge && (
+                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 ${
+                          f.badge === "Soon"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-muted text-muted-foreground"
+                        }`}>
+                          {f.badge}
+                        </span>
+                      )}
                     </li>
                   ))}
                 </ul>
