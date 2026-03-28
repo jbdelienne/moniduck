@@ -60,9 +60,6 @@ def create_journal():
     name = f"Journal — {now.strftime('%Y-%m-%d %H:%M')}"
 
     ids = load_ids()
-    collection_id = ids.get("_collections", {}).get("journal")
-    if not collection_id:
-        print(f"⚠️  Collection Dev journaling introuvable dans anytype-ids.json")
 
     result = api_request("POST", f"/spaces/{SPACE_ID}/objects", {
         "name": name,
@@ -73,12 +70,7 @@ def create_journal():
     journal_id = obj.get("id")
     print(f"✅ Journal créé : {name}")
     print(f"   ID : {journal_id}")
-
-    if collection_id:
-        api_request("POST", f"/spaces/{SPACE_ID}/lists/{collection_id}/objects", {
-            "object_id": journal_id
-        })
-        print(f"✅ Ajouté à la collection Dev journaling")
+    print(f"   ⚠️  À ranger manuellement dans Dev journaling")
 
     # Sauvegarde du dernier ID créé pour que journal update sache lequel remplir
     ids["last_journal_id"] = journal_id
