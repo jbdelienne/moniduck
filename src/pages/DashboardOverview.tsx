@@ -147,10 +147,35 @@ export default function DashboardOverview() {
           <h1 className="text-2xl font-bold text-foreground font-display">Overview</h1>
           <p className="text-sm text-muted-foreground mt-0.5 font-mono text-xs">$ status --global<span className="cursor-blink"></span></p>
         </div>
-        <Button size="sm" onClick={() => navigate('/views?create=true')} className="gap-1.5">
-          <Plus className="w-4 h-4" />
-          Create a new view
-        </Button>
+        <div className="flex items-center gap-2">
+          {dashboards.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5">
+                  <LayoutDashboard className="w-4 h-4" />
+                  My views
+                  <ChevronDown className="w-3 h-3 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[200px]">
+                {dashboards.map(d => (
+                  <DropdownMenuItem key={d.id} onClick={() => navigate(`/views/${d.id}`)}>
+                    <LayoutDashboard className="w-4 h-4 mr-2 text-muted-foreground" />
+                    {d.name}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/views')}>
+                  View all
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          <Button size="sm" onClick={() => navigate('/views?create=true')} className="gap-1.5">
+            <Plus className="w-4 h-4" />
+            Create a new view
+          </Button>
+        </div>
       </div>
 
       {/* Health Score */}
