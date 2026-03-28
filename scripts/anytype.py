@@ -59,26 +59,23 @@ def create_journal():
     now = datetime.now()
     name = f"Journal — {now.strftime('%Y-%m-%d %H:%M')}"
 
+    ids = load_ids()
+    collection_id = ids.get("_collections", {}).get("journal")
+    if not collection_id:
+        print(f"⚠️  Collection Dev journaling introuvable dans anytype-ids.json")
+
     result = api_request("POST", f"/spaces/{SPACE_ID}/objects", {
         "name": name,
         "type_key": "page",
-        "template_id": TPL_JOURNAL
+        "template_id": TPL_JOURNAL,
+        **({"collection_id": collection_id} if collection_id else {})
     })
     obj = result.get("object", {})
     journal_id = obj.get("id")
     print(f"✅ Journal créé : {name}")
     print(f"   ID : {journal_id}")
-
-    # Ajout à la collection "Dev journaling"
-    ids = load_ids()
-    collection_id = ids.get("_collections", {}).get("journal")
     if collection_id:
-        api_request("POST", f"/spaces/{SPACE_ID}/collections/{collection_id}/objects", {
-            "object_id": journal_id
-        })
         print(f"✅ Ajouté à la collection Dev journaling")
-    else:
-        print(f"⚠️  Collection Dev journaling introuvable dans anytype-ids.json")
 
     # Sauvegarde du dernier ID créé pour que journal update sache lequel remplir
     ids["last_journal_id"] = journal_id
