@@ -1,0 +1,22 @@
+{
+  "_collections": {
+    "features": "bafyreibig5nd4wsjt5xrvmx52iqumchifpb3tw75sum2527fgon77uvalm",
+    "journal": "bafyreia5e3hfm3b6nplx7swledw2yqh6ofh2k4th3cwegltcnqrokktezi"
+  },
+  "features": {
+    "Dashboard": "bafyreihhsy2qr7ktzpxqkgtfkudx2ocbxdz26j6cv3kbr3bay27r3xtaxy",
+    "HTTP Services Monitoring": "bafyreicwdfpnlxs3mvuqlvdzhnkus4q3usfydjhzteihz42z643vqpsrqa",
+    "Cloud Resources": "bafyreidedo3h4e7wjg35wq4vjxcljxmvmij5siqmzicv3wle4mxvypysmz4",
+    "Cloud Regions": "bafyreihepnm67wrcr7zahtmd4xip435eheiede74vbfy4rkguposegs3bu",
+    "Stack SaaS": "bafyreiajtvcuqssg3u6k2wqipc6yl2gn6nsn5zlzhakwnly5ietu6twgy4",
+    "Intégrations": "bafyreidx27f62ms3vgvkgqba7pza3shzsxtyyqyunka7xh2wmywsx5sp7q",
+    "Reports": "bafyreifmgrozhflbugarqjwtrjuzrm6o77oqb6xpq64eqewqh64objbn3m",
+    "Alertes": "bafyreido3zixqeldyhi6lhbe4znuvwmkjxpx62iuezzb5sxj64klmrqn7i",
+    "Incidents": "bafyreicjmsjjfww2riditvoovvbb2y7q2r22ac4u3prj265d52mbaw34ji",
+    "Overview / Health Score": "bafyreieggp4sg5czf4dqrurltvhqghalp6cknsprey4q2jhz7xry3z7pxa",
+    "Settings & Team": "bafyreiccgup2tzcrqgawsvqmpsbmansaqy55fgl7z3ppqaycfo6shrnhim",
+    "Onboarding": "bafyreicpw5v6jygriw5rykfyvaljjcmmutk3tkow4jpavay7h2s27lpp4a",
+    "Landing page": "bafyreib4oj4e5c4sgdlxb7kxd6olcat46in4djrku6ibvfuashsv5l2cmu",
+    "Waitlist": "bafyreidmbyb46bjtnxgw436bu3mtptbldpksv2zanj4y4dq5wsmzydndfe"
+  }
+}

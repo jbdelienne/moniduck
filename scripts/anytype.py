@@ -2,9 +2,8 @@
 """
 MoniDuck — Anytype Integration
 Usage:
-  python scripts/anytype.py journal
-  python scripts/anytype.py feature create "Dashboard"
-  python scripts/anytype.py feature update "Dashboard"
+  python3 scripts/anytype.py journal
+  python3 scripts/anytype.py feature update "Dashboard" "Contenu markdown ici"
 """
 
 import sys
@@ -16,7 +15,6 @@ from datetime import datetime
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 
-# Charge la clé depuis .env.anytype
 def load_api_key():
     env_file = os.path.join(os.path.dirname(__file__), '..', '.env.anytype')
     if os.path.exists(env_file):
@@ -26,14 +24,17 @@ def load_api_key():
                     return line.strip().split('=', 1)[1]
     return os.environ.get('ANYTYPE_API_KEY')
 
-API_KEY    = load_api_key()
-BASE_URL   = "http://127.0.0.1:31009/v1"
-SPACE_ID   = "bafyreieixejt4lkndllh7ojwvj7l5we22wx3u466kc4ggeo6huiwpwjk44.1tzbokjbcail1"
-TYPE_PAGE  = "bafyreicqerohgpxpounkgx7vwqyhifehxjyxecqwil23jsls72rg2tdjwu"
-TPL_FEATURE = "bafyreihr2www5vvf4roa5efleihyw6v52f5sqtlxwnfrtkhumgr3kmmj5i"
+def load_ids():
+    ids_file = os.path.join(os.path.dirname(__file__), 'anytype-ids.json')
+    with open(ids_file) as f:
+        return json.load(f)
+
+API_KEY  = load_api_key()
+BASE_URL = "http://127.0.0.1:31009/v1"
+SPACE_ID = "bafyreieixejt4lkndllh7ojwvj7l5we22wx3u466kc4ggeo6huiwpwjk44.1tzbokjbcail1"
 TPL_JOURNAL = "bafyreihe6etimniypq72j7pkt46hx6fe366p2b5qyizr6lbxf4qfdaxqdy"
 
-# ─── HTTP HELPERS ─────────────────────────────────────────────────────────────
+# ─── HTTP ─────────────────────────────────────────────────────────────────────
 
 def api_request(method, path, body=None):
     url = f"{BASE_URL}{path}"
@@ -52,69 +53,34 @@ def api_request(method, path, body=None):
         print(f"❌ HTTP Error {e.code}: {e.read().decode()}")
         sys.exit(1)
 
-# ─── SEARCH ───────────────────────────────────────────────────────────────────
-
-def find_object_by_name(name):
-    """Cherche une page existante par son nom."""
-    result = api_request("POST", f"/spaces/{SPACE_ID}/objects/search", {
-        "query": name,
-        "types": [TYPE_PAGE],
-        "limit": 10
-    })
-    for obj in result.get("data", []):
-        if obj.get("name", "").lower() == name.lower():
-            return obj
-    return None
-
 # ─── ACTIONS ──────────────────────────────────────────────────────────────────
 
 def create_journal():
-    """Crée une entrée journal pour aujourd'hui."""
     today = datetime.now().strftime("%Y-%m-%d")
     name = f"Journal — {today}"
-
-    # Vérifie si une entrée existe déjà aujourd'hui
-    existing = find_object_by_name(name)
-    if existing:
-        print(f"⚠️  Une entrée journal existe déjà pour aujourd'hui : {name}")
-        print(f"   ID : {existing['id']}")
-        return
-
     result = api_request("POST", f"/spaces/{SPACE_ID}/objects", {
         "name": name,
-        "type_id": TYPE_PAGE,
+        "type_key": "page",
         "template_id": TPL_JOURNAL
     })
+    obj = result.get("object", {})
     print(f"✅ Journal créé : {name}")
-    print(f"   ID : {result.get('object', {}).get('id', '?')}")
+    print(f"   ID : {obj.get('id', '?')}")
 
-def create_feature(name):
-    """Crée une nouvelle page feature depuis le template."""
-    existing = find_object_by_name(name)
-    if existing:
-        print(f"⚠️  La feature '{name}' existe déjà.")
-        print(f"   ID : {existing['id']}")
-        print(f"   Utilise 'feature update' pour la modifier.")
-        return
+def update_feature(name, content):
+    ids = load_ids()
+    feature_id = ids.get("features", {}).get(name)
 
-    result = api_request("POST", f"/spaces/{SPACE_ID}/objects", {
-        "name": name,
-        "type_id": TYPE_PAGE,
-        "template_id": TPL_FEATURE
+    if not feature_id:
+        print(f"❌ Feature '{name}' introuvable dans anytype-ids.json")
+        print(f"   Features disponibles : {', '.join(ids['features'].keys())}")
+        sys.exit(1)
+
+    api_request("PATCH", f"/spaces/{SPACE_ID}/objects/{feature_id}", {
+        "markdown": content.replace('\\n', '\n')
     })
-    print(f"✅ Feature créée : {name}")
-    print(f"   ID : {result.get('object', {}).get('id', '?')}")
-
-def update_feature(name):
-    """Trouve une feature existante et affiche son ID pour mise à jour."""
-    obj = find_object_by_name(name)
-    if not obj:
-        print(f"❌ Feature '{name}' introuvable.")
-        print(f"   Utilise 'feature create' pour la créer.")
-        return
-    print(f"✅ Feature trouvée : {name}")
-    print(f"   ID : {obj['id']}")
-    print(f"   → Utilise cet ID pour mettre à jour le contenu via l'API.")
+    print(f"✅ Feature mise à jour : {name}")
+    print(f"   ID : {feature_id}")
 
 # ─── CLI ──────────────────────────────────────────────────────────────────────
 
@@ -135,20 +101,13 @@ def main():
         create_journal()
 
     elif command == "feature":
-        if len(args) < 3:
-            print("Usage: python scripts/anytype.py feature [create|update] 'Nom feature'")
+        if len(args) < 4 or args[1] != "update":
+            print("Usage: python3 scripts/anytype.py feature update 'Nom' 'Contenu'")
             sys.exit(1)
-        action, name = args[1], args[2]
-        if action == "create":
-            create_feature(name)
-        elif action == "update":
-            update_feature(name)
-        else:
-            print(f"❌ Action inconnue : {action}")
+        update_feature(args[2], args[3])
 
     else:
         print(f"❌ Commande inconnue : {command}")
-        print(__doc__)
 
 if __name__ == "__main__":
     main()
