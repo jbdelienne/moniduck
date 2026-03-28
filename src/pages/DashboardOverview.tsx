@@ -61,7 +61,7 @@ const statusLabel: Record<string, string> = {
 export default function DashboardOverview() {
   const { data: services = [], isLoading: servicesLoading } = useServices();
   const { data: dependencies = [], isLoading: depsLoading } = useSaasDependencies();
-  const { data: alerts = [] } = useAlerts();
+  const { data: dashboards = [] } = useDashboards();
   const navigate = useNavigate();
 
   // Build unified recent incidents list
