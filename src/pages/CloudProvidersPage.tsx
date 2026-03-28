@@ -1,11 +1,10 @@
 import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Search, Star, ExternalLink, RefreshCw } from 'lucide-react';
+import { Star, ExternalLink, RefreshCw, Plus, MapPin } from 'lucide-react';
 import {
   CLOUD_REGIONS, PROVIDER_ICONS, PROVIDER_LABELS,
   useCloudRegionFavorites, CloudRegion,
@@ -15,6 +14,7 @@ import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
+import { AddRegionModal } from '@/components/cloud/AddRegionModal';
 
 const statusConfig: Record<string, { label: string; dotClass: string; color: string }> = {
   operational: { label: 'Operational', dotClass: 'status-dot-up', color: 'text-green-400' },
@@ -28,9 +28,9 @@ type ProviderFilter = 'all' | 'aws' | 'gcp' | 'azure';
 export default function CloudProvidersPage() {
   const { favorites, toggleFavorite } = useCloudRegionFavorites();
   const { statuses, isLoading: statusesLoading } = useCloudRegionStatuses();
-  const [search, setSearch] = useState('');
   const [providerFilter, setProviderFilter] = useState<ProviderFilter>('all');
   const [refreshing, setRefreshing] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
 
   const isFavorite = (provider: string, code: string) =>
     favorites.some(f => f.provider === provider && f.region_code === code);
@@ -39,31 +39,15 @@ export default function CloudProvidersPage() {
     return statuses.get(`${provider}:${code}`);
   };
 
-  const filtered = useMemo(() => {
-    let regions = CLOUD_REGIONS;
+  const allAddedRegions = useMemo(() =>
+    CLOUD_REGIONS.filter(r => isFavorite(r.provider, r.code))
+      .sort((a, b) => a.provider.localeCompare(b.provider) || a.code.localeCompare(b.code)),
+  [favorites]);
 
-    if (providerFilter !== 'all') {
-      regions = regions.filter(r => r.provider === providerFilter);
-    }
-
-    if (search) {
-      const q = search.toLowerCase();
-      regions = regions.filter(r =>
-        r.name.toLowerCase().includes(q) ||
-        r.code.toLowerCase().includes(q) ||
-        r.location.toLowerCase().includes(q) ||
-        PROVIDER_LABELS[r.provider].toLowerCase().includes(q)
-      );
-    }
-
-    return [...regions].sort((a, b) => {
-      const aFav = isFavorite(a.provider, a.code) ? 0 : 1;
-      const bFav = isFavorite(b.provider, b.code) ? 0 : 1;
-      if (aFav !== bFav) return aFav - bFav;
-      if (a.provider !== b.provider) return a.provider.localeCompare(b.provider);
-      return a.code.localeCompare(b.code);
-    });
-  }, [search, providerFilter, favorites]);
+  const addedRegions = useMemo(() => {
+    if (providerFilter === 'all') return allAddedRegions;
+    return allAddedRegions.filter(r => r.provider === providerFilter);
+  }, [providerFilter, allAddedRegions]);
 
   const handleToggleFavorite = (region: CloudRegion) => {
     toggleFavorite.mutate(
@@ -91,11 +75,12 @@ export default function CloudProvidersPage() {
     }
   };
 
-  // Live stats from real data
-  const degradedCount = Array.from(statuses.values()).filter(s => s.status === 'degraded').length;
-  const outageCount = Array.from(statuses.values()).filter(s => s.status === 'outage').length;
-  const operationalCount = Array.from(statuses.values()).filter(s => s.status === 'operational').length;
-  const totalRegions = CLOUD_REGIONS.length;
+  // Stats based on all added (favorited) regions
+  const allAddedStatuses = allAddedRegions.map(r => statuses.get(`${r.provider}:${r.code}`));
+  const degradedCount = allAddedStatuses.filter(s => s?.status === 'degraded').length;
+  const outageCount = allAddedStatuses.filter(s => s?.status === 'outage').length;
+  const operationalCount = allAddedStatuses.filter(s => s?.status === 'operational').length;
+  const totalRegions = allAddedRegions.length;
 
   return (
     <TooltipProvider>
@@ -104,27 +89,42 @@ export default function CloudProvidersPage() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Cloud Providers</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Monitor cloud provider regions across AWS, Google Cloud, and Azure.
+              Monitor the cloud regions that matter to you.
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="gap-2"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setAddModalOpen(true)}
+              className="gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add a region
+            </Button>
+          </div>
         </div>
 
+        <AddRegionModal open={addModalOpen} onOpenChange={setAddModalOpen} />
+
         {/* Stats cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <div className="bg-card border border-border rounded-lg p-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Total Regions</p>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+          <div
+            className="bg-card border border-border rounded-lg p-4 cursor-pointer hover:border-primary/50 transition-colors"
+            onClick={() => setProviderFilter('all')}
+          >
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Monitored</p>
             <p className="text-2xl font-bold text-foreground">{totalRegions}</p>
-            {statuses.size > 0 && (
+            {totalRegions > 0 && operationalCount > 0 && (
               <p className="text-xs text-green-400 mt-1">{operationalCount} operational</p>
             )}
           </div>
@@ -134,7 +134,7 @@ export default function CloudProvidersPage() {
           >
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">🟠 AWS</p>
             <p className="text-2xl font-bold text-foreground">
-              {CLOUD_REGIONS.filter(r => r.provider === 'aws').length}
+              {allAddedRegions.filter(r => r.provider === 'aws').length}
             </p>
           </div>
           <div
@@ -143,12 +143,19 @@ export default function CloudProvidersPage() {
           >
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">🔵 Google Cloud</p>
             <p className="text-2xl font-bold text-foreground">
-              {CLOUD_REGIONS.filter(r => r.provider === 'gcp').length}
+              {allAddedRegions.filter(r => r.provider === 'gcp').length}
             </p>
           </div>
           <div
-            className="bg-card border border-border rounded-lg p-4 cursor-pointer hover:border-red-500/50 transition-colors"
+            className="bg-card border border-border rounded-lg p-4 cursor-pointer hover:border-green-500/50 transition-colors"
+            onClick={() => setProviderFilter(providerFilter === 'azure' ? 'all' : 'azure')}
           >
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">🟢 Azure</p>
+            <p className="text-2xl font-bold text-foreground">
+              {allAddedRegions.filter(r => r.provider === 'azure').length}
+            </p>
+          </div>
+          <div className="bg-card border border-border rounded-lg p-4">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">⚠️ Issues</p>
             <p className="text-2xl font-bold text-foreground">{degradedCount + outageCount}</p>
             {outageCount > 0 && (
@@ -157,24 +164,15 @@ export default function CloudProvidersPage() {
             {degradedCount > 0 && (
               <p className="text-xs text-yellow-400 mt-1">{degradedCount} degraded</p>
             )}
-            {degradedCount + outageCount === 0 && statuses.size > 0 && (
+            {degradedCount + outageCount === 0 && totalRegions > 0 && (
               <p className="text-xs text-green-400 mt-1">All systems go</p>
             )}
           </div>
         </div>
 
-        {/* Search + filter bar */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search regions..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <div className="flex items-center gap-1">
+        {/* Provider filter bar */}
+        {allAddedRegions.length > 0 && (
+          <div className="flex items-center gap-1 mb-4">
             {(['all', 'aws', 'gcp', 'azure'] as ProviderFilter[]).map(f => (
               <Button
                 key={f}
@@ -187,9 +185,10 @@ export default function CloudProvidersPage() {
               </Button>
             ))}
           </div>
-        </div>
+        )}
 
         {/* Table */}
+        {addedRegions.length > 0 && (
         <div className="table-container">
           <Table>
             <TableHeader>
@@ -206,7 +205,7 @@ export default function CloudProvidersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((region) => {
+              {addedRegions.map((region) => {
                 const fav = isFavorite(region.provider, region.code);
                 const regionStatus = getRegionStatus(region.provider, region.code);
                 const st = statusConfig[regionStatus?.status || 'unknown'];
@@ -317,10 +316,22 @@ export default function CloudProvidersPage() {
             </TableBody>
           </Table>
         </div>
+        )}
 
-        {filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-muted-foreground">No regions match your search.</p>
+        {/* Empty state */}
+        {allAddedRegions.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+              <MapPin className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <p className="text-foreground font-medium mb-1">No regions added yet</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Add the cloud regions you want to monitor.
+            </p>
+            <Button size="sm" className="gap-2" onClick={() => setAddModalOpen(true)}>
+              <Plus className="w-4 h-4" />
+              Add a region
+            </Button>
           </div>
         )}
       </div>

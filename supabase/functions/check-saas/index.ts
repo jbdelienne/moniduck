@@ -2,278 +2,170 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// ── Status page detection ──────────────────────────
+// ── Constants ──────────────────────────────────────────────────────────────
 
-/** Try common status page URL patterns for a given domain */
+/**
+ * Consecutive ping failures needed to trust the ping over the status page.
+ * - If other SaaS pings in the same batch succeeded → network is healthy → threshold = 2
+ *   (failure is isolated to this provider, almost certainly their problem)
+ * - If all/most other pings also failed → could be our network → threshold = 3
+ */
+const THRESHOLD_NETWORK_OK   = 2;
+const THRESHOLD_NETWORK_UNKNOWN = 3;
+
+// ── Status page parsing ────────────────────────────────────────────────────
+
 function guessStatusPageUrls(siteUrl: string): string[] {
   try {
     const u = new URL(siteUrl);
     const domain = u.hostname.replace(/^www\./, "");
     const baseDomain = domain.split(".").slice(-2).join(".");
-    const candidates = [
+    return [...new Set([
       `https://status.${baseDomain}`,
       `https://${domain}/status`,
       `https://status.${domain}`,
-      `https://${baseDomain.replace(".", "")  }status.com`,
+      `https://${baseDomain.replace(".", "")}status.com`,
       `https://www.${baseDomain.replace(".", "")}status.com`,
-    ];
-    // De-dup
-    return [...new Set(candidates)];
+    ])];
   } catch {
     return [];
   }
 }
 
-/** Check if a URL hosts an Atlassian Statuspage (has /api/v2/status.json) */
 async function probeAtlassianStatuspage(baseUrl: string): Promise<boolean> {
   try {
     const res = await fetch(`${baseUrl}/api/v2/status.json`, {
       headers: { Accept: "application/json" },
       signal: AbortSignal.timeout(4000),
-      redirect: "follow",
     });
     if (!res.ok) { await res.text().catch(() => {}); return false; }
     const json = await res.json();
-    // Atlassian Statuspage always has status.indicator
     return json?.status?.indicator !== undefined;
   } catch {
     return false;
   }
 }
 
-/** Discover the status page URL for a provider by probing common patterns */
 async function discoverStatusPageUrl(siteUrl: string): Promise<string | null> {
-  const candidates = guessStatusPageUrls(siteUrl);
-  for (const candidate of candidates) {
-    // First try Atlassian JSON API (fastest signal)
-    if (await probeAtlassianStatuspage(candidate)) {
-      return candidate;
-    }
-    // Then try if the page itself loads and looks like a status page
+  for (const candidate of guessStatusPageUrls(siteUrl)) {
+    if (await probeAtlassianStatuspage(candidate)) return candidate;
     try {
       const res = await fetch(candidate, {
         signal: AbortSignal.timeout(5000),
-        redirect: "follow",
         headers: { "User-Agent": "moniduck/1.0 StatusChecker" },
       });
       if (res.ok) {
-        const html = await res.text();
-        // Check for common status page indicators in HTML
-        const lowerHtml = html.toLowerCase();
-        const signals = [
-          "all systems operational",
-          "system status",
-          "service status",
-          "operational",
-          "statuspage",
-          "incident history",
-          "uptime",
-          "current status",
-          "component status",
-        ];
-        const matchCount = signals.filter((s) => lowerHtml.includes(s)).length;
-        if (matchCount >= 2) {
-          return candidate;
-        }
+        const html = (await res.text()).toLowerCase();
+        const signals = ["all systems operational", "system status", "service status",
+          "operational", "statuspage", "incident history", "uptime"];
+        if (signals.filter((s) => html.includes(s)).length >= 2) return candidate;
       }
-    } catch {
-      // Candidate doesn't resolve, skip
-    }
+    } catch { /* skip */ }
   }
   return null;
 }
 
-// ── Atlassian Statuspage JSON API ──────────────────
+// ── Atlassian Statuspage API ───────────────────────────────────────────────
 
-function getStatuspageApiUrl(statusPageUrl: string): { statusUrl: string; incidentsUrl: string } | null {
-  try {
-    const u = new URL(statusPageUrl);
-    return {
-      statusUrl: `${u.origin}/api/v2/status.json`,
-      incidentsUrl: `${u.origin}/api/v2/incidents.json`,
-    };
-  } catch {
-    return null;
-  }
-}
-
-async function fetchAtlassianStatus(statusPageUrl: string): Promise<{
-  status: string;
-  incidents: Array<{ date: string; title: string; duration_minutes: number; severity: string }>;
-  isAtlassian: boolean;
-}> {
-  const apiUrls = getStatuspageApiUrl(statusPageUrl);
-  if (!apiUrls) return { status: "unknown", incidents: [], isAtlassian: false };
-
-  let status = "unknown";
-  let isAtlassian = false;
-  const incidents: Array<{ date: string; title: string; duration_minutes: number; severity: string }> = [];
-
-  // Fetch status
-  try {
-    const res = await fetch(apiUrls.statusUrl, {
-      headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.status?.indicator !== undefined) {
-        isAtlassian = true;
-        status = mapStatuspageStatus(json.status.indicator);
-      }
-    } else {
-      await res.text().catch(() => {});
-    }
-  } catch {
-    // Not an Atlassian status page or unreachable
-  }
-
-  if (!isAtlassian) return { status: "unknown", incidents: [], isAtlassian: false };
-
-  // Fetch incidents
-  try {
-    const res = await fetch(apiUrls.incidentsUrl, {
-      headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      const rawIncidents = json.incidents || [];
-      const now = new Date();
-      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-      for (const inc of rawIncidents.slice(0, 20)) {
-        const createdAt = new Date(inc.created_at);
-        if (createdAt < thirtyDaysAgo) continue;
-
-        let durationMinutes = 0;
-        if (inc.resolved_at) {
-          durationMinutes = Math.round(
-            (new Date(inc.resolved_at).getTime() - createdAt.getTime()) / 60000,
-          );
-        } else {
-          durationMinutes = Math.round((now.getTime() - createdAt.getTime()) / 60000);
-        }
-
-        incidents.push({
-          date: inc.created_at,
-          title: inc.name || "Incident",
-          duration_minutes: Math.max(durationMinutes, 1),
-          severity: mapSeverity(inc.impact || "minor"),
-        });
-      }
-    } else {
-      await res.text().catch(() => {});
-    }
-  } catch {
-    // ignore
-  }
-
-  return { status, incidents, isAtlassian };
-}
-
-// ── HTML scraping fallback ─────────────────────────
-
-async function scrapeStatusFromHtml(statusPageUrl: string): Promise<{
-  status: string;
-  incidents: Array<{ date: string; title: string; duration_minutes: number; severity: string }>;
-}> {
-  try {
-    const res = await fetch(statusPageUrl, {
-      signal: AbortSignal.timeout(6000),
-      redirect: "follow",
-      headers: { "User-Agent": "moniduck/1.0 StatusChecker" },
-    });
-    if (!res.ok) {
-      await res.text().catch(() => {});
-      return { status: "unknown", incidents: [] };
-    }
-    const html = await res.text();
-    const lower = html.toLowerCase();
-
-
-    // Detect status from common text patterns
-    let status: string;
-    if (
-      lower.includes("all systems operational") ||
-      lower.includes("all services are online") ||
-      lower.includes("everything is up") ||
-      lower.includes("is up and running") ||
-      lower.includes("no issues") ||
-      lower.includes("systems are go")
-    ) {
-      status = "operational";
-    } else if (
-      lower.includes("major outage") ||
-      lower.includes("major incident") ||
-      lower.includes("service disruption")
-    ) {
-      status = "outage";
-    } else if (
-      lower.includes("partial outage") ||
-      lower.includes("partial system outage") ||
-      lower.includes("some systems")
-    ) {
-      status = "outage";
-    } else if (
-      lower.includes("degraded performance") ||
-      lower.includes("minor incident") ||
-      lower.includes("elevated error") ||
-      lower.includes("experiencing issues")
-    ) {
-      status = "degraded";
-    } else if (
-      lower.includes("under maintenance") ||
-      lower.includes("scheduled maintenance")
-    ) {
-      status = "degraded";
-    } else if (lower.includes("operational")) {
-      status = "operational";
-    } else {
-      status = "unknown";
-    }
-
-    return { status, incidents: [] };
-  } catch {
-    return { status: "unknown", incidents: [] };
-  }
-}
-
-// ── Helpers ────────────────────────────────────────
+type ParsedIncident = { date: string; title: string; duration_minutes: number; severity: string };
 
 function mapStatuspageStatus(indicator: string): string {
   switch (indicator) {
-    case "none":
-      return "operational";
-    case "minor":
-      return "degraded";
+    case "none":     return "operational";
+    case "minor":    return "degraded";
     case "major":
-      return "outage";
-    case "critical":
-      return "outage";
-    default:
-      return "unknown";
+    case "critical": return "outage";
+    default:         return "unknown";
   }
 }
 
 function mapSeverity(impact: string): string {
-  switch (impact) {
-    case "critical":
-      return "critical";
-    case "major":
-      return "major";
-    default:
-      return "minor";
-  }
+  if (impact === "critical") return "critical";
+  if (impact === "major")    return "major";
+  return "minor";
 }
 
-function calculateSlaFromIncidents(
-  incidents: Array<{ date: string; duration_minutes: number }>,
-): number {
+async function fetchStatusPage(statusPageUrl: string): Promise<{
+  statusPageStatus: string;
+  incidents: ParsedIncident[];
+  isAtlassian: boolean;
+}> {
+  // Try Atlassian JSON API
+  try {
+    const origin = new URL(statusPageUrl).origin;
+    const [statusRes, incidentsRes] = await Promise.all([
+      fetch(`${origin}/api/v2/status.json`, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(5000) }),
+      fetch(`${origin}/api/v2/incidents.json`, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(5000) }),
+    ]);
+
+    if (statusRes.ok) {
+      const json = await statusRes.json();
+      if (json?.status?.indicator !== undefined) {
+        const statusPageStatus = mapStatuspageStatus(json.status.indicator);
+        const incidents: ParsedIncident[] = [];
+
+        if (incidentsRes.ok) {
+          const incJson = await incidentsRes.json();
+          const now = new Date();
+          const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+          for (const inc of (incJson.incidents ?? []).slice(0, 20)) {
+            const createdAt = new Date(inc.created_at);
+            if (createdAt < thirtyDaysAgo) continue;
+            const durationMinutes = inc.resolved_at
+              ? Math.round((new Date(inc.resolved_at).getTime() - createdAt.getTime()) / 60000)
+              : Math.round((now.getTime() - createdAt.getTime()) / 60000);
+            incidents.push({
+              date: inc.created_at,
+              title: inc.name || "Incident",
+              duration_minutes: Math.max(durationMinutes, 1),
+              severity: mapSeverity(inc.impact || "minor"),
+            });
+          }
+        } else {
+          await incidentsRes.text().catch(() => {});
+        }
+
+        return { statusPageStatus, incidents, isAtlassian: true };
+      }
+    } else {
+      await statusRes.text().catch(() => {});
+    }
+  } catch { /* Not Atlassian or unreachable */ }
+
+  // Fallback: HTML scrape for status only
+  try {
+    const res = await fetch(statusPageUrl, {
+      signal: AbortSignal.timeout(6000),
+      headers: { "User-Agent": "moniduck/1.0 StatusChecker" },
+    });
+    if (res.ok) {
+      const html = (await res.text()).toLowerCase();
+      let statusPageStatus = "unknown";
+      if (html.includes("all systems operational") || html.includes("no issues")) {
+        statusPageStatus = "operational";
+      } else if (html.includes("major outage") || html.includes("service disruption")) {
+        statusPageStatus = "outage";
+      } else if (html.includes("degraded") || html.includes("minor incident") || html.includes("elevated error")) {
+        statusPageStatus = "degraded";
+      } else if (html.includes("operational")) {
+        statusPageStatus = "operational";
+      }
+      return { statusPageStatus, incidents: [], isAtlassian: false };
+    } else {
+      await res.text().catch(() => {});
+    }
+  } catch { /* unreachable */ }
+
+  return { statusPageStatus: "unknown", incidents: [], isAtlassian: false };
+}
+
+// ── SLA calculation ────────────────────────────────────────────────────────
+
+function slaFromIncidents(incidents: ParsedIncident[]): number {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const minutesInMonth = (now.getTime() - monthStart.getTime()) / 60000;
@@ -281,59 +173,90 @@ function calculateSlaFromIncidents(
 
   let downtimeMinutes = 0;
   for (const inc of incidents) {
-    const incDate = new Date(inc.date);
-    if (incDate >= monthStart) {
-      downtimeMinutes += inc.duration_minutes;
-    }
+    if (new Date(inc.date) >= monthStart) downtimeMinutes += inc.duration_minutes;
   }
-
-  const sla = ((minutesInMonth - downtimeMinutes) / minutesInMonth) * 100;
-  return Math.round(sla * 100) / 100;
+  return Math.round(((minutesInMonth - downtimeMinutes) / minutesInMonth) * 10000) / 100;
 }
 
-// ── Main handler ───────────────────────────────────
+// ── Status merge logic ─────────────────────────────────────────────────────
+//
+// | Ping        | Status page  | consecutive_failures | Final             |
+// |-------------|-------------|----------------------|-------------------|
+// | operational | operational  | any                  | operational       |
+// | operational | degraded     | any                  | degraded          |
+// | operational | outage       | any                  | outage            |
+// | failing     | operational  | < threshold          | operational (wait)|
+// | failing     | operational  | >= threshold         | unconfirmed_outage|
+// | failing     | degraded     | any                  | degraded          |
+// | failing     | outage       | any                  | outage            |
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+function mergeStatus(
+  pingOk: boolean,
+  statusPageStatus: string,
+  consecutiveFailures: number,
+  threshold: number,
+): string {
+  if (pingOk) {
+    // Ping is up — trust status page if it shows a problem
+    if (statusPageStatus === "outage" || statusPageStatus === "degraded") return statusPageStatus;
+    return "operational";
   }
 
+  // Ping is failing
+  if (statusPageStatus === "outage") return "outage";
+  if (statusPageStatus === "degraded") return "degraded";
+
+  // Status page says operational but ping fails
+  if (consecutiveFailures >= threshold) return "unconfirmed_outage";
+
+  // Not enough consecutive failures yet — give benefit of the doubt
+  return "operational";
+}
+
+// ── Main handler ───────────────────────────────────────────────────────────
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
 
     const url = new URL(req.url);
     const providerId = url.searchParams.get("provider_id");
 
-    let query = supabase.from("saas_providers").select("*");
-    if (providerId) {
-      query = query.eq("id", providerId);
-    }
+    const query = supabase.from("saas_providers").select("*");
+    const { data: providers, error } = providerId
+      ? await query.eq("id", providerId)
+      : await query;
 
-    const { data: providers, error } = await query;
     if (error) throw error;
-    if (!providers || providers.length === 0) {
+    if (!providers?.length) {
       return new Response(
         JSON.stringify({ message: "No SaaS providers to check", checked: 0 }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    const results: Array<{
-      name: string;
-      status: string;
-      response_time: number;
-      status_page_detected: boolean;
-    }> = [];
+    // ── Pass 1: ping all providers in parallel ─────────────────────────────
+    type PingResult = {
+      providerId: string;
+      pingOk: boolean;
+      pingStatusLabel: string;
+      responseTime: number;
+      statusCode: number | null;
+      errorMessage: string | null;
+    };
 
-    for (const provider of providers) {
-      try {
-        // ── 1. HTTP Ping ───────────────────────────
-        let pingStatus = "unknown";
+    const pingResults = await Promise.all(
+      providers.map(async (provider): Promise<PingResult> => {
+        let pingOk = false;
         let responseTime = 0;
         let statusCode: number | null = null;
         let errorMessage: string | null = null;
+        let pingStatusLabel = "outage";
 
         try {
           const controller = new AbortController();
@@ -348,144 +271,121 @@ Deno.serve(async (req) => {
           clearTimeout(timeout);
           responseTime = Date.now() - start;
           statusCode = res.status;
-          // Consume body to avoid leak
           await res.text().catch(() => {});
 
           if (res.status >= 200 && res.status < 400) {
-            pingStatus = "operational";
+            pingOk = true;
+            pingStatusLabel = "operational";
           } else if (res.status >= 400 && res.status < 500) {
-            pingStatus = "degraded";
-          } else {
-            pingStatus = "outage";
+            pingStatusLabel = "degraded";
           }
         } catch (err: unknown) {
-          const errMsg = err instanceof Error ? err.message : String(err);
-          if (errMsg.includes("abort")) {
-            pingStatus = "outage";
-            errorMessage = "Timeout (10s)";
-          } else {
-            pingStatus = "outage";
-            errorMessage = errMsg;
-          }
+          const msg = err instanceof Error ? err.message : String(err);
+          errorMessage = msg.includes("abort") ? "Timeout (10s)" : msg;
         }
 
-        // ── 2. Store check ─────────────────────────
+        return { providerId: provider.id, pingOk, pingStatusLabel, responseTime, statusCode, errorMessage };
+      })
+    );
+
+    // Network health: if at least one OTHER provider pinged OK, our network is fine
+    const pingMap = new Map(pingResults.map(r => [r.providerId, r]));
+    const successCount = pingResults.filter(r => r.pingOk).length;
+    const networkHealthy = successCount > 0; // at least one succeeded → not our network
+
+    const consecutiveThreshold = networkHealthy ? THRESHOLD_NETWORK_OK : THRESHOLD_NETWORK_UNKNOWN;
+
+    // ── Pass 2: process each provider ─────────────────────────────────────
+    const results = [];
+
+    for (const provider of providers) {
+      try {
+        const ping = pingMap.get(provider.id)!;
+        const { pingOk, pingStatusLabel, responseTime, statusCode, errorMessage } = ping;
+
+        // ── Track consecutive ping failures ────────────────────────────────
+        const previousFailures: number = provider.consecutive_ping_failures ?? 0;
+        const consecutiveFailures = pingOk ? 0 : previousFailures + 1;
+
+        // ── 3. Store ping check ────────────────────────────────────────────
         await supabase.from("saas_checks").insert({
           saas_provider_id: provider.id,
           response_time: responseTime,
-          status: pingStatus,
+          status: pingStatusLabel,
           status_code: statusCode,
           error_message: errorMessage,
         });
 
-        // ── 3. Status page: discover → scrape ──────
-        let statusPageUrl = provider.status_page_url;
+        // ── 4. Status page ─────────────────────────────────────────────────
+        let statusPageUrl: string | null = provider.status_page_url ?? null;
         let statusPageStatus = "unknown";
-        let incidents: Array<{
-          date: string;
-          title: string;
-          duration_minutes: number;
-          severity: string;
-        }> = [];
-        let statusPageDetected = false;
+        let incidents: ParsedIncident[] = [];
+        let discoveredUrl = false;
 
-        // Auto-discover status page if not set
         if (!statusPageUrl) {
-          console.log(`[${provider.name}] No status page URL — attempting auto-discovery...`);
-          const discovered = await discoverStatusPageUrl(provider.url);
-          if (discovered) {
-            statusPageUrl = discovered;
-            statusPageDetected = true;
-            console.log(`[${provider.name}] ✓ Discovered status page: ${discovered}`);
-          } else {
-            console.log(`[${provider.name}] ✗ No status page found`);
-          }
+          const found = await discoverStatusPageUrl(provider.url);
+          if (found) { statusPageUrl = found; discoveredUrl = true; }
         }
 
         if (statusPageUrl) {
-          // Try Atlassian JSON API first
-          const atlassian = await fetchAtlassianStatus(statusPageUrl);
-          if (atlassian.isAtlassian) {
-            statusPageStatus = atlassian.status;
-            incidents = atlassian.incidents;
-            console.log(`[${provider.name}] Atlassian API → ${statusPageStatus}`);
-          } else {
-            // Fallback: scrape HTML
-            const scraped = await scrapeStatusFromHtml(statusPageUrl);
-            statusPageStatus = scraped.status;
-            incidents = scraped.incidents;
-            console.log(`[${provider.name}] HTML scrape fallback → ${statusPageStatus}`);
+          const parsed = await fetchStatusPage(statusPageUrl);
+          statusPageStatus = parsed.statusPageStatus;
+          incidents = parsed.incidents;
+        }
+
+        // ── 5. Merge status ────────────────────────────────────────────────
+        const finalStatus = mergeStatus(pingOk, statusPageStatus, consecutiveFailures, consecutiveThreshold);
+
+        // ── 6. Uptime from pings (last 30 days) ───────────────────────────
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        const { data: recentChecks } = await supabase
+          .from("saas_checks")
+          .select("status, response_time")
+          .eq("saas_provider_id", provider.id)
+          .gte("checked_at", thirtyDaysAgo);
+
+        let uptimeFromPing = 100;
+        let avgResponseTime = responseTime;
+        if (recentChecks?.length) {
+          const upCount = recentChecks.filter((c: any) => c.status === "operational").length;
+          uptimeFromPing = Math.round((upCount / recentChecks.length) * 10000) / 100;
+          const timings = recentChecks.filter((c: any) => c.response_time > 0);
+          if (timings.length) {
+            avgResponseTime = Math.round(timings.reduce((s: number, c: any) => s + c.response_time, 0) / timings.length);
           }
         }
 
-        // ── 4. Final status (ping prevails) ────────
-        const finalStatus = pingStatus;
+        // ── 7. Uptime from status page incidents ───────────────────────────
+        const uptimeFromStatusPage = incidents.length > 0 ? slaFromIncidents(incidents) : 100;
 
-        // ── 5. Uptime from recent checks (24h) ────
-        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-        const { data: recentChecks } = await supabase
-          .from("saas_checks")
-          .select("status")
-          .eq("saas_provider_id", provider.id)
-          .gte("checked_at", twentyFourHoursAgo);
-
-        let uptimePercentage = 100;
-        if (recentChecks && recentChecks.length > 0) {
-          const upCount = recentChecks.filter((c: any) => c.status === "operational").length;
-          uptimePercentage = Math.round((upCount / recentChecks.length) * 10000) / 100;
-        }
-
-        // ── 6. Avg response time (24h) ─────────────
-        const { data: recentTimings } = await supabase
-          .from("saas_checks")
-          .select("response_time")
-          .eq("saas_provider_id", provider.id)
-          .gte("checked_at", twentyFourHoursAgo)
-          .gt("response_time", 0);
-
-        let avgResponseTime = responseTime;
-        if (recentTimings && recentTimings.length > 0) {
-          const sum = recentTimings.reduce((acc: number, c: any) => acc + c.response_time, 0);
-          avgResponseTime = Math.round(sum / recentTimings.length);
-        }
-
-        // ── 7. SLA actual ──────────────────────────
-        const slaActual =
-          incidents.length > 0 ? calculateSlaFromIncidents(incidents) : uptimePercentage;
-
-        // ── 8. Update provider ─────────────────────
-        const updatePayload: Record<string, unknown> = {
+        // ── 8. Update provider ─────────────────────────────────────────────
+        const update: Record<string, unknown> = {
           status: finalStatus,
+          ping_status: pingStatusLabel,
           status_page_status: statusPageStatus,
+          uptime_percentage: uptimeFromPing,       // kept for backwards compat
+          uptime_from_ping: uptimeFromPing,
+          uptime_from_statuspage: uptimeFromStatusPage,
           avg_response_time: avgResponseTime,
-          uptime_percentage: uptimePercentage,
+          consecutive_ping_failures: consecutiveFailures,
           last_check: new Date().toISOString(),
           incidents,
         };
+        if (discoveredUrl && statusPageUrl) update.status_page_url = statusPageUrl;
 
-        // Persist discovered status page URL so we don't re-discover every time
-        if (statusPageDetected && statusPageUrl) {
-          updatePayload.status_page_url = statusPageUrl;
-        }
+        await supabase.from("saas_providers").update(update).eq("id", provider.id);
 
-        await supabase.from("saas_providers").update(updatePayload).eq("id", provider.id);
-
-        results.push({
-          name: provider.name,
-          status: finalStatus,
-          response_time: responseTime,
-          status_page_detected: statusPageDetected,
-        });
-      } catch (providerErr) {
-        console.error(`Error checking ${provider.name}:`, providerErr);
+        results.push({ name: provider.name, finalStatus, pingOk, statusPageStatus, uptimeFromPing, uptimeFromStatusPage, consecutiveFailures, threshold: consecutiveThreshold });
+      } catch (err) {
+        console.error(`Error checking ${provider.name}:`, err);
       }
     }
 
     return new Response(JSON.stringify({ checked: results.length, results }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (error: unknown) {
-    console.error("check-saas error:", error instanceof Error ? error.message : error);
+  } catch (err: unknown) {
+    console.error("check-saas error:", err instanceof Error ? err.message : err);
     return new Response(JSON.stringify({ error: "Internal error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

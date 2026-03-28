@@ -16,10 +16,17 @@ export interface SaasProvider {
   status_page_url: string | null;
   icon: string;
   sla_promised_default: number;
+  // Merged final status (ping + status page)
   status: string;
+  // Raw sources
+  ping_status: string;
   status_page_status: string;
+  consecutive_ping_failures: number;
+  // Uptime
+  uptime_percentage: number;       // alias of uptime_from_ping, kept for compat
+  uptime_from_ping: number;
+  uptime_from_statuspage: number;
   avg_response_time: number;
-  uptime_percentage: number;
   last_check: string | null;
   incidents: SaasIncident[];
   created_at: string;
