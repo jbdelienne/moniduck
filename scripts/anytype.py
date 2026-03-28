@@ -56,13 +56,8 @@ def api_request(method, path, body=None):
 # ─── ACTIONS ──────────────────────────────────────────────────────────────────
 
 def create_journal():
-    today = datetime.now().strftime("%Y-%m-%d")
-    name = f"Journal — {today}"
-
-    ids = load_ids()
-    if ids.get("journal", {}).get(today):
-        print(f"   Journal déjà existant pour {today} : {ids['journal'][today]}")
-        return ids["journal"][today]
+    now = datetime.now()
+    name = f"Journal — {now.strftime('%Y-%m-%d %H:%M')}"
 
     result = api_request("POST", f"/spaces/{SPACE_ID}/objects", {
         "name": name,
@@ -74,7 +69,19 @@ def create_journal():
     print(f"✅ Journal créé : {name}")
     print(f"   ID : {journal_id}")
 
-    ids.setdefault("journal", {})[today] = journal_id
+    # Ajout à la collection "Dev journaling"
+    ids = load_ids()
+    collection_id = ids.get("_collections", {}).get("journal")
+    if collection_id:
+        api_request("POST", f"/spaces/{SPACE_ID}/collections/{collection_id}/objects", {
+            "object_id": journal_id
+        })
+        print(f"✅ Ajouté à la collection Dev journaling")
+    else:
+        print(f"⚠️  Collection Dev journaling introuvable dans anytype-ids.json")
+
+    # Sauvegarde du dernier ID créé pour que journal update sache lequel remplir
+    ids["last_journal_id"] = journal_id
     ids_file = os.path.join(os.path.dirname(__file__), 'anytype-ids.json')
     with open(ids_file, 'w') as f:
         json.dump(ids, f, indent=2, ensure_ascii=False)
@@ -82,16 +89,15 @@ def create_journal():
     return journal_id
 
 def update_journal(content):
-    today = datetime.now().strftime("%Y-%m-%d")
     ids = load_ids()
-    journal_id = ids.get("journal", {}).get(today)
+    journal_id = ids.get("last_journal_id")
     if not journal_id:
-        print(f"❌ Aucun journal pour {today}. Lance d'abord : python3 scripts/anytype.py journal")
+        print(f"❌ Aucun journal trouvé. Lance d'abord : python3 scripts/anytype.py journal")
         sys.exit(1)
     api_request("PATCH", f"/spaces/{SPACE_ID}/objects/{journal_id}", {
         "markdown": content.replace('\\n', '\n')
     })
-    print(f"✅ Journal mis à jour : Journal — {today}")
+    print(f"✅ Journal mis à jour")
     print(f"   ID : {journal_id}")
 
 TPL_FEATURE = "bafyreihr2www5vvf4roa5efleihyw6v52f5sqtlxwnfrtkhumgr3kmmj5i"
