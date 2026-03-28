@@ -68,13 +68,16 @@ def create_journal():
         "name": name,
         "type_key": "page",
         "template_id": TPL_JOURNAL,
-        **({"collection_id": collection_id} if collection_id else {})
     })
     obj = result.get("object", {})
     journal_id = obj.get("id")
     print(f"✅ Journal créé : {name}")
     print(f"   ID : {journal_id}")
+
     if collection_id:
+        api_request("POST", f"/spaces/{SPACE_ID}/lists/{collection_id}/objects", {
+            "object_id": journal_id
+        })
         print(f"✅ Ajouté à la collection Dev journaling")
 
     # Sauvegarde du dernier ID créé pour que journal update sache lequel remplir
