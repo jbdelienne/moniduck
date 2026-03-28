@@ -60,6 +60,7 @@ const AppRoutes = () => (
       <Route path="/alerts" element={<Alerts />} />
       <Route path="/reports" element={<ReportsPage />} />
       <Route path="/views" element={<Dashboard />} />
+      <Route path="/views/:id" element={<Dashboard />} />
       <Route path="/cloud" element={<CloudResourcesPage />} />
       <Route path="/cloud-providers" element={<CloudProvidersPage />} />
       <Route path="/settings" element={<SettingsPage />} />
