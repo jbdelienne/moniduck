@@ -1,73 +1,173 @@
-# Welcome to your Lovable project
+# MoniDuck 🦆
 
-## Project info
+Monitoring app for modern tech stacks. End-to-end visibility for engineering teams using hybrid infrastructures.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+**Lovable project URL**: https://lovable.dev/projects/a958943c-1b40-48c5-8678-5000e2e54b1a
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Prerequisites
 
-**Use Lovable**
+- [Bun](https://bun.sh) — package manager
+- [Python 3](https://python.org) — for Anytype scripts
+- [Claude Code](https://claude.ai/code) — AI coding assistant
+- [Git](https://git-scm.com)
+- [Anytype](https://anytype.io) — local documentation
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## Getting Started
 
-**Use your preferred IDE**
+```bash
+# Step 1: Clone the repository
+git clone https://github.com/jbdelienne/saas-guardian.git
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+# Step 2: Navigate to the project directory
+cd saas-guardian
 
-The only requirement is having [Bun](https://bun.sh) installed.
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
+# Step 3: Install dependencies
 bun install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server
 bun run dev
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## How to edit this project
+
+**Use Lovable**
+Simply visit the [Lovable Project](https://lovable.dev/projects/a958943c-1b40-48c5-8678-5000e2e54b1a) and start prompting.
+Changes made via Lovable will be committed automatically to this repo.
+
+**Use Claude Code (recommended for logic & integrations)**
+See the architecture and code ownership sections below.
+
+**Edit directly in GitHub**
+Navigate to the desired file, click the pencil icon, make your changes and commit.
 
 **Use GitHub Codespaces**
+Click the green "Code" button → "Codespaces" tab → "New codespace".
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## Architecture
 
-This project is built with:
+```
+Lovable (UI generation)
+      │
+      ▼ auto push
+   GitHub (saas-guardian) ◄──────────┐
+      │                               │
+      ▼ auto pull (watch-lovable.sh)  │
+   Mac local (Claude Code) ───────────┘
+      │
+      ▼ end of session
+   Anytype (documentation)
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## Running Locally
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Open 3 terminals:
 
-## Can I connect a custom domain to my Lovable project?
+| Terminal | Purpose | Command |
+|:---------|:--------|:--------|
+| 1 | Claude Code | `claude` |
+| 2 | Lovable watcher | `./watch-lovable.sh` |
+| 3 | Local preview | `bun run dev` |
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Tech Stack
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- Vite + React + TypeScript
+- shadcn-ui + Tailwind CSS
+- Supabase (auth + DB + realtime)
+- Bun (package manager)
+
+---
+
+## Code Ownership
+
+| Zone | Owner | Paths |
+|:-----|:------|:------|
+| 🔴 Lovable only | Lovable | `/src/pages/*`, `/src/components/ui/*`, `tailwind.config.ts`, `index.html` |
+| 🟢 Claude Code | Claude Code | `/src/hooks/*`, `/src/lib/*`, `/src/types/*`, `/src/contexts/*`, `/supabase/migrations/*` |
+| 🟡 Shared | Coordination needed | `/src/components/*` (excl. `/ui`), `/src/integrations/supabase/*` |
+
+---
+
+## Key Files
+
+| File | Purpose |
+|:-----|:--------|
+| `watch-lovable.sh` | Auto-pulls when Lovable pushes to GitHub |
+| `.gitattributes` | Prevents merge conflicts on Lovable files |
+| `CLAUDE.md` | Permanent instructions for Claude Code |
+| `scripts/anytype.py` | Auto-documentation script to Anytype |
+| `scripts/anytype-ids.json` | Feature name → Anytype page ID mapping |
+| `.env.anytype` | Anytype API key (not committed) |
+
+---
+
+## Environment Variables
+
+Create a `.env.anytype` file at the root (never commit this):
+
+```
+ANYTYPE_API_KEY=your_key_here
+```
+
+---
+
+## Commit Convention
+
+```
+feat(zone): new feature
+fix(zone): bug fix
+refactor(zone): restructuring
+chore(zone): maintenance / config
+```
+
+---
+
+## Anytype Documentation Scripts
+
+```bash
+# Create today's journal entry
+python3 scripts/anytype.py journal
+
+# Fill in the journal
+python3 scripts/anytype.py journal update "content"
+
+# Update (or create) a feature page
+python3 scripts/anytype.py feature update "Feature Name" "content"
+```
+
+> See `CLAUDE.md` for the full end-of-session workflow.
+
+---
+
+## Deploy
+
+Open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click **Share → Publish**.
+
+To connect a custom domain: Project → Settings → Domains → Connect Domain.
+[Read more](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+---
+
+## Product Features
+
+- Dashboard (+ TV mode)
+- HTTP Services Monitoring
+- Cloud Resources + AWS Costs
+- SaaS Status
+- Stack Monitoring
+- Integrations
+- Alerts (Supabase realtime)
+- Incidents
+- Reports (public + private)
+- Settings / Onboarding
