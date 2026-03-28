@@ -67,14 +67,30 @@ def create_journal():
     print(f"✅ Journal créé : {name}")
     print(f"   ID : {obj.get('id', '?')}")
 
+TPL_FEATURE = "bafyreihr2www5vvf4roa5efleihyw6v52f5sqtlxwnfrtkhumgr3kmmj5i"
+
 def update_feature(name, content):
     ids = load_ids()
     feature_id = ids.get("features", {}).get(name)
 
     if not feature_id:
-        print(f"❌ Feature '{name}' introuvable dans anytype-ids.json")
-        print(f"   Features disponibles : {', '.join(ids['features'].keys())}")
-        sys.exit(1)
+        # Feature inconnue → on la crée et on sauvegarde l'ID
+        result = api_request("POST", f"/spaces/{SPACE_ID}/objects", {
+            "name": name,
+            "type_key": "page",
+            "template_id": TPL_FEATURE
+        })
+        obj = result.get("object", {})
+        feature_id = obj.get("id")
+        ids["features"][name] = feature_id
+
+        ids_file = os.path.join(os.path.dirname(__file__), 'anytype-ids.json')
+        with open(ids_file, 'w') as f:
+            json.dump(ids, f, indent=2, ensure_ascii=False)
+
+        print(f"✅ Feature créée : {name} (ID : {feature_id})")
+    else:
+        print(f"   Feature existante : {name}")
 
     api_request("PATCH", f"/spaces/{SPACE_ID}/objects/{feature_id}", {
         "markdown": content.replace('\\n', '\n')
