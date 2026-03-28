@@ -14,7 +14,7 @@ const sections = [
     icon: Server,
     title: 'Services',
     description:
-      'Monitor any HTTP endpoint. Add a URL, choose a check interval (1–10 min), and MoniDuck will ping it regularly. You get uptime percentage, average response time, SSL certificate info, and instant alerts when a service goes down. Set visibility to "public" to include it in shared reports.',
+      'Monitor any HTTP endpoint. Add a URL, choose a check interval (1–10 min), and moniduck will ping it regularly. You get uptime percentage, average response time, SSL certificate info, and instant alerts when a service goes down. Set visibility to "public" to include it in shared reports.',
   },
   {
     icon: Cloud,
@@ -26,13 +26,13 @@ const sections = [
     icon: Globe,
     title: 'SaaS',
     description:
-      'Track the availability of third-party SaaS tools your team depends on (Slack, GitHub, Stripe…). MoniDuck checks their status pages and measures response times so you know immediately when a dependency is degraded.',
+      'Track the availability of third-party SaaS tools your team depends on (Slack, GitHub, Stripe…). moniduck checks their status pages and measures response times so you know immediately when a dependency is degraded.',
   },
   {
     icon: BarChart3,
     title: 'Integrations',
     description:
-      'Connect services like Google Workspace or Microsoft 365 via OAuth. MoniDuck syncs usage data (Drive storage, license counts, email stats) and displays them as widgets on your dashboard.',
+      'Connect services like Google Workspace or Microsoft 365 via OAuth. moniduck syncs usage data (Drive storage, license counts, email stats) and displays them as widgets on your dashboard.',
   },
   {
     icon: Bell,
@@ -71,7 +71,7 @@ export default function DocsDrawer() {
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-5rem)] px-6 py-4">
           <p className="text-sm text-muted-foreground mb-6">
-            Quick guide to every section of MoniDuck. Click on a sidebar tab to navigate there.
+            Quick guide to every section of moniduck. Click on a sidebar tab to navigate there.
           </p>
           <div className="space-y-5">
             {sections.map((s) => (

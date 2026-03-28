@@ -330,7 +330,7 @@ const steps = [
   {
     n: "2",
     title: "We monitor everything",
-    desc: "MoniDuck pings your endpoints, reads vendor status pages, and tracks your cloud resources — continuously.",
+    desc: "moniduck pings your endpoints, reads vendor status pages, and tracks your cloud resources — continuously.",
     icon: Bell,
   },
   {
@@ -345,7 +345,7 @@ const personas = [
   {
     emoji: "🧑‍💻",
     title: "Solo founders",
-    desc: "You wear every hat. MoniDuck watches your infra so you can focus on the product.",
+    desc: "You wear every hat. moniduck watches your infra so you can focus on the product.",
   },
   {
     emoji: "🏗️",
@@ -365,7 +365,7 @@ const faqs = [
   { q: "What exactly does moniduck monitor?", a: "HTTP endpoints, AWS resources (EC2, Lambda, RDS, S3), SaaS providers (Stripe, GitHub, Vercel and more), and cloud region statuses." },
   { q: "How is SaaS monitoring different from just checking their status page?", a: "We combine their status page data with our own HTTP pings. If they say operational but we can't reach them, you'll know. We also track uptime against the SLA they promised you." },
   { q: "How does alerting work?", a: "You define thresholds and we notify you via email, Slack, or both. Downtime alerts are instant." },
-  { q: "Is my AWS data safe?", a: "MoniDuck only requires read-only access to your AWS account. We never write, modify, or delete anything. Your credentials are encrypted at rest." },
+  { q: "Is my AWS data safe?", a: "moniduck only requires read-only access to your AWS account. We never write, modify, or delete anything. Your credentials are encrypted at rest." },
   { q: "When will early access open?", a: "We're onboarding our first users progressively. Join the waitlist and you'll be among the first." },
 ];
 
@@ -462,7 +462,7 @@ export default function Waitlist() {
               </h1>
 
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-8 max-w-md">
-                MoniDuck monitors your services, cloud resources, and SaaS
+                moniduck monitors your services, cloud resources, and SaaS
                 dependencies — and alerts you before your customers notice anything.
               </p>
 
@@ -560,7 +560,7 @@ export default function Waitlist() {
               Your entire stack. <span className="text-primary">One place.</span>
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Most monitoring tools cover one layer. MoniDuck covers all three.
+              Most monitoring tools cover one layer. moniduck covers all three.
             </p>
           </div>
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight, Check, ChevronDown, X, Globe, Cloud, Plug,
-  Bell, Search, Zap, Shield, TrendingDown,
+  Bell, Search, Zap, Shield, TrendingDown, Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
@@ -12,10 +12,11 @@ import duckLogo from "@/assets/moniduck-logo.png";
 
 type Tier = {
   name: string;
-  mo: number;
-  annual: number;
+  mo: number | null;
+  annual: number | null;
   desc: string;
   popular: boolean;
+  cta: string;
   features: { text: string; ok: boolean }[];
 };
 
@@ -26,6 +27,7 @@ const tiers: Tier[] = [
     annual: 39,
     desc: "For founders managing everything on their own.",
     popular: false,
+    cta: "Join waitlist",
     features: [
       { text: "10 HTTP monitors", ok: true },
       { text: "5-minute check interval", ok: true },
@@ -45,6 +47,7 @@ const tiers: Tier[] = [
     annual: 99,
     desc: "For teams that can't afford to miss an incident.",
     popular: true,
+    cta: "Join waitlist",
     features: [
       { text: "50 HTTP monitors", ok: true },
       { text: "1-minute check interval", ok: true },
@@ -64,6 +67,7 @@ const tiers: Tier[] = [
     annual: 239,
     desc: "For teams with real infrastructure and SLAs to enforce.",
     popular: false,
+    cta: "Join waitlist",
     features: [
       { text: "Unlimited HTTP monitors", ok: true },
       { text: "1-minute check interval", ok: true },
@@ -74,7 +78,27 @@ const tiers: Tier[] = [
       { text: "Unlimited cloud accounts", ok: true },
       { text: "White-label status page", ok: true },
       { text: "SLA exports (PDF + CSV)", ok: true },
-      { text: "Priority support (< 4h response)", ok: true },
+      { text: "Priority support (< 4h)", ok: true },
+    ],
+  },
+  {
+    name: "Enterprise",
+    mo: null,
+    annual: null,
+    desc: "For organisations that need custom limits, SSO, and a dedicated contract.",
+    popular: false,
+    cta: "Contact us",
+    features: [
+      { text: "Everything in Scale", ok: true },
+      { text: "Unlimited members & workspaces", ok: true },
+      { text: "SSO / SAML", ok: true },
+      { text: "Custom data retention", ok: true },
+      { text: "Dedicated Slack channel", ok: true },
+      { text: "Uptime SLA on moniduck itself", ok: true },
+      { text: "Custom integrations", ok: true },
+      { text: "On-premise option", ok: true },
+      { text: "Volume discounts", ok: true },
+      { text: "Signed DPA & custom MSA", ok: true },
     ],
   },
 ];
@@ -84,11 +108,11 @@ const tiers: Tier[] = [
 const faqs = [
   {
     q: "Why not just use UptimeRobot or Pingdom?",
-    a: "Those tools ping your URLs — that's it. MoniDuck does that, but also cross-checks your SaaS vendors' status pages against our own pings, tracks their actual uptime vs their contractual SLA, and monitors your cloud resources and costs. It's the difference between a thermometer and a full health check.",
+    a: "Those tools ping your URLs — that's it. moniduck does that, but also cross-checks your SaaS vendors' status pages against our own pings, tracks their actual uptime vs their contractual SLA, and monitors your cloud resources and costs. It's the difference between a thermometer and a full health check.",
   },
   {
     q: "What exactly is an 'SLA breach report'?",
-    a: "When Stripe goes down three times this month and their actual uptime is 99.71% instead of the 99.99% they promised, MoniDuck generates a PDF with dates, durations, and the gap vs their SLA. You send it to their support team and negotiate service credits. One successful claim can pay for years of subscription.",
+    a: "When Stripe goes down three times this month and their actual uptime is 99.71% instead of the 99.99% they promised, moniduck generates a PDF with dates, durations, and the gap vs their SLA. You send it to their support team and negotiate service credits. One successful claim can pay for years of subscription.",
   },
   {
     q: "How long does setup take?",
@@ -96,7 +120,7 @@ const faqs = [
   },
   {
     q: "Is my cloud data safe?",
-    a: "MoniDuck only uses read-only access to your cloud accounts. We never write, modify, or delete anything. Credentials are encrypted at rest. EU-hosted infrastructure.",
+    a: "moniduck only uses read-only access to your cloud accounts. We never write, modify, or delete anything. Credentials are encrypted at rest. EU-hosted infrastructure.",
   },
   {
     q: "What happens if I exceed my plan limits?",
@@ -147,8 +171,8 @@ export default function LandingPage() {
             linear-gradient(hsl(var(--border)/0.35) 1px,transparent 1px),
             linear-gradient(90deg,hsl(var(--border)/0.35) 1px,transparent 1px);
           background-size:64px 64px;
-          mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 20%,transparent 100%);
-          -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 20%,transparent 100%);
+          mask-image:radial-gradient(ellipse 100% 70% at 60% 0%,black 30%,transparent 100%);
+          -webkit-mask-image:radial-gradient(ellipse 100% 70% at 60% 0%,black 30%,transparent 100%);
         }
         .shimmer { position:relative; overflow:hidden; }
         .shimmer::after {
@@ -180,86 +204,130 @@ export default function LandingPage() {
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 hero-grid pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 900px 500px at 50% 0%,hsl(160 84% 39%/0.05),transparent)",
+          background: "radial-gradient(ellipse 700px 500px at 0% 50%,hsl(160 84% 39%/0.05),transparent)",
         }} />
 
-        <div ref={heroRef} className="relative max-w-5xl mx-auto px-6 pt-24 pb-24 md:pt-36 md:pb-32 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-success/20 bg-success/5 text-xs font-medium mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-            <span className="text-success">Early access — full Pro free during beta</span>
-          </div>
+        <div ref={heroRef} className="relative max-w-6xl mx-auto px-6 py-20 md:py-28">
+          <div className="grid lg:grid-cols-[1fr_480px] gap-16 items-center">
 
-          <h1 className="text-5xl sm:text-6xl md:text-[72px] font-bold tracking-tight leading-[1.04] mb-7">
-            Your stack has blind spots.
-            <br />
-            <span className="text-green-600">You should know before your customers do.</span>
-          </h1>
-
-          <p className="text-xl text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
-            MoniDuck monitors your HTTP services, cloud resources, and SaaS dependencies —
-            and proves when your vendors aren't meeting the SLA they promised.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="h-12 px-10 text-base shimmer group" onClick={cta}>
-              Start for free
-              <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-            </Button>
-            <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors">
-              See pricing →
-            </a>
-          </div>
-
-          {/* Mini dashboard mockup */}
-          <div className="mt-16 max-w-3xl mx-auto rounded-2xl border border-border bg-card/90 backdrop-blur-sm overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.25)]">
-            <div className="border-b border-border px-5 py-3 flex items-center gap-2.5">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-destructive/50" />
-                <div className="w-3 h-3 rounded-full bg-warning/50" />
-                <div className="w-3 h-3 rounded-full bg-success/50" />
+            {/* Left: Copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-success/20 bg-success/5 text-xs font-medium mb-8">
+                <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                <span className="text-success">Early access — full Pro free during beta</span>
               </div>
-              <span className="text-xs text-muted-foreground ml-1">moniduck — active incidents</span>
-              <div className="ml-auto flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-                <span className="text-xs text-destructive font-medium">2 active incidents</span>
-              </div>
-            </div>
-            <div className="divide-y divide-border">
-              {[
-                {
-                  label: "🔴 Critical",
-                  name: "Dashboard — app.mycompany.com",
-                  detail: "Down for 18 min · Est. revenue impact: ~€290",
-                  right: "Ongoing",
-                  rightColor: "text-destructive",
-                },
-                {
-                  label: "🟡 SLA Breach",
-                  name: "Stripe — actual uptime 99.71% vs 99.99% promised",
-                  detail: "Gap: −0.28% · PDF report ready to send",
-                  right: "This month",
-                  rightColor: "text-warning",
-                },
-                {
-                  label: "✅ Operational",
-                  name: "Auth Service · AWS us-east-1",
-                  detail: "100% uptime · 43ms avg response",
-                  right: "Normal",
-                  rightColor: "text-success",
-                },
-              ].map(row => (
-                <div key={row.name} className="flex items-center justify-between px-5 py-4 hover:bg-muted/20 transition-colors">
-                  <div className="flex items-start gap-3 min-w-0">
-                    <span className="text-xs font-medium mt-0.5 shrink-0">{row.label}</span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{row.name}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{row.detail}</p>
-                    </div>
+
+              <h1 className="text-5xl sm:text-6xl lg:text-[64px] font-bold tracking-tight leading-[1.05] mb-6">
+                Your vendors
+                <br />promise 99.9%.
+                <br /><span className="text-green-600">Hold them to it.</span>
+              </h1>
+
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
+                moniduck monitors your HTTP services, cloud resources, and SaaS
+                dependencies — and generates breach reports when a vendor falls
+                short of the uptime they promised.
+              </p>
+
+              <div className="flex flex-col gap-3 mb-10">
+                {[
+                  "Alerts in under 2 minutes — before your users notice",
+                  "SLA breaches documented and exportable as PDF",
+                  "One dashboard for your entire stack",
+                ].map(item => (
+                  <div key={item} className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <Check className="w-4 h-4 text-success shrink-0" />
+                    {item}
                   </div>
-                  <span className={`text-xs font-medium shrink-0 ml-4 ${row.rightColor}`}>{row.right}</span>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <div className="flex items-center gap-4">
+                <Button size="lg" className="h-12 px-8 shimmer group" onClick={cta}>
+                  Start for free
+                  <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                </Button>
+                <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors">
+                  See pricing →
+                </a>
+              </div>
             </div>
+
+            {/* Right: Dashboard mockup */}
+            <div className="hidden lg:block">
+              <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-[0_32px_80px_-16px_rgba(0,0,0,0.2)]">
+                <div className="border-b border-border px-4 py-3 flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-destructive/50" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-warning/50" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-success/50" />
+                  </div>
+                  <span className="text-xs text-muted-foreground ml-2">moniduck — incidents</span>
+                  <div className="ml-auto flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
+                    <span className="text-xs text-destructive font-medium">2 active</span>
+                  </div>
+                </div>
+
+                {/* Incident rows */}
+                <div className="divide-y divide-border">
+                  {[
+                    {
+                      badge: "Critical",
+                      badgeColor: "bg-destructive/10 text-destructive",
+                      name: "Dashboard — app.mycompany.com",
+                      sub: "Down for 18 min · ~€290 revenue impact",
+                      right: "Ongoing",
+                      rightColor: "text-destructive",
+                    },
+                    {
+                      badge: "SLA Breach",
+                      badgeColor: "bg-warning/10 text-warning",
+                      name: "Stripe — 99.71% vs 99.99% promised",
+                      sub: "PDF report ready · gap: −0.28%",
+                      right: "This month",
+                      rightColor: "text-warning",
+                    },
+                    {
+                      badge: "OK",
+                      badgeColor: "bg-success/10 text-success",
+                      name: "Auth Service · AWS us-east-1",
+                      sub: "100% uptime · 43ms avg",
+                      right: "Normal",
+                      rightColor: "text-success",
+                    },
+                    {
+                      badge: "OK",
+                      badgeColor: "bg-success/10 text-success",
+                      name: "GitHub — 99.99% uptime",
+                      sub: "SLA compliant · last check 41s ago",
+                      right: "Normal",
+                      rightColor: "text-success",
+                    },
+                  ].map(row => (
+                    <div key={row.name} className="flex items-center justify-between px-4 py-3.5 hover:bg-muted/20 transition-colors">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-md shrink-0 mt-0.5 ${row.badgeColor}`}>
+                          {row.badge}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{row.name}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{row.sub}</p>
+                        </div>
+                      </div>
+                      <span className={`text-xs font-medium shrink-0 ml-3 ${row.rightColor}`}>{row.right}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Bottom bar */}
+                <div className="border-t border-border px-4 py-2.5 bg-muted/20 flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">4 monitors · checked 41s ago</span>
+                  <span className="text-xs font-medium text-warning">1 SLA breach this month</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -276,7 +344,7 @@ export default function LandingPage() {
                 icon: TrendingDown,
                 stat: "~€500",
                 label: "in lost revenue per hour of downtime",
-                sub: "For a startup at €1M ARR. At €129/month, MoniDuck pays for itself the first time it catches an incident before your users do.",
+                sub: "For a startup at €1M ARR. At €129/month, moniduck pays for itself the first time it catches an incident before your users do.",
                 color: "text-destructive",
                 bg: "bg-destructive/10",
               },
@@ -284,7 +352,7 @@ export default function LandingPage() {
                 icon: Shield,
                 stat: "1 claim",
                 label: "can pay for years of subscription",
-                sub: "Stripe at 99.71% instead of 99.99%? That's a provable SLA breach. MoniDuck generates the PDF. You negotiate service credits.",
+                sub: "Stripe at 99.71% instead of 99.99%? That's a provable SLA breach. moniduck generates the PDF. You negotiate service credits.",
                 color: "text-warning",
                 bg: "bg-warning/10",
               },
@@ -292,7 +360,7 @@ export default function LandingPage() {
                 icon: Zap,
                 stat: "< 2 min",
                 label: "to detect an outage, not 14",
-                sub: "Without monitoring, the average time to detect is 14 minutes — usually because a customer tweeted at you. That's the scenario we prevent.",
+                sub: "Without monitoring, average detection time is 14 minutes — usually because a customer tweeted at you. That's the scenario we prevent.",
                 color: "text-success",
                 bg: "bg-success/10",
               },
@@ -332,7 +400,7 @@ export default function LandingPage() {
                   "Pinged every minute",
                   "HTTP code, latency, incident duration",
                   "Alert in under 2 minutes",
-                  "History and incident timeline",
+                  "Incident history and timeline",
                 ],
               },
               {
@@ -349,10 +417,10 @@ export default function LandingPage() {
                 emoji: "🔌",
                 title: "SaaS & SLA",
                 bullets: [
-                  "Stripe, GitHub, Vercel, Slack and 10+ others",
-                  "Cross-checks their status page with our pings",
+                  "Stripe, GitHub, Vercel, Slack and 10+ more",
+                  "Cross-checks status page with our own pings",
                   "Actual uptime vs contractual SLA",
-                  "Exportable breach report",
+                  "Exportable breach report (PDF)",
                 ],
               },
             ].map(f => (
@@ -373,7 +441,6 @@ export default function LandingPage() {
             ))}
           </div>
 
-          {/* Steps */}
           <div className="mt-16 grid md:grid-cols-3 gap-6 relative">
             <div className="hidden md:block absolute top-7 left-[calc(16.66%+1rem)] right-[calc(16.66%+1rem)] h-px bg-border" />
             {[
@@ -423,8 +490,9 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 items-start">
-            {tiers.map(tier => (
+          {/* 3 paid plans */}
+          <div className="grid md:grid-cols-3 gap-6 items-start mb-6">
+            {tiers.filter(t => t.name !== "Enterprise").map(tier => (
               <div
                 key={tier.name}
                 className={`rounded-2xl border p-7 flex flex-col relative ${
@@ -445,23 +513,20 @@ export default function LandingPage() {
                   <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-1">{tier.name}</p>
                   <p className="text-sm text-muted-foreground mb-5 min-h-[40px]">{tier.desc}</p>
                   <div className="flex items-end gap-1.5 mb-1">
-                    <span className="text-5xl font-bold text-foreground">€{annual ? tier.annual : tier.mo}</span>
+                    <span className="text-5xl font-bold text-foreground">
+                      €{annual ? tier.annual : tier.mo}
+                    </span>
                     <span className="text-muted-foreground text-sm mb-2">/mo</span>
                   </div>
-                  {annual && (
+                  {annual && tier.annual && tier.mo && (
                     <p className="text-xs text-muted-foreground">
                       Billed €{tier.annual * 12}/year · save €{(tier.mo - tier.annual) * 12}
                     </p>
                   )}
                 </div>
 
-                <Button
-                  size="lg"
-                  variant={tier.popular ? "default" : "outline"}
-                  className="w-full h-11 mb-7"
-                  onClick={cta}
-                >
-                  Join the waitlist
+                <Button size="lg" variant={tier.popular ? "default" : "outline"} className="w-full h-11 mb-7" onClick={cta}>
+                  {tier.cta}
                 </Button>
 
                 <ul className="space-y-3 flex-1">
@@ -480,7 +545,39 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div className="mt-10 rounded-xl border border-primary/20 bg-primary/5 p-6 text-center max-w-2xl mx-auto">
+          {/* Enterprise — full width band */}
+          {(() => {
+            const ent = tiers.find(t => t.name === "Enterprise")!;
+            return (
+              <div className="rounded-2xl border border-border bg-card p-7">
+                <div className="grid md:grid-cols-[1fr_auto] gap-8 items-center">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <p className="text-sm font-semibold text-primary uppercase tracking-wider">Enterprise</p>
+                      <span className="text-xs bg-muted text-muted-foreground px-2.5 py-0.5 rounded-full">Custom pricing</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-5">{ent.desc}</p>
+                    <div className="grid sm:grid-cols-2 gap-2">
+                      {ent.features.map(f => (
+                        <div key={f.text} className="flex items-center gap-2.5 text-sm text-foreground">
+                          <Check className="w-3.5 h-3.5 text-success shrink-0" />
+                          {f.text}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-3 shrink-0">
+                    <Button size="lg" variant="outline" className="gap-2 h-11 px-8 whitespace-nowrap" onClick={() => window.location.href = "mailto:hello@moniduck.io"}>
+                      <Mail className="w-4 h-4" /> Contact us
+                    </Button>
+                    <p className="text-xs text-muted-foreground">hello@moniduck.io</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          <div className="mt-8 rounded-xl border border-primary/20 bg-primary/5 p-6 text-center max-w-2xl mx-auto">
             <p className="font-semibold text-foreground mb-1">🎁 Beta = full Pro, free</p>
             <p className="text-sm text-muted-foreground">
               Early users get all Pro features at no cost during the beta.
@@ -510,7 +607,7 @@ export default function LandingPage() {
           <p className="text-muted-foreground text-lg mb-10 max-w-xl mx-auto">
             Free early access. Full Pro during beta. No credit card required.
           </p>
-          <Button size="lg" className="h-12 px-12 text-base shimmer group" onClick={cta}>
+          <Button size="lg" className="h-12 px-12 shimmer group" onClick={cta}>
             Get early access
             <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
           </Button>

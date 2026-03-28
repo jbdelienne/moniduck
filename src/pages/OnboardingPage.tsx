@@ -81,7 +81,7 @@ export default function OnboardingPage() {
         } catch (e) { /* skip errors */ }
       }
 
-      toast.success('MoniDuck is ready! 🎉');
+      toast.success('moniduck is ready! 🎉');
       navigate('/dashboard');
     } catch (e: any) {
       toast.error(e.message);
@@ -282,7 +282,7 @@ export default function OnboardingPage() {
               className="gap-2 gradient-primary text-primary-foreground hover:opacity-90"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />}
-              Launch MoniDuck
+              Launch moniduck
             </Button>
           )}
         </div>
