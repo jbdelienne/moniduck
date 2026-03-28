@@ -138,7 +138,7 @@ export default function DashboardOverview() {
           <h1 className="text-2xl font-bold text-foreground font-display">Overview</h1>
           <p className="text-sm text-muted-foreground mt-0.5 font-mono text-xs">$ status --global<span className="cursor-blink"></span></p>
         </div>
-        <Button size="sm" onClick={() => navigate('/dashboard')} className="gap-1.5">
+        <Button size="sm" onClick={() => navigate('/views?create=true')} className="gap-1.5">
           <Plus className="w-4 h-4" />
           Create a new view
         </Button>

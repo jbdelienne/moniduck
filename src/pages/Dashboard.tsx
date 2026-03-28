@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import moniduckLogo from '@/assets/moniduck-logo.png';
 // layout provided by route
 import { useServices, Service } from '@/hooks/use-supabase';
@@ -43,6 +44,14 @@ export default function Dashboard() {
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setCreateOpen(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const selectedDashboard = dashboards.find((d) => d.id === selectedDashboardId);
 
