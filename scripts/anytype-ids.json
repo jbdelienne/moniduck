@@ -1,13 +1,13 @@
 {
-  "last_journal_id": "bafyreiaogyjfbfdux6kzofkjtxqqbsv5cdgjxzqlzoxyfspnlqqv3x3i6e",
+  "last_journal_id": "bafyreicknxbvgvpkhlozzjgdan4wdb75prdf5h3hh5pojj4zr5wheonq3u",
   "_collections": {
     "features": "bafyreibig5nd4wsjt5xrvmx52iqumchifpb3tw75sum2527fgon77uvalm",
     "journal": "bafyreia5e3hfm3b6nplx7swledw2yqh6ofh2k4th3cwegltcnqrokktezi"
   },
   "features": {
-    "Dashboard": "bafyreihhsy2qr7ktzpxqkgtfkudx2ocbxdz26j6cv3kbr3bay27r3xtaxy",
+    "Views": "bafyreidq2ocycybbzocgh4sg5iou7xcpblwawppebdpgka2dyoxrn7ppda",
     "HTTP Services Monitoring": "bafyreicwdfpnlxs3mvuqlvdzhnkus4q3usfydjhzteihz42z643vqpsrqa",
-    "Cloud Resources": "bafyreigjk73syky3dlto3y4uh24aut6cdv5tek5j26lakldwrmeivglreu",
+    "Cloud Resources": "bafyreiedo3h4e7wjg35wq4vjxcljxmvmij5siqmzicv3wle4mxvypysmz4",
     "Cloud Regions": "bafyreihepnm67wrcr7zahtmd4xip435eheiede74vbfy4rkguposegs3bu",
     "Stack SaaS": "bafyreiajtvcuqssg3u6k2wqipc6yl2gn6nsn5zlzhakwnly5ietu6twgy4",
     "Intégrations": "bafyreidx27f62ms3vgvkgqba7pza3shzsxtyyqyunka7xh2wmywsx5sp7q",
