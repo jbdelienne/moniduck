@@ -222,7 +222,7 @@ Deno.serve(async (req) => {
       }
 
       // --- Lambda services: check CloudWatch error rate ---
-      const lambdaServices = awsServices.filter((s: any) =>
+      const lambdaServices = (awsServices ?? []).filter((s: any) =>
         Array.isArray(s.tags) && s.tags.includes("lambda")
       );
 

@@ -86,9 +86,7 @@ async function discoverEC2(aws: AwsClient, region: string): Promise<AwsMetric[]>
         type: typeM?.[1] || "unknown",
         state: stateM?.[1] || "unknown",
         name: nameM?.[1] || "",
-        publicIp: publicIpM?.[1] || null,
-        privateIp: privateIpM?.[1] || null,
-      });
+      } as any);
     }
     if (instances.length > 0) {
       metrics.push({
