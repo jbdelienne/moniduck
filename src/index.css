@@ -6,32 +6,32 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 150 20% 99%;
+    --foreground: 220 15% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 220 15% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    --popover-foreground: 220 15% 8%;
 
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --primary-hover: 0 0% 20%;
+    --primary: 150 55% 32%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 150 55% 25%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 150 12% 94%;
+    --secondary-foreground: 220 15% 15%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 150 10% 94%;
+    --muted-foreground: 220 10% 45%;
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 150 25% 91%;
+    --accent-foreground: 150 55% 25%;
 
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 85% 97%;
 
-    --success: 160 84% 39%;
+    --success: 150 55% 35%;
     --success-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
@@ -40,20 +40,20 @@
     --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 3.9%;
+    --border: 150 15% 88%;
+    --input: 150 15% 88%;
+    --ring: 150 55% 32%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 3.9%;
-    --sidebar-primary: 0 0% 9%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 9%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 0 0% 3.9%;
+    --sidebar-background: 150 20% 97%;
+    --sidebar-foreground: 220 15% 15%;
+    --sidebar-primary: 150 55% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 150 15% 93%;
+    --sidebar-accent-foreground: 150 55% 25%;
+    --sidebar-border: 150 15% 87%;
+    --sidebar-ring: 150 55% 32%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -233,7 +233,7 @@
 
   /* Hover lift */
   .hover-lift {
-    @apply transition-all duration-200;
+    @apply transition-all duration-100;
   }
 
   .hover-lift:hover {
@@ -243,7 +243,7 @@
 
   /* Service card */
   .service-card {
-    @apply bg-card border border-border/50 rounded-xl p-5 transition-all duration-200 cursor-pointer;
+    @apply bg-card border border-border/50 rounded-xl p-5 transition-all duration-100 cursor-pointer;
   }
 
   .service-card:hover {
@@ -299,22 +299,13 @@
 }
 
 @layer utilities {
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
+  /* fade-in et scale-in keyframes définis dans tailwind.config.ts */
   .animate-fade-in {
-    animation: fade-in 0.3s ease-out;
-  }
-
-  @keyframes animate-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    animation: fade-in 0.15s ease-out;
   }
 
   .animate-in {
-    animation: animate-in 0.3s ease-out;
+    animation: fade-in 0.15s ease-out;
   }
 
   @keyframes modal-fade-in {
@@ -328,11 +319,11 @@
   }
 
   .animate-modal-fade-in {
-    animation: modal-fade-in 140ms ease-out;
+    animation: modal-fade-in 80ms ease-out;
   }
 
   .animate-modal-fade-out {
-    animation: modal-fade-out 100ms ease-in;
+    animation: modal-fade-out 60ms ease-in;
   }
 
   @keyframes pulse-glow {

@@ -1,12 +1,14 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSaasDependencies, SaasIncident } from '@/hooks/use-saas-dependencies';
-
-import { useSaasUptimeByPeriod, type SaasUptimePeriod } from '@/hooks/use-saas-uptime';
+import { useSaasUptimeByPeriod, useSaasUptimeChart, type SaasUptimePeriod } from '@/hooks/use-saas-uptime';
 import { useServices } from '@/hooks/use-supabase';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { ArrowLeft, Loader2, ExternalLink, AlertTriangle, CheckCircle } from 'lucide-react';
-import { format, subDays } from 'date-fns';
+import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -26,16 +28,33 @@ const statusLabel: Record<string, string> = {
   unknown: 'Unknown',
 };
 
+const PERIOD_OPTIONS: { value: SaasUptimePeriod; label: string }[] = [
+  { value: '24h', label: 'Last day' },
+  { value: '7d', label: 'Last week' },
+  { value: '30d', label: 'Last month' },
+  { value: '12m', label: 'Last year' },
+];
+
+const BREAKDOWN_LABEL: Record<SaasUptimePeriod, string> = {
+  '24h': 'Hourly breakdown',
+  '7d': 'Daily breakdown',
+  '30d': 'Daily breakdown',
+  '12m': 'Monthly breakdown',
+};
+
 export default function StackDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { data: dependencies = [], isLoading } = useSaasDependencies();
   const { data: services = [] } = useServices();
 
+  const [period, setPeriod] = useState<SaasUptimePeriod>('30d');
+
   const dep = dependencies.find(d => d.name.toLowerCase().replace(/\s+/g, '-') === slug);
 
   const providerIds = useMemo(() => dep ? [dep.id] : [], [dep]);
-  const { data: uptimeMap = {} } = useSaasUptimeByPeriod(providerIds, '30d');
+  const { data: uptimeMap = {} } = useSaasUptimeByPeriod(providerIds, period);
+  const { data: chartData = [], isLoading: chartLoading } = useSaasUptimeChart(dep?.id, period);
 
   if (isLoading) {
     return (
@@ -62,12 +81,12 @@ export default function StackDetailPage() {
   const incidents: SaasIncident[] = dep.incidents || [];
   const status = statusBadgeClass[dep.status] || statusBadgeClass.unknown;
 
-  // Monthly SLA breakdown (mock from incidents)
-  const months = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - i);
-    return { month: format(d, 'MMM yyyy'), uptime: 100 - (Math.random() * 0.5) };
-  }).reverse();
+  const validUptimes = chartData.filter(p => p.uptime !== null).map(p => p.uptime as number);
+  const minUptime = validUptimes.length > 0 ? Math.min(...validUptimes) : 99;
+  const yDomain: [number, number] = [Math.max(0, Math.floor(minUptime) - 1), 100];
+
+  // For the breakdown panel: limit rows to keep it readable
+  const displayedPoints = period === '30d' ? chartData.slice(-10) : chartData;
 
   return (
     <div className="animate-fade-in">
@@ -103,33 +122,61 @@ export default function StackDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Uptime Chart */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-foreground mb-4">Uptime — Last 6 months</h2>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <h2 className="text-sm font-semibold text-foreground">Uptime</h2>
+              <Select value={period} onValueChange={v => setPeriod(v as SaasUptimePeriod)}>
+                <SelectTrigger className="h-7 text-xs w-32 border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PERIOD_OPTIONS.map(o => (
+                    <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <span className={`text-lg font-bold data-mono ${slaBreach ? 'text-destructive' : 'text-success'}`}>
+              {uptime.toFixed(2)}%
+            </span>
+          </div>
           <div className="h-[200px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={months}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                <YAxis domain={[99, 100]} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                <Tooltip
-                  contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8 }}
-                  labelStyle={{ color: 'hsl(var(--foreground))' }}
-                />
-                <Area type="monotone" dataKey="uptime" stroke="hsl(var(--primary))" fill="hsl(var(--primary) / 0.1)" strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
+            {chartLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+                  <YAxis domain={yDomain} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickFormatter={v => `${v}%`} />
+                  <Tooltip
+                    contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8 }}
+                    labelStyle={{ color: 'hsl(var(--foreground))' }}
+                    formatter={(v: number) => [`${v?.toFixed(2) ?? '—'}%`, 'Uptime']}
+                  />
+                  <Area type="monotone" dataKey="uptime" stroke="hsl(var(--primary))" fill="hsl(var(--primary) / 0.1)" strokeWidth={2} connectNulls={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
-        {/* SLA Breakdown */}
+        {/* Breakdown panel */}
         <div className="bg-card border border-border rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-foreground mb-4">Monthly SLA</h2>
-          <div className="space-y-2">
-            {months.map(m => (
-              <div key={m.month} className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{m.month}</span>
-                <span className={m.uptime < dep.sla_promised ? 'text-destructive font-medium' : 'text-foreground'}>
-                  {m.uptime.toFixed(2)}%
-                </span>
+          <h2 className="text-sm font-semibold text-foreground mb-4">{BREAKDOWN_LABEL[period]}</h2>
+          <div className="space-y-2 overflow-y-auto max-h-[200px]">
+            {displayedPoints.map(p => (
+              <div key={p.label} className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{p.label}</span>
+                {p.uptime === null ? (
+                  <span className="text-muted-foreground text-xs">—</span>
+                ) : (
+                  <span className={p.uptime < dep.sla_promised ? 'text-destructive font-medium' : 'text-foreground'}>
+                    {p.uptime.toFixed(2)}%
+                  </span>
+                )}
               </div>
             ))}
           </div>
