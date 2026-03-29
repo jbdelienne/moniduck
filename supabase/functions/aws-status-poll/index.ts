@@ -138,7 +138,7 @@ Deno.serve(async (req) => {
       const now = new Date().toISOString();
 
       // Load services once (filter AWS in memory to avoid array-operator quirks)
-      const { data: awsServices = [] } = await supabaseAdmin
+      const { data: awsServices } = await supabaseAdmin
         .from("services")
         .select("id, name, url, tags, status")
         .eq("user_id", cred.user_id);
@@ -197,7 +197,7 @@ Deno.serve(async (req) => {
       }
 
       // --- EC2 + RDS compute services ---
-      const computeServices = awsServices.filter((s: any) =>
+      const computeServices = (awsServices ?? []).filter((s: any) =>
         Array.isArray(s.tags) && (s.tags.includes("ec2") || s.tags.includes("rds"))
       );
 
@@ -222,7 +222,7 @@ Deno.serve(async (req) => {
       }
 
       // --- Lambda services: check CloudWatch error rate ---
-      const lambdaServices = awsServices.filter((s: any) =>
+      const lambdaServices = (awsServices ?? []).filter((s: any) =>
         Array.isArray(s.tags) && s.tags.includes("lambda")
       );
 

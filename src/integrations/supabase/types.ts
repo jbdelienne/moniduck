@@ -1043,6 +1043,62 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          billing_cycle: string
+          cancel_at_period_end: boolean | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          plan_id: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          trial_end: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          billing_cycle?: string
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan_id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          billing_cycle?: string
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan_id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_saas_subscriptions: {
         Row: {
           created_at: string
@@ -1187,18 +1243,21 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          stripe_customer_id: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
           name?: string
+          stripe_customer_id?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
+          stripe_customer_id?: string | null
           updated_at?: string
         }
         Relationships: []
