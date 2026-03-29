@@ -1,6 +1,9 @@
 import { useState } from 'react';
 // layout provided by route
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/hooks/use-subscription';
+import { useBilling } from '@/hooks/use-billing';
+import { PLAN_NAMES, PLAN_PRICES, type PlanId } from '@/lib/plans';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +41,167 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { toast as sonnerToast } from 'sonner';
+
+/* ── Billing Tab ─────────────────────────────────────── */
+
+const UPGRADE_PLANS: { id: Exclude<PlanId, 'free'>; popular?: boolean; features: string[] }[] = [
+  {
+    id: 'starter',
+    features: ['10 HTTP monitors', '5-min checks', '10 SaaS deps', 'Email alerts', '30-day history', '1 member'],
+  },
+  {
+    id: 'pro',
+    popular: true,
+    features: ['50 HTTP monitors', '1-min checks', 'Unlimited SaaS', 'Email alerts', '90-day history', '5 members', '1 AWS account'],
+  },
+  {
+    id: 'scale',
+    features: ['Unlimited monitors', '1-min checks', 'Unlimited SaaS', 'Email alerts', '1-year history', '15 members', 'Unlimited cloud accounts'],
+  },
+]
+
+function BillingTab() {
+  const { subscription, planId, isLoading } = useSubscription()
+  const { checkout, openPortal } = useBilling()
+  const [annual, setAnnual] = useState(true)
+
+  if (isLoading) {
+    return (
+      <div className="bg-card border border-border rounded-xl p-8 flex items-center justify-center">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  const isPaid = planId !== 'free'
+
+  return (
+    <div className="space-y-6">
+      {/* Current plan */}
+      <div className="bg-card border border-border rounded-xl p-6 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <CreditCard className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Current plan</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="font-semibold text-foreground">{PLAN_NAMES[planId]}</span>
+              {isPaid && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-success/10 text-success">
+                  Active
+                </span>
+              )}
+              {subscription?.cancel_at_period_end && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-warning/10 text-warning">
+                  Cancels {subscription.current_period_end
+                    ? new Date(subscription.current_period_end).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : ''}
+                </span>
+              )}
+            </div>
+            {isPaid && subscription?.current_period_end && !subscription.cancel_at_period_end && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Renews {new Date(subscription.current_period_end).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+            )}
+          </div>
+        </div>
+        {isPaid && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0 gap-1.5"
+            onClick={() => openPortal.mutate()}
+            disabled={openPortal.isPending}
+          >
+            {openPortal.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ExternalLink className="w-3.5 h-3.5" />}
+            Manage billing
+          </Button>
+        )}
+      </div>
+
+      {/* Upgrade plans (shown if not on Scale) */}
+      {planId !== 'scale' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-foreground">
+              {isPaid ? 'Upgrade your plan' : 'Choose a plan'}
+            </p>
+            <div className="inline-flex items-center gap-1 bg-muted rounded-full px-1.5 py-1">
+              <button
+                onClick={() => setAnnual(false)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${!annual ? 'bg-background shadow text-foreground' : 'text-muted-foreground'}`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setAnnual(true)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${annual ? 'bg-background shadow text-foreground' : 'text-muted-foreground'}`}
+              >
+                Annual
+                <span className="text-[10px] bg-success/10 text-success px-1.5 py-0.5 rounded-full font-semibold">−20%</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {UPGRADE_PLANS.filter(p => {
+              const order: PlanId[] = ['free', 'starter', 'pro', 'scale']
+              return order.indexOf(p.id) > order.indexOf(planId)
+            }).map(plan => (
+              <div
+                key={plan.id}
+                className={`rounded-xl border p-5 flex flex-col relative ${
+                  plan.popular ? 'border-primary bg-card' : 'border-border bg-card'
+                }`}
+              >
+                {plan.popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold bg-primary text-primary-foreground px-3 py-1 rounded-full">
+                    Most popular
+                  </span>
+                )}
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-1">{PLAN_NAMES[plan.id]}</p>
+                  <div className="flex items-end gap-1">
+                    <span className="text-3xl font-bold text-foreground">
+                      €{annual ? PLAN_PRICES[plan.id].annual : PLAN_PRICES[plan.id].monthly}
+                    </span>
+                    <span className="text-muted-foreground text-xs mb-1">/mo</span>
+                  </div>
+                  {annual && (
+                    <p className="text-xs text-muted-foreground">
+                      Billed €{PLAN_PRICES[plan.id].annual * 12}/year
+                    </p>
+                  )}
+                </div>
+
+                <ul className="space-y-2 flex-1 mb-5">
+                  {plan.features.map(f => (
+                    <li key={f} className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle className="w-3.5 h-3.5 text-success shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  size="sm"
+                  variant={plan.popular ? 'default' : 'outline'}
+                  className="w-full"
+                  onClick={() => checkout.mutate({ plan_id: plan.id, billing_cycle: annual ? 'annual' : 'monthly' })}
+                  disabled={checkout.isPending}
+                >
+                  {checkout.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : `Upgrade to ${PLAN_NAMES[plan.id]}`}
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -424,16 +588,7 @@ export default function SettingsPage() {
 
           {/* Billing tab */}
           <TabsContent value="billing" className="space-y-6">
-            <div className="bg-card border border-border rounded-xl p-8 text-center">
-              <CreditCard className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Billing & Subscription</h3>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
-                Subscription management and billing details will be available soon. You're currently on the free plan.
-              </p>
-              <Button variant="outline" disabled>
-                Coming soon
-              </Button>
-            </div>
+            <BillingTab />
           </TabsContent>
 
           {/* Integrations cloud tab */}

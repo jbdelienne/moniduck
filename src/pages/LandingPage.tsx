@@ -24,63 +24,60 @@ type Tier = {
 // This makes the progression immediately readable left to right.
 const tiers: Tier[] = [
   {
-    name: "Solo",
-    mo: 49,
-    annual: 39,
-    // Deliberately limited: push serious users toward Startup
-    desc: "For testing the product. Not ideal once you ship to production.",
+    name: "Starter",
+    mo: 29,
+    annual: 23,
+    desc: "For freelancers and solo devs who need reliable uptime visibility.",
     popular: false,
-    cta: "Join waitlist",
+    cta: "Get started",
     features: [
-      { text: "5 HTTP monitors", ok: true },
+      { text: "10 HTTP monitors", ok: true },
       { text: "5-minute check interval", ok: true },
-      { text: "3 SaaS dependencies", ok: true },
-      { text: "Email alerts only", ok: true },
-      { text: "7-day incident history", ok: true },
+      { text: "10 SaaS dependencies", ok: true },
+      { text: "Email alerts", ok: true },
+      { text: "30-day incident history", ok: true },
       { text: "1 workspace member", ok: true },
-      { text: "Cloud account", ok: false },
-      { text: "Slack alerts", ok: false },
-      { text: "SLA breach reports", ok: false, badge: "Soon" },
+      { text: "Public status reports", ok: true },
+      { text: "Cloud account (AWS)", ok: false },
+      { text: "Slack alerts", ok: false, badge: "Soon" },
     ],
   },
   {
-    name: "Startup",
-    mo: 129,
-    annual: 99,
-    // The obvious choice for any team in production
+    name: "Pro",
+    mo: 89,
+    annual: 71,
     desc: "For any team that ships to production and takes uptime seriously.",
     popular: true,
-    cta: "Join waitlist",
+    cta: "Get started",
     features: [
-      { text: "25 HTTP monitors", ok: true },
+      { text: "50 HTTP monitors", ok: true },
       { text: "1-minute check interval", ok: true },
       { text: "Unlimited SaaS dependencies", ok: true },
-      { text: "Email + Slack alerts", ok: true, badge: "Soon" },
-      { text: "30-day incident history", ok: true },
+      { text: "Email alerts", ok: true },
+      { text: "90-day incident history", ok: true },
       { text: "5 workspace members", ok: true },
       { text: "1 AWS cloud account", ok: true },
-      { text: "Monthly SLA report (PDF)", ok: true, badge: "Soon" },
-      { text: "Webhooks", ok: false, badge: "Soon" },
+      { text: "Public status reports", ok: true },
+      { text: "Slack alerts", ok: false, badge: "Soon" },
     ],
   },
   {
     name: "Scale",
-    mo: 299,
-    annual: 239,
-    // For teams that have genuinely outgrown Startup
+    mo: 199,
+    annual: 159,
     desc: "For engineering teams managing serious infrastructure across multiple accounts.",
     popular: false,
-    cta: "Join waitlist",
+    cta: "Get started",
     features: [
       { text: "Unlimited HTTP monitors", ok: true },
       { text: "1-minute check interval", ok: true },
       { text: "Unlimited SaaS dependencies", ok: true },
-      { text: "Email + Slack + webhooks", ok: true, badge: "Soon" },
-      { text: "90-day incident history", ok: true },
+      { text: "Email alerts", ok: true },
+      { text: "1-year incident history", ok: true },
       { text: "15 workspace members", ok: true },
-      { text: "Unlimited AWS cloud accounts", ok: true },
-      { text: "SLA exports (PDF + CSV, on demand)", ok: true, badge: "Soon" },
-      { text: "API access + priority support", ok: true, badge: "Roadmap" },
+      { text: "Unlimited cloud accounts", ok: true },
+      { text: "SLA exports (PDF + CSV)", ok: true, badge: "Soon" },
+      { text: "Slack + webhooks", ok: false, badge: "Soon" },
     ],
   },
   {
@@ -163,7 +160,7 @@ export default function LandingPage() {
   const pricingRef = useScrollReveal();
   const faqRef = useScrollReveal();
 
-  const cta = () => navigate("/waitlist");
+  const cta = () => navigate("/auth");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -196,7 +193,7 @@ export default function LandingPage() {
             <a href="#pricing" className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
             <a href="#faq" className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
             <Button size="sm" className="h-9 shimmer" onClick={cta}>
-              Get early access
+              Get started
             </Button>
           </div>
         </div>
@@ -216,7 +213,7 @@ export default function LandingPage() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-success/20 bg-success/5 text-xs font-medium mb-8">
                 <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                <span className="text-success">Early access — full Pro free during beta</span>
+                <span className="text-success">Beta — full Pro features included during early access</span>
               </div>
 
               <h1 className="text-5xl sm:text-6xl lg:text-[64px] font-bold tracking-tight leading-[1.05] mb-6">
@@ -346,7 +343,7 @@ export default function LandingPage() {
                 icon: TrendingDown,
                 stat: "~€500",
                 label: "in lost revenue per hour of downtime",
-                sub: "For a startup at €1M ARR. At €129/month, moniduck pays for itself the first time it catches an incident before your users do.",
+                sub: "For a startup at €1M ARR. At €89/month, moniduck pays for itself the first time it catches an incident before your users do.",
                 color: "text-destructive",
                 bg: "bg-destructive/10",
               },
