@@ -197,7 +197,7 @@ Deno.serve(async (req) => {
       }
 
       // --- EC2 + RDS compute services ---
-      const computeServices = awsServices.filter((s: any) =>
+      const computeServices = (awsServices ?? []).filter((s: any) =>
         Array.isArray(s.tags) && (s.tags.includes("ec2") || s.tags.includes("rds"))
       );
 
