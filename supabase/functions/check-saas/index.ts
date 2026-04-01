@@ -240,6 +240,31 @@ Deno.serve(async (req) => {
       );
     }
 
+    // ── Canary check: verify outbound connectivity before anything else ───────
+    const CANARY_URLS = [
+      "https://1.1.1.1",          // Cloudflare DNS — most reliable endpoint on earth
+      "https://www.google.com",   // Different AS / backbone
+      "https://www.apple.com",    // Yet another diverse network path
+    ];
+    const canaryResults = await Promise.all(
+      CANARY_URLS.map(async (u) => {
+        try {
+          const res = await fetch(u, { signal: AbortSignal.timeout(4000), method: "HEAD" });
+          await res.text().catch(() => {});
+          return res.ok || res.status < 500;
+        } catch { return false; }
+      })
+    );
+    const canaryOk = canaryResults.some(Boolean);
+
+    if (!canaryOk) {
+      console.error("check-saas: canary probes all failed — monitoring network is down, aborting.");
+      return new Response(
+        JSON.stringify({ checked: 0, skipped: providers.length, reason: "monitoring_network_down", canaries: CANARY_URLS }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     // ── Pass 1: ping all providers in parallel ─────────────────────────────
     type PingResult = {
       providerId: string;
@@ -292,6 +317,17 @@ Deno.serve(async (req) => {
     const pingMap = new Map(pingResults.map(r => [r.providerId, r]));
     const successCount = pingResults.filter(r => r.pingOk).length;
     const networkHealthy = successCount > 0; // at least one succeeded → not our network
+
+    // If every single ping failed and we have multiple providers, this is almost certainly
+    // a monitoring-side network failure — bail out entirely to avoid poisoning statuses and
+    // uptime stats with false positives.
+    if (!networkHealthy && providers.length >= 2) {
+      console.warn(`check-saas: ALL ${providers.length} pings failed — suspected monitoring outage, skipping DB writes.`);
+      return new Response(
+        JSON.stringify({ checked: 0, skipped: providers.length, reason: "monitoring_outage_suspected" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     const consecutiveThreshold = networkHealthy ? THRESHOLD_NETWORK_OK : THRESHOLD_NETWORK_UNKNOWN;
 
