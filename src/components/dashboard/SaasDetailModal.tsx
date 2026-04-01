@@ -4,6 +4,7 @@ import { useSaasChecks } from '@/hooks/use-saas-checks';
 import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 import { format } from 'date-fns';
 import { Loader2, ExternalLink, Activity, Clock, ShieldCheck, Pencil, Check, X as XIcon, Copy, Globe } from 'lucide-react';
+import { INCIDENT_SEVERITY } from '@/lib/status';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -304,8 +305,8 @@ export default function SaasDetailModal({ provider, open, onClose }: SaasDetailM
                   <div className="space-y-2">
                     {incidents.map((inc, i) => (
                       <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-muted/10 border border-border/50 hover:bg-muted/20 transition-colors">
-                        <div className={`p-1.5 rounded-lg ${inc.severity === 'critical' ? 'bg-destructive/15' : inc.severity === 'major' ? 'bg-warning/15' : 'bg-info/15'}`}>
-                          <span className="text-xs">{inc.severity === 'critical' ? '🔴' : inc.severity === 'major' ? '🟠' : '🟡'}</span>
+                        <div className={`p-1.5 rounded-lg ${(INCIDENT_SEVERITY[inc.severity] ?? INCIDENT_SEVERITY.minor).bgClass}`}>
+                          {(() => { const cfg = INCIDENT_SEVERITY[inc.severity] ?? INCIDENT_SEVERITY.minor; return <cfg.icon className={`w-3.5 h-3.5 ${cfg.colorClass}`} />; })()}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-foreground">{inc.title}</p>

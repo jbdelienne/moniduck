@@ -1,6 +1,7 @@
 import { useAlerts, useDismissAlert } from '@/hooks/use-supabase';
 import { formatDistanceToNow } from 'date-fns';
-import { AlertTriangle, XCircle, Info, X, Loader2 } from 'lucide-react';
+import { AlertTriangle, XCircle, Info, X } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const severityIcons: Record<string, typeof AlertTriangle> = {
   critical: XCircle,
@@ -22,8 +23,17 @@ export default function AlertListWidget() {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      <div className="h-full flex flex-col gap-2 p-1">
+        <Skeleton className="h-3 w-24 mb-1" />
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex items-start gap-2 px-2 py-1.5">
+            <Skeleton className="w-3.5 h-3.5 rounded shrink-0 mt-0.5" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-3 w-36" />
+              <Skeleton className="h-3 w-48" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

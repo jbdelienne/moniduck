@@ -1,5 +1,5 @@
 import { useServices } from '@/hooks/use-supabase';
-import { Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const statusDot: Record<string, string> = {
   up: 'status-dot-up',
@@ -13,8 +13,18 @@ export default function ServiceTableWidget() {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      <div className="h-full flex flex-col overflow-hidden">
+        <Skeleton className="h-3 w-20 mb-3" />
+        <div className="space-y-2">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center gap-4 py-1.5">
+              <Skeleton className="h-3 flex-1" />
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-3 w-10" />
+              <Skeleton className="h-3 w-12" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

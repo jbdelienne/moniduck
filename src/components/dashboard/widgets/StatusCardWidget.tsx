@@ -1,12 +1,5 @@
 import { Service } from '@/hooks/use-supabase';
-import { CheckCircle, XCircle, AlertTriangle, HelpCircle } from 'lucide-react';
-
-const statusIcons: Record<string, { icon: typeof CheckCircle; colorClass: string }> = {
-  up: { icon: CheckCircle, colorClass: 'text-success' },
-  down: { icon: XCircle, colorClass: 'text-destructive' },
-  degraded: { icon: AlertTriangle, colorClass: 'text-warning' },
-  unknown: { icon: HelpCircle, colorClass: 'text-muted-foreground' },
-};
+import { SERVICE_STATUS } from '@/lib/status';
 
 export default function StatusCardWidget({ service }: { service: Service | undefined }) {
   if (!service) {
@@ -17,7 +10,8 @@ export default function StatusCardWidget({ service }: { service: Service | undef
     );
   }
 
-  const { icon: Icon, colorClass } = statusIcons[service.status] ?? statusIcons.unknown;
+  const cfg = SERVICE_STATUS[service.status] ?? SERVICE_STATUS.unknown;
+  const Icon = cfg.icon;
 
   return (
     <div className="h-full flex flex-col justify-between p-1">
@@ -26,7 +20,7 @@ export default function StatusCardWidget({ service }: { service: Service | undef
         <span className="font-medium text-sm text-foreground truncate">{service.name}</span>
       </div>
       <div className="flex items-center gap-3 mt-2">
-        <Icon className={`w-8 h-8 ${colorClass}`} />
+        <Icon className={`w-8 h-8 ${cfg.colorClass}`} />
         <div>
           <p className="text-2xl font-bold text-foreground tracking-tight">
             {service.status === 'unknown' ? '—' : `${service.uptime_percentage ?? 0}%`}
@@ -34,7 +28,7 @@ export default function StatusCardWidget({ service }: { service: Service | undef
           <p className="text-[11px] text-muted-foreground">uptime</p>
         </div>
       </div>
-      <div className="text-xs text-muted-foreground mt-1">
+      <div className="text-xs text-muted-foreground font-mono mt-1">
         {(service.avg_response_time ?? 0) > 0 ? `${service.avg_response_time}ms avg` : 'No data yet'}
       </div>
     </div>

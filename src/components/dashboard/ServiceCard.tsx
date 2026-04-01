@@ -1,5 +1,6 @@
 import { Service } from '@/hooks/use-supabase';
 import { formatDistanceToNow } from 'date-fns';
+import { Globe, Lock } from 'lucide-react';
 
 interface ServiceCardProps {
   service: Service;
@@ -30,7 +31,9 @@ export default function ServiceCard({ service, onClick }: ServiceCardProps) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <span className="text-xl">{service.icon}</span>
-          <span className="text-sm">{(service as any).visibility === 'private' ? '🔒' : '🌐'}</span>
+          {(service as any).visibility === 'private'
+            ? <Lock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            : <Globe className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
           <h3 className="font-semibold text-card-foreground text-sm">{service.name}</h3>
         </div>
         <div className="flex items-center gap-2">
