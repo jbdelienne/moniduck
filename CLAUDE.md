@@ -4,6 +4,10 @@
 Vérifier que watch-lovable.sh tourne (Terminal 2).
 Ne jamais coder sans être à jour avec origin/main.
 
+## 🚧 Statut produit
+Le produit N'EST PAS lancé. Zéro user en prod. On est en phase de construction pré-launch.
+Ne pas over-engineer, ne pas optimiser prématurément. Privilégier la simplicité et la vitesse d'itération.
+
 ## Stack
 - Frontend: React/Vite + shadcn/ui + Tailwind
 - Backend: Supabase (auth + DB + realtime)
