@@ -1,5 +1,5 @@
 {
-  "last_journal_id": "bafyreihe5ijs6x5pyaprxso3z7c5hh6j7atdoemee65wjz62ppmintxd3a",
+  "last_journal_id": "bafyreiff4f2varu63uslrw2pb2hvkwgvlezodyeel6epjdskuk5kbjnz64",
   "_collections": {
     "features": "bafyreibig5nd4wsjt5xrvmx52iqumchifpb3tw75sum2527fgon77uvalm",
     "journal": "bafyreia5e3hfm3b6nplx7swledw2yqh6ofh2k4th3cwegltcnqrokktezi"
@@ -23,6 +23,8 @@
     "Webhooks": "bafyreifc6gpydg2bt5xsd6cja72xepza2g2eomkumtcjpeeetpqjzporkm",
     "API Access": "bafyreibs3cisq3gtnuv4uab2ipiphakv3qo3dape7725ur3yagv6kxcnaa",
     "Audit Logs": "bafyreibolzbovke3mnmisdrvhjr6sxuaozyhapylhuzwznrpphrnfn2ipu",
-    "SSO / SAML": "bafyreia4ezgqxoznnvh5xhku37aqrdmre5flfiqqmemzkk5qdi2nvb6ulq"
+    "SSO / SAML": "bafyreia4ezgqxoznnvh5xhku37aqrdmre5flfiqqmemzkk5qdi2nvb6ulq",
+    "Playbook Lovable Supabase Dissociating": "bafyreidfbuklnwblsiwdwb7ahahmex4p5ztwv2xzcetmcdojkylayz5ynm",
+    "Architecture V1": "bafyreics7gjfczhs2aev3klpsgerx5ezc6bgxlqc6x6dga2dycjreqf2ce"
   }
 }
