@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,19 +7,58 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { useLangPrefix } from "@/hooks/use-lang-prefix";
+import { supabase } from "@/integrations/supabase/client";
 
 import duckLogo from "@/assets/moniduck-logo.png";
 
 export default function Auth() {
   const { user, loading, signIn, signUp } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isRecovery, setIsRecovery] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
   const { t } = useTranslation();
   const lp = useLangPrefix();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') setIsRecovery(true);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Email sent", description: "Check your inbox to reset your password." });
+      setIsForgotPassword(false);
+    }
+    setSubmitting(false);
+  };
+
+  const handleNewPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Password updated", description: "You can now sign in with your new password." });
+      setIsRecovery(false);
+    }
+    setSubmitting(false);
+  };
 
   if (loading) return null;
   if (user) return <Navigate to={`${lp}/dashboard`} replace />;
@@ -82,75 +121,144 @@ export default function Auth() {
             
           </div>
 
-          <div>
-            <h1 className="text-xl font-semibold text-foreground tracking-tight">
-              {isSignUp ? t("auth.createAccount") : t("auth.welcomeBack")}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              {isSignUp ? t("auth.getStarted") : t("auth.signInToAccount")}
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
-              <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  {t("auth.displayName")}
-                </Label>
-                <Input
-                  id="name"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder={t("auth.yourName")}
-                  className="h-10 bg-card border-border"
-                />
+          {isRecovery ? (
+            <>
+              <div>
+                <h1 className="text-xl font-semibold text-foreground tracking-tight">Set new password</h1>
+                <p className="text-sm text-muted-foreground mt-1">Choose a new password for your account.</p>
               </div>
-            )}
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                {t("auth.email")}
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
-                required
-                className="h-10 bg-card border-border"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                {t("auth.password")}
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                minLength={6}
-                className="h-10 bg-card border-border"
-              />
-            </div>
+              <form onSubmit={handleNewPassword} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="new-password" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    New password
+                  </Label>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                    className="h-10 bg-card border-border"
+                  />
+                </div>
+                <Button type="submit" disabled={submitting} className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                  {submitting ? t("auth.loading") : "Update password"}
+                </Button>
+              </form>
+            </>
+          ) : isForgotPassword ? (
+            <>
+              <div>
+                <h1 className="text-xl font-semibold text-foreground tracking-tight">Reset password</h1>
+                <p className="text-sm text-muted-foreground mt-1">We'll send you a link to reset your password.</p>
+              </div>
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {t("auth.email")}
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    required
+                    className="h-10 bg-card border-border"
+                  />
+                </div>
+                <Button type="submit" disabled={submitting} className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                  {submitting ? t("auth.loading") : "Send reset link"}
+                </Button>
+              </form>
+              <div className="text-center text-sm text-muted-foreground">
+                <button onClick={() => setIsForgotPassword(false)} className="text-primary font-medium hover:underline">
+                  Back to sign in
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <h1 className="text-xl font-semibold text-foreground tracking-tight">
+                  {isSignUp ? t("auth.createAccount") : t("auth.welcomeBack")}
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {isSignUp ? t("auth.getStarted") : t("auth.signInToAccount")}
+                </p>
+              </div>
 
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-            >
-              {submitting ? t("auth.loading") : isSignUp ? t("auth.createAccountBtn") : t("auth.signInBtn")}
-            </Button>
-          </form>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {isSignUp && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="name" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {t("auth.displayName")}
+                    </Label>
+                    <Input
+                      id="name"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder={t("auth.yourName")}
+                      className="h-10 bg-card border-border"
+                    />
+                  </div>
+                )}
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {t("auth.email")}
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    required
+                    className="h-10 bg-card border-border"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      {t("auth.password")}
+                    </Label>
+                    {!isSignUp && (
+                      <button type="button" onClick={() => setIsForgotPassword(true)} className="text-xs text-muted-foreground hover:text-primary transition-colors">
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                    className="h-10 bg-card border-border"
+                  />
+                </div>
 
-          <div className="text-center text-sm text-muted-foreground">
-            {isSignUp ? t("auth.alreadyHaveAccount") : t("auth.dontHaveAccount")}{" "}
-            <button onClick={() => setIsSignUp(!isSignUp)} className="text-primary font-medium hover:underline">
-              {isSignUp ? t("auth.signInBtn") : t("auth.signUp")}
-            </button>
-          </div>
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  {submitting ? t("auth.loading") : isSignUp ? t("auth.createAccountBtn") : t("auth.signInBtn")}
+                </Button>
+              </form>
+
+              <div className="text-center text-sm text-muted-foreground">
+                {isSignUp ? t("auth.alreadyHaveAccount") : t("auth.dontHaveAccount")}{" "}
+                <button onClick={() => setIsSignUp(!isSignUp)} className="text-primary font-medium hover:underline">
+                  {isSignUp ? t("auth.signInBtn") : t("auth.signUp")}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
