@@ -1,4 +1,4 @@
-project_id = "cynnbynmicfosozmgjua"
+project_id = "irsmnxqzyimcmusdkket"
 
 [functions]
   [functions.auth-email-hook]
@@ -13,11 +13,25 @@ project_id = "cynnbynmicfosozmgjua"
     verify_jwt = false
   [functions.check-services]
     verify_jwt = false
+  [functions.check-cloud-regions]
+    verify_jwt = false
+  [functions.check-saas-status]
+    verify_jwt = false
+  [functions.create-checkout-session]
+    verify_jwt = false
+  [functions.create-portal-session]
+    verify_jwt = false
   [functions.integration-oauth]
     verify_jwt = false
   [functions.integration-oauth-callback]
     verify_jwt = false
   [functions.integration-sync]
+    verify_jwt = false
+  [functions.public-report]
+    verify_jwt = false
+  [functions.stripe-webhook]
+    verify_jwt = false
+  [functions.sync-drive-details]
     verify_jwt = false
   [functions.waitlist-welcome]
     verify_jwt = false
