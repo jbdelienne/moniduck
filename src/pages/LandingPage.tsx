@@ -331,7 +331,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── ROI section ─────────────────────────── */}
-      <section className="border-b border-border bg-card/30">
+      <section aria-label="ROI Calculator" className="border-b border-border bg-card/30">
         <div ref={roiRef} className="max-w-6xl mx-auto px-6 py-16">
           <p className="text-center text-xs text-muted-foreground uppercase tracking-widest mb-12">
             The real question isn't whether it's worth the price
