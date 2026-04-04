@@ -218,7 +218,7 @@ export default function LandingPage() {
 
               <h1 className="text-5xl sm:text-6xl lg:text-[64px] font-bold tracking-tight leading-[1.05] mb-6">
                 Infrastructure monitoring
-                <br />for modern stacks.
+                <br /><span className="text-primary">for modern stacks.</span>
               </h1>
 
               <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
