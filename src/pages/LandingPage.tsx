@@ -7,6 +7,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 import duckLogo from "@/assets/moniduck-logo.png";
+import awsLogo from "@/assets/logos/aws.svg";
+import azureLogo from "@/assets/logos/azure.svg";
+import gcpLogo from "@/assets/logos/gcp.svg";
 
 /* ── Pricing ──────────────────────────────────────── */
 
