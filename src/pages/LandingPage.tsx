@@ -340,9 +340,9 @@ export default function LandingPage() {
             {[
               {
                 icon: TrendingDown,
-                stat: "~€500",
+                stat: "~500€",
                 label: "in lost revenue per hour of downtime",
-                sub: "For a startup at €1M ARR. At €89/month, moniduck pays for itself the first time it catches an incident before your users do.",
+                sub: "For a startup at 1M€ ARR. At 89€/month, moniduck pays for itself the first time it catches an incident before your users do.",
                 color: "text-destructive",
                 bg: "bg-destructive/10",
               },
