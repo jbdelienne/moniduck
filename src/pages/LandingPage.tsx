@@ -217,9 +217,8 @@ export default function LandingPage() {
               </div>
 
               <h1 className="text-5xl sm:text-6xl lg:text-[64px] font-bold tracking-tight leading-[1.05] mb-6">
-                Your vendors
-                <br />promise 99.9%.
-                <br /><span className="text-green-600">Hold them to it.</span>
+                Infrastructure monitoring
+                <br />for modern stacks.
               </h1>
 
               <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
