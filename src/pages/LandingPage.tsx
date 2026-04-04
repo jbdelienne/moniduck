@@ -334,7 +334,23 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── ROI section ─────────────────────────── */}
+      {/* ─── Works with ──────────────────────────── */}
+      <section aria-label="Integrations" className="border-b border-border">
+        <div className="max-w-4xl mx-auto px-6 py-12 text-center">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest mb-6">Works with your stack</p>
+          <div className="flex items-center justify-center gap-10 mb-4">
+            {[
+              { src: awsLogo, alt: "Amazon Web Services" },
+              { src: gcpLogo, alt: "Google Cloud Platform" },
+              { src: azureLogo, alt: "Microsoft Azure" },
+            ].map(l => (
+              <img key={l.alt} src={l.src} alt={l.alt} className="h-8 opacity-60 hover:opacity-100 transition-opacity grayscale hover:grayscale-0" />
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground">+ 8 SaaS providers in our monitoring catalog — and growing.</p>
+        </div>
+      </section>
+
       <section aria-label="ROI Calculator" className="border-b border-border bg-card/30">
         <div ref={roiRef} className="max-w-6xl mx-auto px-6 py-16">
           <p className="text-center text-xs text-muted-foreground uppercase tracking-widest mb-12">
