@@ -252,6 +252,7 @@ export default function LandingPage() {
                   See pricing →
                 </a>
               </div>
+              <p className="text-xs text-muted-foreground mt-6">Built for DevOps, platform engineers & CTOs.</p>
             </div>
 
             {/* Right: Dashboard mockup */}
