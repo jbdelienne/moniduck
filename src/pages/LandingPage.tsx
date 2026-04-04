@@ -200,7 +200,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ─── Hero ────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-border">
+      <section aria-label="Hero" className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 hero-grid pointer-events-none" />
         <div className="absolute inset-0 pointer-events-none" style={{
           background: "radial-gradient(ellipse 700px 500px at 0% 50%,hsl(160 84% 39%/0.05),transparent)",
