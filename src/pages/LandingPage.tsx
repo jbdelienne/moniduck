@@ -614,7 +614,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Final CTA ───────────────────────────── */}
-      <section>
+      <section aria-label="Call to action">
         <div className="max-w-3xl mx-auto px-6 py-24 text-center">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
             The next outage — you'll know
