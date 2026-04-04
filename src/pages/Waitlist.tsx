@@ -377,6 +377,8 @@ export default function Waitlist() {
   const { canvasRef, fire } = useConfetti();
   const waitlistCount = useWaitlistCount();
 
+  useEffect(() => { document.title = "Join the waitlist — moniduck"; }, []);
+
   const heroRef = useScrollReveal({ delay: 100 });
   const painRef = useScrollReveal();
   const featuresHeaderRef = useScrollReveal();
