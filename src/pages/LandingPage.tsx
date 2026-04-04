@@ -460,7 +460,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Pricing ─────────────────────────────── */}
-      <section id="pricing" className="border-b border-border bg-card/20">
+      <section aria-label="Pricing" id="pricing" className="border-b border-border bg-card/20">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-28">
           <div ref={pricingRef} className="text-center mb-12">
             <p className="text-sm font-medium text-primary mb-3 tracking-wide uppercase">Pricing</p>
