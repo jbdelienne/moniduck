@@ -377,7 +377,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Features ────────────────────────────── */}
-      <section className="border-b border-border">
+      <section aria-label="Features" className="border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-28">
           <div ref={featuresRef} className="text-center mb-16">
             <p className="text-sm font-medium text-primary mb-3 tracking-wide uppercase">What you monitor</p>
