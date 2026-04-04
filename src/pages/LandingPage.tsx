@@ -186,7 +186,7 @@ export default function LandingPage() {
       <nav className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img src={duckLogo} alt="moniduck" className="w-10 h-10" />
+            <img src={duckLogo} alt="moniduck — infrastructure monitoring platform" className="w-10 h-10" />
             <span className="font-semibold text-xl tracking-tight">moniduck</span>
           </div>
           <div className="flex items-center gap-6">
