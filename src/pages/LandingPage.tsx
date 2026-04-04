@@ -595,13 +595,22 @@ export default function LandingPage() {
       </section>
 
       {/* ─── FAQ ─────────────────────────────────── */}
-      <section id="faq" className="border-b border-border">
+      <section aria-label="FAQ" id="faq" className="border-b border-border">
         <div className="max-w-2xl mx-auto px-6 py-20 md:py-28">
           <h2 ref={faqRef} className="text-3xl md:text-4xl font-bold tracking-tight mb-12 text-center">
             Frequently asked questions
           </h2>
           {faqs.map(f => <FaqItem key={f.q} q={f.q} a={f.a} />)}
         </div>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": faqs.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }) }} />
       </section>
 
       {/* ─── Final CTA ───────────────────────────── */}
