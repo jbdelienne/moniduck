@@ -642,7 +642,7 @@ export default function LandingPage() {
             <img src={duckLogo} alt="moniduck" className="w-6 h-6" />
             <span className="text-sm text-muted-foreground">© {new Date().getFullYear()} moniduck</span>
           </div>
-          <p className="text-xs text-muted-foreground">For teams that can't afford to miss an incident.</p>
+          <p className="text-xs text-muted-foreground italic">Built by an engineer who just wanted one tool.</p>
         </div>
       </footer>
     </div>
